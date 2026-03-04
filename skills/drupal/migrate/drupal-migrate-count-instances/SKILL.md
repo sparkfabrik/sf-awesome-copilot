@@ -1,5 +1,5 @@
 ---
-name: migrate-count-instances
+name: drupal-migrate-count-instances
 description: Count entity instances in the source migration database using revision-safe queries. Use when you need to know how many nodes, paragraphs, taxonomy terms, or users of a specific bundle exist. Always uses COUNT(DISTINCT) to avoid inflated counts from revisions.
 ---
 
@@ -31,7 +31,7 @@ If the entity type is not specified, infer it from the bundle name:
 ## Entity-Type Context
 
 Before running any query, resolve entity-type-specific variables from:
-**`.github/prompts/entity-type-context.prompt.md`**
+**`.github/prompts/drupal-migrate-entity-type-context.prompt.md`**
 
 Use `{main_table}`, `{id_column}`, `{bundle_column}`, and `{status_column}` from that reference.
 

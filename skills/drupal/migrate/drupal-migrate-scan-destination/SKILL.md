@@ -1,5 +1,5 @@
 ---
-name: migrate-scan-destination
+name: drupal-migrate-scan-destination
 description: Scan destination Drupal configuration for field mapping proposals. Reads local config YAML files and project analysis documents to propose source-to-destination field mappings. Use after querying source fields.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: migrate-verify-active
+name: drupal-migrate-verify-active
 description: Verify active vs orphaned paragraph instances by checking against currently published node revisions. Use after identifying parent context to determine how many paragraph instances are actually in use. Critical for accurate migration scope.
 ---
 

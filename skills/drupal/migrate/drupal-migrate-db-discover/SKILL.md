@@ -1,5 +1,5 @@
 ---
-name: migrate-db-discover
+name: drupal-migrate-db-discover
 description: Discover and validate the source Drupal database connection for migration. Use when starting any migration analysis, or when you need to verify the source database is reachable. Checks settings.php for database configuration and tests connectivity.
 ---
 

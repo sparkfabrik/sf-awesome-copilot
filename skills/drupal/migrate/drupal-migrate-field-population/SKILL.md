@@ -1,5 +1,5 @@
 ---
-name: migrate-field-population
+name: drupal-migrate-field-population
 description: Measure field population percentages for a source entity bundle. For each field, counts how many active instances actually contain data. Fields at 0% are non-migration candidates. Use after querying fields with migrate-query-fields.
 ---
 
@@ -38,7 +38,7 @@ If it exists, read the **Database Connection** section for the drush database op
 ## Entity-Type Context
 
 Before running any query, resolve entity-type-specific variables from:
-**`.github/prompts/entity-type-context.prompt.md`**
+**`.github/prompts/drupal-migrate-entity-type-context.prompt.md`**
 
 Use `{main_table}`, `{id_column}`, `{bundle_column}`, and `{field_data_prefix}` from that reference.
 
@@ -67,7 +67,7 @@ Replace `{value_suffix}` based on field type:
 - **Image**: `_target_id`
 - **Entity reference revisions**: `_target_id`
 
-See `.github/prompts/entity-type-context.prompt.md` → "Value Column Suffix Patterns" for full list.
+See `.github/prompts/drupal-migrate-entity-type-context.prompt.md` → "Value Column Suffix Patterns" for full list.
 
 > **Important**: Use `entity_id` only in the JOIN (not `revision_id`) to avoid false negatives from revision mismatches.
 

@@ -1,5 +1,5 @@
 ---
-name: migrate-detect-container
+name: drupal-migrate-detect-container
 description: Detect if a paragraph bundle is a group/container that holds child paragraph entities via entity_reference_revisions fields. Use to discover nested paragraph hierarchies before analyzing fields.
 ---
 

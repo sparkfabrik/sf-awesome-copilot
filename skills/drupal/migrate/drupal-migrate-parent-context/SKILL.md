@@ -1,5 +1,5 @@
 ---
-name: migrate-parent-context
+name: drupal-migrate-parent-context
 description: Identify the parent context for a paragraph bundle in the source database. Shows which entity types, fields, and node bundles reference a given paragraph type. Use after counting instances to understand where a paragraph is used.
 ---
 
