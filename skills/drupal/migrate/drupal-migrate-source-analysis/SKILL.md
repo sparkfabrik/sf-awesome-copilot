@@ -1,5 +1,5 @@
 ---
-name: migrate-source-analysis
+name: drupal-migrate-source-analysis
 description: Analyse a source Drupal entity bundle (node, paragraph, taxonomy_term) for migration purposes. Use when the user asks to "analyse", "dig into", or "investigate" a specific bundle type — e.g., "Analyse the paragraph type 'profile_card_with_modal'", "Dig into the node of type luisspage", "What fields does person_simple_with_email have?". Produces a structured field analysis report with active instance counts, field population data, orphan detection, live screenshots of example pages, and — optionally — a complete GitLab issue description ready to paste.
 ---
 
@@ -9,7 +9,7 @@ description: Analyse a source Drupal entity bundle (node, paragraph, taxonomy_te
 
 You are a migration analysis expert for the Luiss University corporate website (Drupal 11). Your job is to **actively query the source database and local config files** to produce a precise, data-driven analysis of the given entity bundle.
 
-Reference the migration issue prompt: [issue-migrate-requirements.prompt.md](../../../.github/prompts/issue-migrate-requirements.prompt.md)
+Reference the migration issue prompt: [drupal-migrate-issue-requirements.prompt.md](../../../.github/prompts/drupal-migrate-issue-requirements.prompt.md)
 
 ---
 
@@ -395,7 +395,7 @@ After presenting the analysis, ask:
 
 > "Would you like me to generate the GitLab issue description based on this analysis, following the project's migration issue instruction?"
 
-If the user confirms, generate the full issue description following the structure defined in [issue-migrate-requirements.prompt.md](../../../.github/prompts/issue-migrate-requirements.prompt.md) (Phases 3–4). The issue description body must be written in **Italian**.
+If the user confirms, generate the full issue description following the structure defined in [drupal-migrate-issue-requirements.prompt.md](../../../.github/prompts/drupal-migrate-issue-requirements.prompt.md) (Phases 3–4). The issue description body must be written in **Italian**.
 
 ---
 

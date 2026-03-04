@@ -1,5 +1,5 @@
 ---
-name: migrate-live-screenshots
+name: drupal-migrate-live-screenshots
 description: Take browser screenshots of live example pages resolved by migrate-resolve-examples. Optional step — only run after explicit user confirmation. Uses the chrome-devtools MCP server for screenshots.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: migrate-detect-version
+name: drupal-migrate-detect-version
 description: Detect the Drupal version of the source migration database (Drupal 7, 8, 9, or 10). Use after discovering the database connection with migrate-db-discover. Checks for version-specific table signatures.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: migrate-query-fields
+name: drupal-migrate-query-fields
 description: Query source entity fields from the migration database. Supports both Drupal 7 (field_config_instance) and Drupal 8+ (config table) patterns. Produces a structured field list with label, machine name, type, cardinality, required, and translatable.
 ---
 
@@ -36,7 +36,7 @@ If it exists, read the **Database Connection** section for the drush database op
 ## Entity-Type Context
 
 Before running any query, resolve entity-type-specific variables from:
-**`.github/prompts/entity-type-context.prompt.md`**
+**`.github/prompts/drupal-migrate-entity-type-context.prompt.md`**
 
 Use `{main_table}`, `{base_table}`, `{id_column}`, `{field_data_prefix}`, `{config_prefix}`, and `{storage_prefix}` from that reference.
 
@@ -49,7 +49,7 @@ Use `{main_table}`, `{base_table}`, `{id_column}`, `{field_data_prefix}`, `{conf
 ### Step 0 — Enumerate base fields
 
 Before querying configurable fields, list the **base fields** for the entity type from the
-Entity-Type Context reference (`.github/prompts/entity-type-context.prompt.md`, section "Base Fields Per Entity Type").
+Entity-Type Context reference (`.github/prompts/drupal-migrate-entity-type-context.prompt.md`, section "Base Fields Per Entity Type").
 
 Include these in the field report with:
 - Population: `100%` (base fields always exist)

@@ -1,5 +1,5 @@
 ---
-name: migrate-resolve-examples
+name: drupal-migrate-resolve-examples
 description: Resolve live URLs for example nodes from the source Drupal database — one representative node per parent bundle. Compulsory step in every full source analysis. Does NOT take screenshots (use migrate-live-screenshots for that).
 ---
 
@@ -22,7 +22,7 @@ Required context (available from prior skills in the analysis workflow):
 ## Entity-Type Context
 
 Before running any query, resolve entity-type-specific variables from:
-**`.github/prompts/entity-type-context.prompt.md`**
+**`.github/prompts/drupal-migrate-entity-type-context.prompt.md`**
 
 Use `{has_direct_url}` and `{base_table}` from that reference to determine the resolution strategy.
 

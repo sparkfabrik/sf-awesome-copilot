@@ -29,7 +29,7 @@ If the user provides additional material, incorporate it into the analysis and n
 
 ### Destination entity verification
 
-Before running `migrate-scan-destination` or proposing any field mapping, **always ask the user**:
+Before running `drupal-migrate-scan-destination` or proposing any field mapping, **always ask the user**:
 
 > "Do you know the destination entity/bundle for this migration? If yes, please provide the machine name. If not, I'll attempt to identify a candidate — but we may need to discuss it."
 
@@ -40,7 +40,7 @@ If you cannot identify a plausible destination bundle even after asking:
 
 ### Live URL resolution
 
-Run `migrate-resolve-examples` **automatically** as part of every full source analysis — no confirmation needed. This step resolves at least one representative node URL per parent bundle and is required output.
+Run `drupal-migrate-resolve-examples` **automatically** as part of every full source analysis — no confirmation needed. This step resolves at least one representative node URL per parent bundle and is required output.
 
 ### Screenshots
 
@@ -48,7 +48,7 @@ After URL resolution, **always ask the user**:
 
 > "Should I take live screenshots of the example pages? This requires browser access and may take some time. You can skip this step if you only need the field analysis."
 
-Only run `migrate-live-screenshots` if the user confirms.
+Only run `drupal-migrate-live-screenshots` if the user confirms.
 
 ### Project Configuration
 
@@ -69,40 +69,40 @@ If the file does not exist, skills will use their built-in defaults and ask the 
 ### Database & Version Discovery
 | Skill | Purpose | When to Use |
 |---|---|---|
-| `migrate-db-discover` | Find and test source DB connection | Always first — before any DB queries |
-| `migrate-detect-version` | Detect Drupal 7 vs 8+ | After DB discovery, before field queries |
+| `drupal-migrate-db-discover` | Find and test source DB connection | Always first — before any DB queries |
+| `drupal-migrate-detect-version` | Detect Drupal 7 vs 8+ | After DB discovery, before field queries |
 
 ### Entity Analysis
 | Skill | Purpose | When to Use |
 |---|---|---|
-| `migrate-count-instances` | Count entities (revision-safe) | When analysing any entity bundle |
-| `migrate-parent-context` | Identify paragraph parents | For paragraph bundles only |
-| `migrate-verify-active` | Active vs orphaned instances | For paragraphs, after parent context |
-| `migrate-detect-container` | Find child paragraph relationships | When a paragraph might be a container |
+| `drupal-migrate-count-instances` | Count entities (revision-safe) | When analysing any entity bundle |
+| `drupal-migrate-parent-context` | Identify paragraph parents | For paragraph bundles only |
+| `drupal-migrate-verify-active` | Active vs orphaned instances | For paragraphs, after parent context |
+| `drupal-migrate-detect-container` | Find child paragraph relationships | When a paragraph might be a container |
 
 ### Field Analysis
 | Skill | Purpose | When to Use |
 |---|---|---|
-| `migrate-query-fields` | Extract source field definitions | For any entity bundle analysis |
-| `migrate-field-population` | Measure field data population % | After querying fields |
+| `drupal-migrate-query-fields` | Extract source field definitions | For any entity bundle analysis |
+| `drupal-migrate-field-population` | Measure field data population % | After querying fields |
 
 ### Visual & Destination
 | Skill | Purpose | When to Use |
 |---|---|---|
-| `migrate-resolve-examples` | Resolve live URLs for example nodes (one per parent bundle) | Always — compulsory step in every full source analysis |
-| `migrate-live-screenshots` | Take browser screenshots of resolved example pages | Optional — only when user confirms |
-| `migrate-scan-destination` | Scan destination config, propose mappings | When destination bundle is known |
+| `drupal-migrate-resolve-examples` | Resolve live URLs for example nodes (one per parent bundle) | Always — compulsory step in every full source analysis |
+| `drupal-migrate-live-screenshots` | Take browser screenshots of resolved example pages | Optional — only when user confirms |
+| `drupal-migrate-scan-destination` | Scan destination config, propose mappings | When destination bundle is known |
 
 ### Issue & Planning
 | Skill | Purpose | When to Use |
 |---|---|---|
 | `gitlab-read-issue` | Read a GitLab issue by number | When user references an issue |
-| `migrate-tech-analysis` | Produce TO DO list from a GitLab issue | When user wants implementation planning |
+| `drupal-migrate-tech-analysis` | Produce TO DO list from a GitLab issue | When user wants implementation planning |
 
 ### Output Templates (Prompts)
 | Prompt | Purpose | When to Use |
 |---|---|---|
-| `issue-migrate-requirements.prompt.md` | GitLab issue template for migrations | When generating a complete issue description |
+| `drupal-migrate-issue-requirements.prompt.md` | GitLab issue template for migrations | When generating a complete issue description |
 | `issue-requirements-generation.prompt.md` | Generic issue requirements template | For non-migration issues |
 
 ---
@@ -114,18 +114,18 @@ If the file does not exist, skills will use their built-in defaults and ask the 
 **Triggers**: "analyse", "dig into", "investigate", "what fields does X have", "analyse the paragraph type X", "source analysis of X"
 
 **Workflow** (full source analysis):
-1. `migrate-db-discover` — find and test source DB
-2. `migrate-detect-version` — detect Drupal version
-3. `migrate-count-instances` — count instances
-4. _(If paragraph)_ `migrate-parent-context` — identify parents
-5. _(If paragraph)_ `migrate-verify-active` — check active vs orphaned
-6. `migrate-detect-container` — check for child paragraphs
+1. `drupal-migrate-db-discover` — find and test source DB
+2. `drupal-migrate-detect-version` — detect Drupal version
+3. `drupal-migrate-count-instances` — count instances
+4. _(If paragraph)_ `drupal-migrate-parent-context` — identify parents
+5. _(If paragraph)_ `drupal-migrate-verify-active` — check active vs orphaned
+6. `drupal-migrate-detect-container` — check for child paragraphs
 7. _(If container)_ Repeat steps 3-6 for each child bundle
-8. `migrate-query-fields` — extract field definitions
-9. `migrate-field-population` — measure population percentages
-10. `migrate-resolve-examples` — resolve one live URL per parent bundle (**compulsory**)
-11. _(Optional, ask user first)_ `migrate-live-screenshots` — take browser screenshots of example pages
-12. _(Ask user for destination bundle first)_ `migrate-scan-destination` — propose field mappings
+8. `drupal-migrate-query-fields` — extract field definitions
+9. `drupal-migrate-field-population` — measure population percentages
+10. `drupal-migrate-resolve-examples` — resolve one live URL per parent bundle (**compulsory**)
+11. _(Optional, ask user first)_ `drupal-migrate-live-screenshots` — take browser screenshots of example pages
+12. _(Ask user for destination bundle first)_ `drupal-migrate-scan-destination` — propose field mappings
 
 > **Important**: The full source analysis produces a **high-level overview** only. It does NOT include technical implementation details, migration YAML planning, plugin suggestions, or developer task breakdowns. Those belong in a separate tech analysis (see "Tech analysis of issue #N" intent below).
 
@@ -152,7 +152,7 @@ If the file does not exist, skills will use their built-in defaults and ask the 
      - **If 2**: Ask for the custom folder path, then use it
    
    - **Auto-generate the filename** based on the source bundle: `migrate-issue-{sourceBundle}.md`
-   - Generate the issue description using `issue-migrate-requirements.prompt.md` template
+   - Generate the issue description using `drupal-migrate-issue-requirements.prompt.md` template
    - Save the file to the chosen folder
    - Confirm the save location and remind the user to review before pasting into GitLab
 
@@ -167,7 +167,7 @@ If the file does not exist, skills will use their built-in defaults and ask the 
 1. Read project config for issue tracker settings
 2. `gitlab-read-issue` — fetch and display the issue
 3. _(If source analysis data is missing)_ Run the source analysis workflow for the referenced bundle
-4. `migrate-tech-analysis` — produce the TO DO list
+4. `drupal-migrate-tech-analysis` — produce the TO DO list
 
 **Output**: Technical TO DO list with checkboxes.
 
@@ -179,8 +179,8 @@ If the file does not exist, skills will use their built-in defaults and ask the 
 1. Run the full source analysis workflow (if not already done)
 2. Ask user for additional context/documents before writing the issue
 3. Ask user for the destination bundle (required for field mapping)
-4. _(If destination known)_ `migrate-scan-destination` — propose mappings
-5. Reference `issue-migrate-requirements.prompt.md` — format the GitLab issue
+4. _(If destination known)_ `drupal-migrate-scan-destination` — propose mappings
+5. Reference `drupal-migrate-issue-requirements.prompt.md` — format the GitLab issue
 
 **Output**: Complete GitLab issue in the language specified by the user (default: English), ready to paste.
 
@@ -191,8 +191,8 @@ If the file does not exist, skills will use their built-in defaults and ask the 
 **Triggers**: "check database", "source database", "DB connection", "connect to source"
 
 **Workflow**:
-1. `migrate-db-discover` — find and test connection
-2. `migrate-detect-version` — detect Drupal version
+1. `drupal-migrate-db-discover` — find and test connection
+2. `drupal-migrate-detect-version` — detect Drupal version
 
 **Output**: Connection status and version.
 
@@ -201,9 +201,9 @@ If the file does not exist, skills will use their built-in defaults and ask the 
 **Triggers**: "compare", "map fields", "what's the mapping for", "field mapping"
 
 **Workflow**:
-1. `migrate-query-fields` — get source fields (or reference existing analysis)
-2. `migrate-field-population` — get population data
-3. `migrate-scan-destination` — scan destination and propose mappings
+1. `drupal-migrate-query-fields` — get source fields (or reference existing analysis)
+2. `drupal-migrate-field-population` — get population data
+3. `drupal-migrate-scan-destination` — scan destination and propose mappings
 
 **Output**: Side-by-side mapping proposal table.
 
@@ -266,19 +266,19 @@ Present results in this format:
 
 1. **Read project config first** — always check `.github/prompts/migrate-instructions.prompt.md` before any skill execution
 2. **Chain skills autonomously** — don't ask the user which skill to run next
-3. **Skip unnecessary skills** — if the user only needs field info, don't run screenshots (`migrate-live-screenshots`); URL resolution (`migrate-resolve-examples`) is always required
+3. **Skip unnecessary skills** — if the user only needs field info, don't run screenshots (`drupal-migrate-live-screenshots`); URL resolution (`drupal-migrate-resolve-examples`) is always required
 4. **Reuse prior results** — if analysis data was already produced in this session, reference it instead of re-running queries
 5. **Run independent queries in parallel** — when multiple skills can run independently, execute them simultaneously
-6. **URL resolution is compulsory** — always run `migrate-resolve-examples` automatically; it requires no confirmation
-7. **Ask before screenshots** — always confirm with the user before running `migrate-live-screenshots`
-8. **Ask for destination bundle** — always confirm destination entity/bundle with the user before running `migrate-scan-destination`
+6. **URL resolution is compulsory** — always run `drupal-migrate-resolve-examples` automatically; it requires no confirmation
+7. **Ask before screenshots** — always confirm with the user before running `drupal-migrate-live-screenshots`
+8. **Ask for destination bundle** — always confirm destination entity/bundle with the user before running `drupal-migrate-scan-destination`
 9. **Ask for additional context** — before generating any report or issue body, ask the user for supplementary documents or notes
 10. **Handle containers recursively** — if a paragraph is a container, automatically repeat the analysis for each child bundle
 11. **Respect language settings** — skill interactions always in English; GitLab issue output language is determined by asking the user before generating the issue (default: English if not specified). Project config may suggest a default language, but the user's explicit choice always takes precedence.
 12. **No tech details in source analysis** — the full analysis report is high-level only; do not include implementation tasks, plugin names, YAML examples, or developer todos unless the user explicitly requests a tech analysis
 13. **Issue generation workflow** — after presenting any analysis report, **always ask** if the user wants to generate an issue description. If yes, offer two save location options: **(1) copilot session folder (default)** or **(2) custom folder path**. Auto-generate the filename as `migrate-issue-{sourceBundle}.md` based on the analyzed bundle. Never assume the output location; let the user choose between default and custom.
-14. **Leave "To do" section empty** — the "## To do" section in generated issues must **always remain empty** unless you are specifically doing a tech analysis via `migrate-tech-analysis` skill. This section is explicitly reserved for developers to fill in. Do not pre-populate it with implementation tasks, assumptions, or details unless the tech analysis workflow explicitly requires it.
-15. **Definition of Done is fixed** — the "## Definition of Done" section must **always** follow the template exactly from `issue-migrate-requirements.prompt.md`:
+14. **Leave "To do" section empty** — the "## To do" section in generated issues must **always remain empty** unless you are specifically doing a tech analysis via `drupal-migrate-tech-analysis` skill. This section is explicitly reserved for developers to fill in. Do not pre-populate it with implementation tasks, assumptions, or details unless the tech analysis workflow explicitly requires it.
+15. **Definition of Done is fixed** — the "## Definition of Done" section must **always** follow the template exactly from `drupal-migrate-issue-requirements.prompt.md`:
     ```markdown
     ## Definition of Done
 
