@@ -1,0 +1,50 @@
+{
+  "skill_name": "glab",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I found a bug on the login page -- when you submit an empty password field the app crashes with a 500 error instead of showing a validation message. Can you create a GitLab issue for this? Make it a high priority bug and assign it to me.",
+      "expected_output": "The agent should use `glab issue create` with a descriptive title, detailed description including steps to reproduce, appropriate labels (bug, priority::high or similar), and --assignee @me. It should NOT use `gh issue create` or any GitHub-specific tooling.",
+      "files": [],
+      "assertions": [
+        "Uses `glab issue create` (not `gh issue create` or curl to the API)",
+        "Includes a descriptive --title flag with relevant bug description",
+        "Includes a --description flag with meaningful content (steps to reproduce or context)",
+        "Uses scoped labels for priority (e.g., `priority::high`) rather than flat labels",
+        "Uses `--assignee @me` or equivalent to assign to the current user",
+        "Checks the git remote to confirm it's a GitLab project before running glab commands",
+        "Uses `--label` with a bug-related label (e.g., `bug`, `type::bug`)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I've been working on this branch and my changes are ready. Create a merge request that targets the develop branch. The changes fix the login validation bug from issue #42. Make sure the MR description mentions it closes that issue, and request a review from my teammate 'marco'.",
+      "expected_output": "The agent should: 1) Check git status and branch state, 2) Push the branch if needed, 3) Use `glab mr create` with --target-branch develop, a clear title, a description containing 'Closes #42', --reviewer marco. It should use GitLab MR terminology, not GitHub PR terminology.",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr create` (not `gh pr create` or other GitHub tooling)",
+        "Specifies `--target-branch develop` to target the correct branch",
+        "MR description contains 'Closes #42' or 'Fixes #42' to auto-close the issue",
+        "Uses `--reviewer marco` to request review from the teammate",
+        "Checks git status and branch state before creating the MR",
+        "Pushes the branch to remote (with -u) before creating the MR",
+        "Analyzes the changes (git diff/log) to draft a meaningful MR title and description"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Can you check what's going on with merge request !15? I want to see the comments, check if the pipeline passed, and then approve it with a note saying the implementation looks solid.",
+      "expected_output": "The agent should: 1) Use `glab mr view 15 --comments` to see the MR and its comments, 2) Use `glab ci status` or check pipeline status, 3) Use `glab mr note 15` to add the comment, and 4) Use `glab mr approve 15` to approve. Commands should use the `!15` MR notation and glab (not gh).",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr view 15` (or with --comments) to view the MR",
+        "Views comments on the MR using `glab mr view 15 --comments`",
+        "Checks pipeline/CI status using `glab ci status` or equivalent",
+        "Uses `glab mr approve 15` to formally approve the MR (GitLab's approval system)",
+        "Uses `glab mr note 15` to add a comment about the implementation looking solid",
+        "Treats approval and comment as separate operations (not combined into one command)",
+        "Uses glab commands throughout (not gh or curl)"
+      ]
+    }
+  ]
+}
