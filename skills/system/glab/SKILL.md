@@ -98,6 +98,40 @@ Issues use `#`, merge requests use `!`.
 
 ---
 
+## Writing comments and notes on behalf of the user
+
+Whenever you post a comment or note on an issue or MR (via `glab issue note`, `glab mr note`, or `glab api` body fields), you **must** prepend the following header to make it clear the message was authored by an AI agent acting on behalf of the user:
+
+```
+🤖 *This comment was written by an AI agent on behalf of @<username>.*
+
+---
+```
+
+To get the current authenticated username run:
+
+```bash
+GITLAB_HOST=<hostname> glab api user --jq '.username'
+```
+
+**Example** — adding a triage note to issue #42:
+
+```bash
+GITLAB_HOST=gitlab.example.com glab issue note 42 \
+  -R group/project \
+  --message "🤖 *This comment was written by an AI agent on behalf of @alice.*
+
+---
+
+## Triage
+
+Root cause identified: ..."
+```
+
+This applies to **every** comment or note, regardless of length or context. Never skip the header.
+
+---
+
 ## Issues
 
 ```bash
