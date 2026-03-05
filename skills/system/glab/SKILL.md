@@ -266,36 +266,20 @@ These operations can be proposed when relevant, but require a brief confirmation
 
 ---
 
-## Milestones -- `id` vs `iid` pitfall
+## Milestones -- `id` vs `iid`
 
-GitLab milestones have two numeric fields that are easy to confuse:
-
-| Field | Scope | Used in API path |
-|-------|-------|-----------------|
-| `id` | **Global** (unique across all GitLab) | ✅ `projects/:id/milestones/<id>` |
-| `iid` | **Project-scoped** (e.g. "Sprint 49 is milestone 58 in this project") | ❌ will return 404 |
-
-**NEVER** use `iid` as the path parameter when calling `projects/:id/milestones/:milestone_id` — it will return a 404.
-
-**Preferred approach: always look up by title**, not by numeric ID:
+Always look up milestones **by title**, not by numeric ID — this avoids the `id`/`iid` confusion entirely:
 
 ```bash
-# CORRECT -- search by title, avoids id/iid confusion entirely:
+# CORRECT -- lookup by title:
 GITLAB_HOST=gitlab.example.com glab api "projects/group%2Frepo/milestones?title=Sprint+49"
 
-# CORRECT -- if you already have the global id from a previous call, use it:
-GITLAB_HOST=gitlab.example.com glab api "projects/group%2Frepo/milestones/551"  # 551 = global id
-
 # WRONG -- iid (project-scoped) used as path param → 404:
-GITLAB_HOST=gitlab.example.com glab api "projects/group%2Frepo/milestones/58"   # 58 = iid, NOT id
+GITLAB_HOST=gitlab.example.com glab api "projects/group%2Frepo/milestones/58"
 ```
 
-When you receive milestone data (e.g. from an issues list or milestone search), always note which field is `id` and which is `iid`:
-
-```json
-{ "id": 551, "iid": 58, "title": "Sprint 49" }
-        ^^^--- use this in API paths
-```
+If you must use a numeric ID, use the global `id` field (not `iid`) from the API response:
+`{ "id": 551, "iid": 58 }` → use `551` in the path, never `58`.
 
 ---
 
