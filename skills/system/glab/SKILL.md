@@ -266,6 +266,23 @@ These operations can be proposed when relevant, but require a brief confirmation
 
 ---
 
+## Milestones -- `id` vs `iid`
+
+Always look up milestones **by title**, not by numeric ID — this avoids the `id`/`iid` confusion entirely:
+
+```bash
+# CORRECT -- lookup by title:
+GITLAB_HOST=gitlab.example.com glab api "projects/group%2Frepo/milestones?title=Sprint+49"
+
+# WRONG -- iid (project-scoped) used as path param → 404:
+GITLAB_HOST=gitlab.example.com glab api "projects/group%2Frepo/milestones/58"
+```
+
+If you must use a numeric ID, use the global `id` field (not `iid`) from the API response:
+`{ "id": 551, "iid": 58 }` → use `551` in the path, never `58`.
+
+---
+
 ## `glab api` -- last resort for advanced operations
 
 > **Do NOT use `glab api` when a CLI subcommand can do the job.** For issues, MRs, CI, labels -- always use the dedicated subcommands first. Use `glab api` only for operations not covered by any subcommand (e.g., project members, GraphQL queries, custom endpoints).
