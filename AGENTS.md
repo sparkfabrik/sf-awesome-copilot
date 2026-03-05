@@ -81,6 +81,18 @@ Content with examples, commands, code snippets...
 3. Add any bundled assets (scripts, templates, data) to the skill folder
 4. Test with GitHub Copilot
 
+## Changelog
+
+This project maintains a `CHANGELOG.md` using the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
+There is no semantic versioning — the latest commit is always the current version. Changes are grouped by date.
+
+**Every time you make changes to this repository, you must update `CHANGELOG.md`:**
+
+- Move any relevant items from `[Unreleased]` to a dated section (e.g. `[2026-03-05]`) matching today's date, or add a new dated section if none exists for today.
+- Use the standard Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
+- Write entries from the perspective of a consumer of the skill/agent (what changed, not how).
+- The `[Unreleased]` section must always remain at the top, even if empty.
+
 ## References
 
 - [AGENTS.md specification](https://agents.md/)
