@@ -99,12 +99,12 @@ Issues use `#`, merge requests use `!`.
 
 ---
 
-## Writing comments and notes on behalf of the user
+## Writing on behalf of the user
 
-Whenever you post a comment or note on an issue or MR (via `glab issue note`, `glab mr note`, or `glab api` body fields), you **must** prepend the following header to make it clear the message was authored by an AI agent acting on behalf of the user:
+Whenever you create or post content on GitLab on behalf of the user — including **MR descriptions** (`glab mr create`), **issue descriptions** (`glab issue create`), **comments/notes** (`glab issue note`, `glab mr note`), or **`glab api` body fields** — you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
 
 ```
-🤖 *This comment was written by an AI agent on behalf of @<username>.*
+🤖 *This was written by an AI agent on behalf of @<username>.*
 
 ---
 ```
@@ -115,12 +115,27 @@ To get the current authenticated username run:
 GITLAB_HOST=<hostname> glab api user --jq '.username'
 ```
 
-**Example** — adding a triage note to issue #42:
+**Example** — creating an MR:
+
+```bash
+GITLAB_HOST=gitlab.example.com glab mr create \
+  --title "feat: add dark mode" \
+  --description "🤖 *This was written by an AI agent on behalf of @alice.*
+
+---
+
+## Summary
+
+- Adds dark mode toggle to settings page
+- ..."
+```
+
+**Example** — adding a note to issue #42:
 
 ```bash
 GITLAB_HOST=gitlab.example.com glab issue note 42 \
   -R group/project \
-  --message "🤖 *This comment was written by an AI agent on behalf of @alice.*
+  --message "🤖 *This was written by an AI agent on behalf of @alice.*
 
 ---
 
@@ -129,7 +144,7 @@ GITLAB_HOST=gitlab.example.com glab issue note 42 \
 Root cause identified: ..."
 ```
 
-This applies to **every** comment or note, regardless of length or context. Never skip the header.
+This applies to **every** piece of content the agent creates, regardless of length or context. Never skip the header.
 
 ---
 
