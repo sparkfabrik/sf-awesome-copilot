@@ -60,6 +60,22 @@
         "Uses `glab mr diff` to retrieve the changes",
         "Provides a clear summary/explanation of the MR to the user"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want to create an issue on this project https://gitlab.sparkfabrik.com/sparkfabrik-innovation-team/board, using the issue template, read it and ask me questions.",
+      "expected_output": "The agent should: 1) Extract hostname and project path from the URL, 2) Fetch the list of issue templates via `glab api projects/<encoded-path>/templates/issues`, 3) Present the available templates as choices to the user, 4) After the user selects a template, fetch the template content via `glab api projects/<encoded-path>/templates/issues/<key>`, 5) Read the template and ask the user to fill in the sections.",
+      "files": [],
+      "assertions": [
+        "Fetches issue templates using `glab api` with the `projects/.../templates/issues` endpoint",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
+        "URL-encodes the project path (slashes as %2F) in the API endpoint",
+        "Presents the list of available templates to the user as choices before proceeding",
+        "After template selection, fetches the template content using `glab api projects/.../templates/issues/<key>`",
+        "Reads the template content and uses it to structure the issue description",
+        "Asks the user for information required by the template sections",
+        "Does NOT skip the template check and jump straight to `glab issue create`"
+      ]
     }
   ]
 }

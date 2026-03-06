@@ -161,6 +161,19 @@ glab issue close 42                               # close (ask confirmation firs
 glab issue reopen 42
 ```
 
+### Issue template selection
+
+Many GitLab projects define issue templates (stored in `.gitlab/issue_templates/`) that encode the team's expected structure -- sections to fill, checklists, labels via quick actions. Skipping these creates issues that don't match the project's conventions and forces manual cleanup.
+
+Before creating any issue, check for templates:
+
+1. **List templates**: `glab api projects/:id/templates/issues` -- returns `[{key, name}, ...]`. If empty or 404, the project has none; proceed without a template.
+2. **Present choices**: show the available template names and ask the user which one to use.
+3. **Fetch the selected template**: `glab api projects/:id/templates/issues/<key>` -- returns `{name, content}` with the full markdown body.
+4. **Fill in the template**: use the template content as the issue description. Ask the user for any information the template sections require that they haven't provided yet.
+
+Note: `glab api` does not support `--jq` -- pipe to `jq` if you need to filter fields.
+
 ### Label selection process
 
 If the user specified exact labels, use them. Otherwise:

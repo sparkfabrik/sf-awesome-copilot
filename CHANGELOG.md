@@ -18,6 +18,8 @@ Changes are grouped by date.
 
 - `glab` skill: explicit instruction to never use WebFetch/curl on GitLab URLs (added to "Before you start" section)
 - `glab` skill: eval for GitLab URL-based MR explanation scenario
+- `glab` skill: automatic issue template selection when creating issues (fetches templates from the project and asks the user to choose)
+- `glab` skill: eval for issue template selection workflow
 
 ## [2026-03-05]
 
