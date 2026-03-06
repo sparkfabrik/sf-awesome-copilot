@@ -1,6 +1,6 @@
 ---
 name: glab
-description: How to use the glab CLI to work with GitLab issues, merge requests, CI/CD pipelines, and repositories. Use this skill whenever the user is working with a GitLab project (self-hosted or SaaS), mentions merge requests, GitLab issues, GitLab CI pipelines, or wants to interact with a GitLab remote. Also use this skill when the user mentions "glab", "MR", "merge request", or when you detect the git remote points to a GitLab instance (look for "gitlab" in the remote URL). This skill is the GitLab equivalent of using `gh` for GitHub -- if the project is on GitLab, use this skill instead.
+description: How to use the glab CLI to work with GitLab issues, merge requests, CI/CD pipelines, and repositories. Use this skill whenever the user provides a URL containing "gitlab" in the hostname (e.g., gitlab.com, gitlab.example.com), mentions merge requests, GitLab issues, GitLab CI pipelines, or wants to interact with a GitLab remote. Also use this skill when the user mentions "glab", "MR", "merge request", or when you detect the git remote points to a GitLab instance (look for "gitlab" in the remote URL). This skill is the GitLab equivalent of using `gh` for GitHub -- if the project is on GitLab, use this skill instead.
 ---
 
 # glab CLI Skill
@@ -9,8 +9,9 @@ Use the `glab` CLI for ALL GitLab-related tasks including working with issues, m
 
 ## Before you start
 
-1. **Confirm it's a GitLab project**: check `git remote -v` for "gitlab" in the URL. If so, use `glab` (not `gh`).
-2. **Verify authentication**: run `glab auth status`. If not authenticated for the relevant hostname, **stop and ask the user** -- do not proceed.
+1. **Detect GitLab URLs**: If the user provided a URL containing "gitlab" in the hostname, this is a GitLab resource. Do NOT use WebFetch, curl, or browser-based tools -- GitLab instances require authentication that only `glab` can provide. Extract the hostname and project path from the URL and proceed with `glab` commands.
+2. **Confirm it's a GitLab project**: check `git remote -v` for "gitlab" in the URL. If so, use `glab` (not `gh`).
+3. **Verify authentication**: run `glab auth status`. If not authenticated for the relevant hostname, **stop and ask the user** -- do not proceed.
 
 ## CLI-first principle
 

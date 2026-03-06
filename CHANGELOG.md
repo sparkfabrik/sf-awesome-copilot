@@ -8,6 +8,17 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-06]
+
+### Changed
+
+- `glab` skill: prioritize GitLab URL detection in skill description to ensure automatic triggering when users paste GitLab links
+
+### Added
+
+- `glab` skill: explicit instruction to never use WebFetch/curl on GitLab URLs (added to "Before you start" section)
+- `glab` skill: eval for GitLab URL-based MR explanation scenario
+
 ## [2026-03-05]
 
 ### Added
