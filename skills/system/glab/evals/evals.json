@@ -45,6 +45,21 @@
         "Treats approval and comment as separate operations (not combined into one command)",
         "Uses glab commands throughout (not gh or curl)"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Can you explain me this MR https://gitlab.sparkfabrik.com/team/project/-/merge_requests/67/diffs?",
+      "expected_output": "The agent should load the glab skill immediately upon seeing the GitLab URL, extract hostname and project path, verify auth, and use glab mr view and glab mr diff to fetch MR details. It should NOT attempt WebFetch, curl, or any browser-based approach.",
+      "files": [],
+      "assertions": [
+        "Does NOT attempt WebFetch or curl on the GitLab URL",
+        "Extracts the hostname (gitlab.sparkfabrik.com) from the URL",
+        "Extracts the project path (team/project) from the URL",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
+        "Uses `glab mr view` with -R flag and correct project path",
+        "Uses `glab mr diff` to retrieve the changes",
+        "Provides a clear summary/explanation of the MR to the user"
+      ]
     }
   ]
 }
