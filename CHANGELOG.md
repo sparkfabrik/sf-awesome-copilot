@@ -8,6 +8,12 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-07]
+
+### Added
+
+- `the-architect` agent: conversational AI oracle for discovery, brainstorming, architecture, and general knowledge (Copilot and OpenCode profiles)
+
 ## [2026-03-06]
 
 ### Changed
