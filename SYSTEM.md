@@ -30,6 +30,11 @@ There is no shared standard yet.
 
 System skills follow the standard skill format (folder with `SKILL.md`). They
 may include bundled assets such as scripts, reference data, or eval definitions.
+Skills are installed to a shared standard path used by all coding agent tools:
+
+| Install path |
+|---|
+| `~/.agents/skills/<skill-name>/` |
 
 ## Available agents
 
