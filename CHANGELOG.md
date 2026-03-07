@@ -13,6 +13,7 @@ Changes are grouped by date.
 ### Added
 
 - `the-architect` agent: conversational AI oracle for discovery, brainstorming, architecture, and general knowledge (Copilot and OpenCode profiles)
+- `SYSTEM.md`: catalog of system agents and skills with directory conventions, install paths, and available resources
 
 ## [2026-03-06]
 

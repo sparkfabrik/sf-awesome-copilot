@@ -73,7 +73,7 @@ Content with examples, commands, code snippets...
 1. Create the `.agent.md` file with proper front matter
 2. Add the file to the appropriate directory under `agents/`
 3. Test with GitHub Copilot
-4. **Update `agents/system/README.md`** — add or remove the agent from the "Available agents" list
+4. **Update `SYSTEM.md`** — if the agent belongs to `system/`, add or remove it from the "Available agents" list
 
 System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Each tool gets its own file in a subfolder, but the prompt body must be kept identical across tools — only the YAML frontmatter differs to match each tool's configuration format. There is no shared standard yet.
 
@@ -83,7 +83,7 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 2. Add a `SKILL.md` file with proper front matter
 3. Add any bundled assets (scripts, templates, data) to the skill folder
 4. Test with GitHub Copilot
-5. **Update `skills/system/README.md`** — if the skill belongs to `system/`, add or remove it from the available skills list
+5. **Update `SYSTEM.md`** — if the skill belongs to `system/`, add or remove it from the "Available skills" list
 
 ## Changelog
 
