@@ -76,6 +76,72 @@
         "Asks the user for information required by the template sections",
         "Does NOT skip the template check and jump straight to `glab issue create`"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "I just pushed a commit to main on our GitLab project and I want to watch the pipeline run. Can you monitor it and let me know when it finishes?",
+      "expected_output": "The agent should use `glab ci status --branch main --live` to stream pipeline status in real-time until the pipeline completes. It should NOT fall back to a manual polling loop with `glab api` and `sleep`, and should NOT claim that `glab ci status` doesn't work on main.",
+      "files": [],
+      "assertions": [
+        "Uses `--branch main` flag to target the main branch pipeline",
+        "Uses `--live` flag to stream status in real-time until completion",
+        "Does NOT use a manual polling loop with `glab api` + `sleep`",
+        "Does NOT claim `glab ci status` doesn't work on main or long-lived branches",
+        "Uses `glab ci status` (not raw API calls) as the primary approach",
+        "Runs `glab ci status --branch main --live` or equivalent combination"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "The pipeline on main failed and I need to figure out what went wrong. I think it was the deploy job. Can you show me the logs from that specific pipeline? The pipeline ID is 243296.",
+      "expected_output": "The agent should use `glab ci trace` with `--branch main` and `--pipeline-id 243296` to stream the logs. It may also use `glab api` for job-level inspection, but should prefer CLI subcommands first. It should NOT claim that `glab ci trace` doesn't accept a pipeline ID flag.",
+      "files": [],
+      "assertions": [
+        "Uses `glab ci trace` with `--pipeline-id` or `-p` flag to target the specific pipeline",
+        "Uses `--branch main` to specify the branch",
+        "Does NOT claim `glab ci trace` doesn't accept a pipeline flag",
+        "May use `glab api projects/:id/pipelines/243296/jobs` for job-level detail, but as supplementary",
+        "Prefers CLI subcommands (`glab ci trace`) over raw API calls for the primary operation",
+        "References the deploy job specifically in its approach"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I'm on the feature/auth branch right now but I want to check if there's a running pipeline on main. Can you check and wait for it to finish?",
+      "expected_output": "The agent should use `glab ci status --branch main` (not rely on the current branch) and `--live` to wait for completion. It should explicitly use `--branch main` since the user is on a different branch.",
+      "files": [],
+      "assertions": [
+        "Uses `--branch main` flag explicitly (since user is on feature/auth, not main)",
+        "Uses `--live` flag to wait for the pipeline to complete",
+        "Does NOT omit the --branch flag (which would look at feature/auth instead of main)",
+        "Uses `glab ci status` as the primary command",
+        "Does NOT fall back to a polling loop as the first approach"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Can you monitor pipeline #12345 on our GitLab project? I need to know when it completes and whether it passed or failed.",
+      "expected_output": "The agent should use `glab ci trace --pipeline-id 12345` or `glab ci status --live` combined with checking the specific pipeline. It should use CLI subcommands preferentially over raw API polling.",
+      "files": [],
+      "assertions": [
+        "References pipeline ID 12345 in the commands used",
+        "Uses `glab ci trace --pipeline-id 12345` or `glab ci status --live` as primary approach",
+        "Does NOT use only raw `glab api` calls when CLI subcommands can do the job",
+        "Reports the final status (success/failed) to the user",
+        "Does NOT use a manual `sleep` + polling loop as the primary approach"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Before I push my changes, can you validate my .gitlab-ci.yml to make sure there are no syntax errors?",
+      "expected_output": "The agent should use `glab ci lint` to validate the CI configuration file syntax. This is a straightforward command that should be used directly.",
+      "files": [],
+      "assertions": [
+        "Uses `glab ci lint` to validate the CI configuration",
+        "Runs the lint command before any push operation",
+        "Reports the validation result clearly to the user",
+        "Does NOT use raw API calls or other tools when `glab ci lint` exists"
+      ]
     }
   ]
 }
