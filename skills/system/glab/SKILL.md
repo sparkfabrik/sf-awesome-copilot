@@ -234,10 +234,15 @@ Approval and notes are separate commands -- `glab mr approve` handles GitLab's f
 ## CI/CD
 
 ```bash
-glab ci status                      # pipeline status for current branch (see caveats below)
+glab ci status                      # pipeline status for current branch
+glab ci status --branch main        # pipeline status for a specific branch
+glab ci status --branch main --live # stream status in real-time until pipeline completes
 glab ci list                        # recent pipelines for current branch/project
 glab ci list --per-page 10          # show more pipelines
-glab ci trace                       # stream logs of the active job on current branch (see caveats below)
+glab ci trace                       # stream logs of the active job on current branch
+glab ci trace --branch main         # stream logs for a specific branch
+glab ci trace --branch main -p <id> # stream logs for a specific pipeline ID
+glab ci trace <job-name>            # stream logs for a specific job by name
 glab ci run                         # trigger new pipeline
 glab ci retry <pipeline-id>         # retry failed pipeline
 glab ci cancel <pipeline-id>        # cancel running pipeline
@@ -247,39 +252,37 @@ glab ci lint                        # validate .gitlab-ci.yml syntax
 
 Run `glab ci lint` before committing CI config changes to catch syntax errors early.
 
-### Caveats
+### Branch targeting
 
-**`glab ci status` only works when there is an active pipeline for the current branch OR an open MR associated with it.** On long-lived branches like `main` where no MR is open, it will fail with:
-```
-✘ no pipeline found for branch main and failed to find associated merge request
-```
-Use `glab ci list` instead — it always works and shows recent pipeline history.
+`glab ci status` and `glab ci trace` default to the **current git branch**. When monitoring pipelines on other branches (e.g., `main` after a push), use `--branch`:
 
-**`glab ci trace` does not accept a `--pipeline <id>` flag** — it traces the active job on the *current branch* interactively. To inspect jobs of a specific pipeline by ID, use the API (see pattern below).
+```bash
+glab ci status --branch main              # one-shot status check
+glab ci status --branch main --live       # stream until pipeline finishes
+glab ci trace --branch main               # stream active job logs on main
+```
+
+Without `--branch`, these commands look for a pipeline on the current branch, and may fail if none exists.
 
 ### Monitoring a specific pipeline
 
-When you need to check or poll a specific pipeline (e.g., after a push to `main`):
+**Preferred: `--live` flag** — streams pipeline status in real-time until the pipeline completes (success, failed, or canceled). No polling loop needed:
+
+```bash
+glab ci status --branch main --live
+```
+
+**For job-level detail** within a specific pipeline:
 
 ```bash
 # 1. Find the pipeline ID
 glab ci list --per-page 5
 
-# 2. Check individual job statuses within that pipeline
+# 2. Stream logs of a specific pipeline
+glab ci trace --branch main --pipeline-id <pipeline-id>
+
+# 3. Check individual job statuses via API (when you need structured data)
 glab api "projects/:id/pipelines/<pipeline-id>/jobs" | jq '.[] | {name: .name, status: .status, stage: .stage}'
-
-# 3. Poll overall pipeline status until success/failed
-glab api "projects/:id/pipelines/<pipeline-id>" | jq -r '.status'
-```
-
-Polling loop example:
-```bash
-for i in $(seq 1 20); do
-  STATUS=$(glab api "projects/:id/pipelines/<pipeline-id>" | jq -r '.status')
-  echo "$(date +%H:%M:%S) $STATUS"
-  [ "$STATUS" = "success" ] || [ "$STATUS" = "failed" ] && break
-  sleep 30
-done
 ```
 
 ---
