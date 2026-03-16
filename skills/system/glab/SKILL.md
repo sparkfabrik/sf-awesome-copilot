@@ -172,7 +172,7 @@ Before creating any issue, check for templates:
 3. **Fetch the selected template**: `glab api projects/:id/templates/issues/<key>` -- returns `{name, content}` with the full markdown body.
 4. **Fill in the template**: use the template content as the issue description. Ask the user for any information the template sections require that they haven't provided yet.
 
-Note: `glab api` does not support `--jq` -- pipe to `jq` if you need to filter fields.
+Note: `glab api` does not support a `--jq` flag — pipe output to `jq` to filter fields: `glab api projects/:id/templates/issues | jq '.[].name'`.
 
 ### Label selection process
 
@@ -235,8 +235,14 @@ Approval and notes are separate commands -- `glab mr approve` handles GitLab's f
 
 ```bash
 glab ci status                      # pipeline status for current branch
-glab ci list                        # recent pipelines
-glab ci trace                       # stream job logs in real-time
+glab ci status --branch main        # pipeline status for a specific branch
+glab ci status --branch main --live # stream status in real-time until pipeline completes
+glab ci list                        # recent pipelines for current branch/project
+glab ci list --per-page 10          # show more pipelines
+glab ci trace                       # stream logs of the active job on current branch
+glab ci trace --branch main         # stream logs for a specific branch
+glab ci trace --branch main -p <id> # stream logs for a specific pipeline ID
+glab ci trace <job-name>            # stream logs for a specific job by name
 glab ci run                         # trigger new pipeline
 glab ci retry <pipeline-id>         # retry failed pipeline
 glab ci cancel <pipeline-id>        # cancel running pipeline
@@ -245,6 +251,39 @@ glab ci lint                        # validate .gitlab-ci.yml syntax
 ```
 
 Run `glab ci lint` before committing CI config changes to catch syntax errors early.
+
+### Branch targeting
+
+`glab ci status` and `glab ci trace` default to the **current git branch**. When monitoring pipelines on other branches (e.g., `main` after a push), use `--branch`:
+
+```bash
+glab ci status --branch main              # one-shot status check
+glab ci status --branch main --live       # stream until pipeline finishes
+glab ci trace --branch main               # stream active job logs on main
+```
+
+Without `--branch`, these commands look for a pipeline on the current branch, and may fail if none exists.
+
+### Monitoring a specific pipeline
+
+**Preferred: `--live` flag** — streams pipeline status in real-time until the pipeline completes (success, failed, or canceled). No polling loop needed:
+
+```bash
+glab ci status --branch main --live
+```
+
+**For job-level detail** within a specific pipeline:
+
+```bash
+# 1. Find the pipeline ID
+glab ci list --per-page 5
+
+# 2. Stream logs of a specific pipeline
+glab ci trace --branch main --pipeline-id <pipeline-id>
+
+# 3. Check individual job statuses via API (when you need structured data)
+glab api "projects/:id/pipelines/<pipeline-id>/jobs" | jq '.[] | {name: .name, status: .status, stage: .stage}'
+```
 
 ---
 
