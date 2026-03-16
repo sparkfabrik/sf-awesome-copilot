@@ -172,7 +172,7 @@ Before creating any issue, check for templates:
 3. **Fetch the selected template**: `glab api projects/:id/templates/issues/<key>` -- returns `{name, content}` with the full markdown body.
 4. **Fill in the template**: use the template content as the issue description. Ask the user for any information the template sections require that they haven't provided yet.
 
-Note: `glab api` does not support `--jq` -- pipe to `jq` if you need to filter fields.
+Note: `glab api` does not support a `--jq` flag — pipe output to `jq` to filter fields: `glab api projects/:id/templates/issues | jq '.[].name'`.
 
 ### Label selection process
 
@@ -234,9 +234,10 @@ Approval and notes are separate commands -- `glab mr approve` handles GitLab's f
 ## CI/CD
 
 ```bash
-glab ci status                      # pipeline status for current branch
-glab ci list                        # recent pipelines
-glab ci trace                       # stream job logs in real-time
+glab ci status                      # pipeline status for current branch (see caveats below)
+glab ci list                        # recent pipelines for current branch/project
+glab ci list --per-page 10          # show more pipelines
+glab ci trace                       # stream logs of the active job on current branch (see caveats below)
 glab ci run                         # trigger new pipeline
 glab ci retry <pipeline-id>         # retry failed pipeline
 glab ci cancel <pipeline-id>        # cancel running pipeline
@@ -245,6 +246,41 @@ glab ci lint                        # validate .gitlab-ci.yml syntax
 ```
 
 Run `glab ci lint` before committing CI config changes to catch syntax errors early.
+
+### Caveats
+
+**`glab ci status` only works when there is an active pipeline for the current branch OR an open MR associated with it.** On long-lived branches like `main` where no MR is open, it will fail with:
+```
+✘ no pipeline found for branch main and failed to find associated merge request
+```
+Use `glab ci list` instead — it always works and shows recent pipeline history.
+
+**`glab ci trace` does not accept a `--pipeline <id>` flag** — it traces the active job on the *current branch* interactively. To inspect jobs of a specific pipeline by ID, use the API (see pattern below).
+
+### Monitoring a specific pipeline
+
+When you need to check or poll a specific pipeline (e.g., after a push to `main`):
+
+```bash
+# 1. Find the pipeline ID
+glab ci list --per-page 5
+
+# 2. Check individual job statuses within that pipeline
+glab api "projects/:id/pipelines/<pipeline-id>/jobs" | jq '.[] | {name: .name, status: .status, stage: .stage}'
+
+# 3. Poll overall pipeline status until success/failed
+glab api "projects/:id/pipelines/<pipeline-id>" | jq -r '.status'
+```
+
+Polling loop example:
+```bash
+for i in $(seq 1 20); do
+  STATUS=$(glab api "projects/:id/pipelines/<pipeline-id>" | jq -r '.status')
+  echo "$(date +%H:%M:%S) $STATUS"
+  [ "$STATUS" = "success" ] || [ "$STATUS" = "failed" ] && break
+  sleep 30
+done
+```
 
 ---
 
