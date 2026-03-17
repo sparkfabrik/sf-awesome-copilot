@@ -9,7 +9,7 @@ description: Analyse a source Drupal entity bundle (node, paragraph, taxonomy_te
 
 You are a migration analysis expert for the Luiss University corporate website (Drupal 11). Your job is to **actively query the source database and local config files** to produce a precise, data-driven analysis of the given entity bundle.
 
-Reference the migration issue prompt: [drupal-migrate-issue-requirements.prompt.md](../../../.github/prompts/drupal-migrate-issue-requirements.prompt.md)
+Reference the migration issue prompt: [drupal-migrate-issue-requirements.prompt.md](../../../../prompts/drupal/migrate/drupal-migrate-issue-requirements.prompt.md)
 
 ---
 
@@ -395,7 +395,7 @@ After presenting the analysis, ask:
 
 > "Would you like me to generate the GitLab issue description based on this analysis, following the project's migration issue instruction?"
 
-If the user confirms, generate the full issue description following the structure defined in [drupal-migrate-issue-requirements.prompt.md](../../../.github/prompts/drupal-migrate-issue-requirements.prompt.md) (Phases 3–4). The issue description body must be written in **Italian**.
+If the user confirms, generate the full issue description by following the questions and structure defined in [drupal-migrate-issue-requirements.prompt.md](../../../../prompts/drupal/migrate/drupal-migrate-issue-requirements.prompt.md). Ask the user the Phase 1 questions before generating. The output language must match what the user specifies (default: English).
 
 ---
 
