@@ -1,11 +1,51 @@
 ---
 name: drupal-migrate-resolve-examples
-description: Resolve live URLs for example nodes from the source Drupal database — one representative node per parent bundle. Compulsory step in every full source analysis. Does NOT take screenshots (use migrate-live-screenshots for that).
+description: 'Resolve live URLs for representative example content during Drupal migration source analysis. Use whenever the user asks for a full source analysis, live examples, example page URLs, representative source content, or validation of public paths for nodes, paragraphs, taxonomy terms, or media. Compulsory in every full source analysis — runs automatically before any optional screenshot capture. Does not take screenshots (use drupal-migrate-live-screenshots for that).'
 ---
 
 # migrate-resolve-examples
 
-Resolves at least one representative live URL per parent node bundle for a given source paragraph (or entity) bundle. This is a **required, automatic step** — no user confirmation needed.
+Resolve at least one representative live URL per relevant parent or referencing node bundle for a source Drupal entity bundle.
+
+This skill populates the **Live examples** section of a migration source analysis report. It is a **required, automatic step** in every full source analysis — do **not** wait for user confirmation before running it.
+
+Run it after prerequisite discovery/context skills have produced bundle and parent information, and before any optional screenshot capture. If the user asks for screenshots, example pages, or live content validation, make sure this skill runs first and let `drupal-migrate-live-screenshots` consume its output afterward.
+
+Do **not** use this skill to take screenshots or to perform destination-field analysis.
+
+---
+
+## When to use
+
+Use this skill whenever the user needs any of the following as part of Drupal migration analysis:
+
+- A **full source analysis** that includes live examples
+- One or more **representative public URLs** for a source bundle
+- Validation that example source content resolves to real **public pages**
+- The input needed for the optional `drupal-migrate-live-screenshots` step
+
+Typical trigger phrases include: "analyze this paragraph bundle", "full source analysis", "show me live examples", "find example pages for this content type", "resolve URLs for representative nodes".
+
+### When not to use
+
+- If the task is only about **taking screenshots**, ensure this skill has already produced URLs, then use `drupal-migrate-live-screenshots`
+- If the task is only about **field structure, counts, or destination mappings**, only run this skill if the workflow also needs live examples
+
+---
+
+## Workflow position
+
+In a standard full source analysis, this skill runs after the analysis has enough context to identify valid example content:
+
+1. Discover and verify the source DB
+2. Detect Drupal version
+3. Count bundle instances
+4. Resolve parent context / active examples when needed
+5. Query source fields and population
+6. **Run this skill to resolve live example URLs** ← you are here
+7. Optionally ask the user whether to run `drupal-migrate-live-screenshots`
+
+If prior skills already produced the necessary parent node IDs or example entities in the current session, reuse that data instead of re-deriving it.
 
 ---
 
@@ -44,6 +84,12 @@ Determine the resolution strategy based on entity type:
 
 If `user`, output the skip note and stop. For all other types, continue.
 
+When the entity type does not have a direct public URL (`paragraph`, `taxonomy_term`, `media`), ask the user:
+
+> "Do you have any additional information (e.g., a URL map file, a CSV export, a custom route, or a database table) that maps this content to its live URL? If not, I will fall back to the canonical `/node/{nid}` path of the referencing or parent node."
+
+If the user provides a custom source (file, table, pattern), use it to resolve the URL. Otherwise, continue with the default parent/referencing node path strategy below and use `/node/{nid}` as the fallback URL if no alias is found.
+
 ### 1. Check for project-specific URL resolution
 
 Read `.github/prompts/migrate-instructions.prompt.md`. If it defines a `## Live URL Resolution` section with a custom method (e.g., `endpoint`, `json_file`, `url_pattern`), **follow those instructions instead of the default steps below**.
@@ -52,7 +98,44 @@ If no custom method is defined, proceed with the **default Drupal path_alias str
 
 ---
 
-### Default strategy — Drupal `path_alias` table
+### Default strategy — path alias table
+
+#### Pre-check: pathauto module and alias table
+
+Before querying for aliases, verify that path aliasing is actually available on this site.
+
+**Step A — Check pathauto module is installed**
+
+*Drupal 7:*
+```sql
+SELECT status
+FROM system
+WHERE name = 'pathauto'
+  AND type = 'module';
+```
+`status = 1` → pathauto is enabled. Any other result → pathauto is absent.
+
+*Drupal 8/9/10/11:*
+```sql
+SELECT value
+FROM key_value
+WHERE collection = 'system.schema'
+  AND name = 'pathauto';
+```
+A non-empty row → pathauto is installed. No row → pathauto is absent.
+
+> **If pathauto is absent**: aliases may still exist if they were created manually, but there is likely no auto-generated alias for most content. Proceed with the alias query below; if no alias is found, fall back to the canonical `/node/{nid}` path and note in the output that pathauto is not installed.
+
+**Step B — Confirm the alias table exists**
+
+*Drupal 7* uses `url_alias`. *Drupal 8+* uses `path_alias`. Confirm using:
+```sql
+SHOW TABLES LIKE 'path_alias';  -- D8+
+SHOW TABLES LIKE 'url_alias';   -- D7
+```
+If neither table exists, skip alias resolution entirely and output canonical paths only.
+
+---
 
 #### 2. Select representative node IDs
 
@@ -113,18 +196,40 @@ LIMIT 3;
 
 > Prefer nodes with a clean path alias (i.e., an entry exists in `path_alias`).
 
-#### 3. Resolve URL alias from `path_alias`
+#### 3. Resolve URL alias — version-specific query
+
+The alias table schema differs between Drupal 7 and Drupal 8+. Use the version detected by `drupal-migrate-detect-version`.
+
+**Drupal 8 / 9 / 10 / 11** — `path_alias` table:
 
 ```sql
 SELECT alias
 FROM path_alias
 WHERE path = '/node/{nid}'
   AND langcode = 'it'
+  AND status = 1
 ORDER BY id DESC
 LIMIT 1;
 ```
 
-If no Italian alias found, retry with `langcode = 'en'`, then fall back to the canonical path `/node/{nid}`.
+If no Italian alias found, retry with `langcode = 'en'`, then with any `langcode`. If still nothing, fall back to `/node/{nid}`.
+
+> Note: In D8+, `path` always includes a leading slash (e.g. `/node/42`). The `status = 1` condition filters out inactive/deleted aliases.
+
+**Drupal 7** — `url_alias` table:
+
+```sql
+SELECT alias
+FROM url_alias
+WHERE source = 'node/{nid}'
+  AND language IN ('it', 'und')
+ORDER BY pid DESC
+LIMIT 1;
+```
+
+If no Italian alias found, retry with `language IN ('en', 'und')`, then `language = 'und'` alone. Fall back to `node/{nid}` (no leading slash in D7).
+
+> Note: In D7, `source` has **no leading slash** (e.g. `node/42`). Use `'und'` for language-neutral aliases.
 
 > **UUID query** (when needed): Always use `{base_table}`, not `{main_table}`:
 > ```sql
@@ -151,19 +256,22 @@ Return a table for inclusion in the analysis report:
 
 | Node type | Node ID | URL |
 |---|---|---|
-| `luisspage` | 42 | `https://www.example.com/path/to/page` |
-| `corso` | 187 | `https://www.example.com/path/to/corso` |
+| `page` | 42 | `https://www.example.com/path/to/page` |
+| `article` | 187 | `https://www.example.com/path/to/article` |
 
 For `paragraph`, `taxonomy_term`, and `media` entities, the table shows the **parent/referencing node**, not the entity itself. Add a note clarifying:
 > "URLs resolved via parent/referencing nodes (entity type `{entity_type}` has no direct public URL)"
 
 This table populates the **Live examples** section of the Source Analysis Report (without the Screenshot column, which is filled by `migrate-live-screenshots`).
 
+If this skill ran automatically inside a larger source-analysis workflow, present the table directly as part of that report instead of treating it as a separate deliverable.
+
 ---
 
 ## Error Handling
 
-- **`path_alias` table missing**: Fall back to canonical `/node/{nid}` paths. Note the fallback in the output.
+- **`path_alias` / `url_alias` table missing**: Fall back to canonical paths (`/node/{nid}` for D8+, `node/{nid}` for D7). Note the fallback in the output.
+- **pathauto not installed**: Aliases may still exist from manual creation. Proceed with the query; if no alias is found, fall back to the canonical path and note the absence of pathauto.
 - **No alias found after 3 attempts**: Mark entry as `URL not found`. Do not block the analysis.
 - **Base URL unknown**: Ask the user once: _"What is the base URL of the production source site?"_
 - **No active parent nodes**: Skip URL resolution for that bundle and note it in the output.
