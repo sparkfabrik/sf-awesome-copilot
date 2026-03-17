@@ -1,0 +1,66 @@
+[
+  {
+    "query": "Analyse the paragraph bundle button_action on our Drupal 9 source site",
+    "should_trigger": true
+  },
+  {
+    "query": "Full source analysis for the article node type",
+    "should_trigger": true
+  },
+  {
+    "query": "Show me live examples for the news bundle",
+    "should_trigger": true
+  },
+  {
+    "query": "Find example pages for the profile_card paragraph type",
+    "should_trigger": true
+  },
+  {
+    "query": "Resolve URLs for representative nodes in the corso bundle",
+    "should_trigger": true
+  },
+  {
+    "query": "I need live example URLs for the tags taxonomy term bundle on our Drupal 7 source",
+    "should_trigger": true
+  },
+  {
+    "query": "Validate that source content for the media image bundle resolves to a real page",
+    "should_trigger": true
+  },
+  {
+    "query": "Get example page URLs to use before taking screenshots with migrate-live-screenshots",
+    "should_trigger": true
+  },
+  {
+    "query": "What fields does the event node type have in the source database?",
+    "should_trigger": false
+  },
+  {
+    "query": "Count how many instances of the card paragraph exist",
+    "should_trigger": false
+  },
+  {
+    "query": "Take browser screenshots of the example pages",
+    "should_trigger": false
+  },
+  {
+    "query": "What is the destination bundle for migrating news nodes?",
+    "should_trigger": false
+  },
+  {
+    "query": "Connect to the source database and verify it is reachable",
+    "should_trigger": false
+  },
+  {
+    "query": "Generate a migration issue description for the button_action paragraph",
+    "should_trigger": false
+  },
+  {
+    "query": "What Drupal version is the source site running?",
+    "should_trigger": false
+  },
+  {
+    "query": "Map the source fields to destination fields for the article bundle",
+    "should_trigger": false
+  }
+]

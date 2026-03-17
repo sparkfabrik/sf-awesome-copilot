@@ -1,0 +1,60 @@
+{
+  "skill_name": "drupal-migrate-resolve-examples",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm doing a Drupal 7 migration source analysis. The source DB connection has already been verified by drupal-migrate-db-discover: database key is `drupal_migrate`, drush option is `--database=drupal_migrate`. The dev environment command template is `{dev_env_command} \"drush sql:query --database=drupal_migrate 'YOUR_SQL'\"` — you don't need to run actual queries, just show the SQL you would execute. The Drupal version is 7. The source entity is a node bundle called `article`. Published node IDs available: 42, 87, 156. The site base URL is https://legacy.example.com. Resolve live example URLs for the `article` bundle.",
+      "expected_output": "A Live examples table with resolved URLs. Checks pathauto via the `system` table, shows SQL against `url_alias` (not `path_alias`), uses `source` column without leading slash (e.g. `node/42`), filters by `language` with `'und'` fallback, and builds full URLs using the base URL.",
+      "files": [],
+      "assertions": [
+        "Checks pathauto installation using the `system` table (Drupal 7 approach), not `key_value`",
+        "Queries the `url_alias` table (not `path_alias`)",
+        "Uses the `source` column with a value like `node/42` — no leading slash",
+        "Filters aliases using the `language` column (not `langcode`) and includes `'und'` as a fallback",
+        "Produces a Live examples table with node type, node ID, and a full URL",
+        "The full URL is built by combining https://legacy.example.com with the resolved alias"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm doing a Drupal 10 migration source analysis. The source DB connection has already been verified by drupal-migrate-db-discover: database key is `drupal_migrate`, drush option is `--database=drupal_migrate`. The dev environment command template is `{dev_env_command} \"drush sql:query --database=drupal_migrate 'YOUR_SQL'\"` — you don't need to run actual queries, just show the SQL you would execute. The Drupal version is 10. The source entity is a node bundle called `news`. Published node IDs available: 101, 202, 303. Site base URL is https://www.example.it. Resolve live example URLs for the `news` bundle.",
+      "expected_output": "A Live examples table using the D8+ path_alias table with path column (leading slash), langcode, and status=1. Checks pathauto via key_value table. Builds full Italian URLs.",
+      "files": [],
+      "assertions": [
+        "Checks pathauto installation using the `key_value` table (Drupal 8+ approach), not the `system` table",
+        "Queries the `path_alias` table (not `url_alias`)",
+        "Uses the `path` column with a value like `/node/101` — with leading slash",
+        "Filters aliases using `langcode` (not `language`) and includes `status = 1`",
+        "Produces a Live examples table with node type, node ID, and a full URL",
+        "The full URL is built by combining https://www.example.it with the resolved alias"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm analysing a Drupal 7 migration. The source DB connection is verified by drupal-migrate-db-discover: database key `drupal_migrate`. The dev environment command template is `{dev_env_command} \"drush sql:query --database=drupal_migrate 'YOUR_SQL'\"` — show the SQL you would execute, no need to actually run it. Drupal version: 7. The source entity is a taxonomy term bundle (vocabulary) called `tags`. I need to resolve live examples as part of a full source analysis. Site base URL: https://legacy.example.com. Resolve example URLs for the `tags` vocabulary.",
+      "expected_output": "Since taxonomy_term has no direct URL, the skill asks the user about custom URL data (map file, CSV, custom route) before proceeding. If no custom source is given, finds referencing published nodes and shows SQL for resolving aliases via D7 url_alias table. Output table notes indirect resolution.",
+      "files": [],
+      "assertions": [
+        "Asks the user whether they have a custom URL map, CSV export, or database table for URL resolution before running the default strategy",
+        "If falling back to referencing nodes, shows SQL querying the `url_alias` table using the `source` column without a leading slash",
+        "Filters aliases using the `language` column with `'und'` fallback",
+        "The output table clarifies that URLs are resolved via referencing/parent nodes (not the taxonomy term itself)",
+        "Notes in the output that the entity type `taxonomy_term` has no direct public URL"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I'm analysing a Drupal 10 migration. The source DB connection is verified by drupal-migrate-db-discover: database key `drupal_migrate`. The dev environment command template is `{dev_env_command} \"drush sql:query --database=drupal_migrate 'YOUR_SQL'\"` — show the SQL you would execute, no need to actually run it. Drupal version: 10. The source entity is a taxonomy term bundle called `category`. I need to resolve live examples as part of a full source analysis. Site base URL: https://www.example.com. Resolve example URLs for the `category` vocabulary.",
+      "expected_output": "Skill asks about custom URL data first. If none, falls back to finding referencing published nodes and showing SQL for path_alias (D8+: path with leading slash, langcode, status=1). Output table notes indirect resolution. Does not use url_alias table.",
+      "files": [],
+      "assertions": [
+        "Asks the user whether they have a custom URL map or source before running the default strategy",
+        "If falling back to referencing nodes, shows SQL querying the `path_alias` table (not `url_alias`)",
+        "Uses `path` column with leading slash and `status = 1` in the alias query",
+        "Uses `langcode` (not `language`) when querying `path_alias`",
+        "The output table clarifies URLs are resolved via referencing nodes, not the taxonomy term directly",
+        "Does NOT reference or query the `url_alias` table (correct for Drupal 10)"
+      ]
+    }
+  ]
+}
