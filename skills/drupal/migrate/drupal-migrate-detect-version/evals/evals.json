@@ -1,0 +1,38 @@
+{
+  "skill_name": "drupal-migrate-detect-version",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "We already ran the migration DB discovery step and the source connection uses `--database=migrate`. Before I query source fields, show me how to detect whether the source DB is Drupal 7 or Drupal 8/9/10 and tell me what I should do next.",
+      "expected_output": "A step-by-step detection workflow that uses drush sql:query, checks Drupal 7 and Drupal 8+ table signatures, and ends with a structured report including source_version, follow-up strategy, evidence, and next step.",
+      "files": [],
+      "expectations": [
+        "Uses `drush sql:query` rather than `mysql`.",
+        "Provides a query or command that checks Drupal 7 and Drupal 8+ table signatures.",
+        "Ends with a structured detection report containing source version, evidence, and next step."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "I can connect to the source migration database with drush, but the first pass did not find either `field_config_instance` or `config`. How should I report this result and what should I ask the team before continuing the migration analysis?",
+      "expected_output": "A response that classifies the version as unknown, explains the missing signatures, stops further schema-specific analysis, and asks the user to confirm the source system or database selection.",
+      "files": [],
+      "expectations": [
+        "Reports the source version as unknown when no Drupal signature tables are found.",
+        "Tells the user to stop and confirm the source system or database selection before continuing.",
+        "Explains why schema-specific migration analysis should not continue."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This legacy migration database is strange: I found both `field_config_instance` and `config`. I need guidance on how to classify the source version and what field-query strategy to use next without making a wrong assumption.",
+      "expected_output": "A response that treats the detection as conflicting or unknown, explains why both signature families are suspicious, avoids overclaiming a version, and recommends manual confirmation instead of picking a field query strategy blindly.",
+      "files": [],
+      "expectations": [
+        "Treats conflicting Drupal 7 and Drupal 8+ signatures as unknown rather than choosing one.",
+        "Avoids claiming a specific major version without direct evidence.",
+        "Recommends manual confirmation before running follow-up schema-specific queries."
+      ]
+    }
+  ]
+}
