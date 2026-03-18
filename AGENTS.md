@@ -85,6 +85,13 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 4. Test with GitHub Copilot
 5. **Update `SYSTEM.md`** — if the skill belongs to `system/`, add or remove it from the "Available skills" list
 
+## Git Workflow
+
+- **Never push directly to `main`.** Always create a feature branch and open a pull request.
+- Branch naming: `feat/`, `fix/`, `chore/`, `test/` prefixes with kebab-case description (e.g., `feat/glab-file-uploads`, `fix/skill-jq-flag`).
+- Commit messages: conventional commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
+- Always update `CHANGELOG.md` when making user-facing changes (see Changelog section below).
+
 ## Changelog
 
 This project maintains a `CHANGELOG.md` using the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
