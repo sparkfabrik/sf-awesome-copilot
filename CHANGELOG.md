@@ -8,6 +8,18 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-18]
+
+### Added
+
+- `glab` skill: file upload workflow documentation (curl-based workaround for glab api multipart limitation, OAuth vs PAT auth header guidance)
+- `glab` skill: two new eval cases for file upload scenarios (image to MR, PDF to issue)
+- `AGENTS.md`: git workflow rules requiring feature branches and pull requests
+
+### Changed
+
+- `glab` skill: clarified `-F key=@file` in api-patterns.md to warn it reads as string, not multipart
+
 ## [2026-03-07]
 
 ### Added
