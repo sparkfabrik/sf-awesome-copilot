@@ -112,8 +112,10 @@ Whenever you create or post content on GitLab on behalf of the user — includin
 To get the current authenticated username run:
 
 ```bash
-GITLAB_HOST=<hostname> glab api user --jq '.username'
+GITLAB_HOST=<hostname> glab api user | jq -r '.username'
 ```
+
+> **Note:** `glab api` does not support `--jq` (that's a `gh` feature). Always pipe to `jq` instead.
 
 **Example** — creating an MR:
 
@@ -172,7 +174,7 @@ Before creating any issue, check for templates:
 3. **Fetch the selected template**: `glab api projects/:id/templates/issues/<key>` -- returns `{name, content}` with the full markdown body.
 4. **Fill in the template**: use the template content as the issue description. Ask the user for any information the template sections require that they haven't provided yet.
 
-Note: `glab api` does not support a `--jq` flag — pipe output to `jq` to filter fields: `glab api projects/:id/templates/issues | jq '.[].name'`.
+To list just the template names: `glab api projects/:id/templates/issues | jq '.[].name'`.
 
 ### Label selection process
 
