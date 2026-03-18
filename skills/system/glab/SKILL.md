@@ -353,6 +353,67 @@ If you must use a numeric ID, use the global `id` field (not `iid`) from the API
 
 ---
 
+## File uploads (images, attachments)
+
+`glab api` **cannot** do multipart file uploads. It only sends JSON request bodies -- the `-F file=@path` flag reads the file as a string value into a JSON field, not as `multipart/form-data`. For binary files (images, PDFs, etc.) this produces a 400 Bad Request.
+
+There is no `glab upload` subcommand for project uploads either (`glab release upload` only handles release assets).
+
+**Use `curl` with the GitLab project uploads API instead.** Extract the auth token from `glab` for the `curl` request:
+
+### Step 1: Get the token and project ID
+
+```bash
+# Get the token (look for the "Token found:" line)
+GITLAB_HOST=<hostname> glab auth status -t
+
+# Get the numeric project ID (inside a git repo)
+GITLAB_HOST=<hostname> glab api projects/:id | jq '.id'
+```
+
+### Step 2: Upload the file
+
+The token stored by `glab auth` may be an **OAuth token** (if you logged in via web/OAuth) or a **PAT** (if you provided a token directly). Use the correct auth header:
+
+```bash
+# For OAuth tokens (logged in via: glab auth login → "Web"):
+curl --silent --show-error --request POST \
+  --header "Authorization: Bearer <token>" \
+  --form "file=@path/to/image.png" \
+  "https://<hostname>/api/v4/projects/<project-id>/uploads"
+
+# For PATs (logged in via: glab auth login --token):
+curl --silent --show-error --request POST \
+  --header "PRIVATE-TOKEN: <token>" \
+  --form "file=@path/to/image.png" \
+  "https://<hostname>/api/v4/projects/<project-id>/uploads"
+```
+
+**How to tell which type you have**: if `glab auth status` shows `✓ Logged in ... (keyring)` without mentioning a PAT, and you originally logged in via the browser flow, it's an OAuth token -- use `Authorization: Bearer`. If you provided a PAT directly, use `PRIVATE-TOKEN`. When in doubt, try Bearer first -- if you get a 401, retry with `PRIVATE-TOKEN`.
+
+### Step 3: Use the returned markdown URL
+
+The upload returns JSON with a `markdown` field ready to paste into descriptions:
+
+```json
+{
+  "id": 12345,
+  "alt": "image",
+  "url": "/uploads/<hash>/image.png",
+  "markdown": "![image](/uploads/<hash>/image.png)"
+}
+```
+
+Use this in MR/issue descriptions or comments:
+
+```bash
+GITLAB_HOST=<hostname> glab mr update 4 --description "## Screenshot
+
+![image](/uploads/<hash>/image.png)"
+```
+
+---
+
 ## `glab api` -- last resort for advanced operations
 
 > **Do NOT use `glab api` when a CLI subcommand can do the job.** For issues, MRs, CI, labels -- always use the dedicated subcommands first. Use `glab api` only for operations not covered by any subcommand (e.g., project members, GraphQL queries, custom endpoints).

@@ -142,6 +142,36 @@
         "Reports the validation result clearly to the user",
         "Does NOT use raw API calls or other tools when `glab ci lint` exists"
       ]
+    },
+    {
+      "id": 11,
+      "prompt": "I have a screenshot at tmp/screenshot.png that shows the bug I fixed. Can you upload it to our GitLab project and add it to the description of MR !4?",
+      "expected_output": "The agent should: 1) Recognize that glab api cannot do multipart file uploads, 2) Extract the auth token from `glab auth status -t`, 3) Get the project ID, 4) Use `curl` with multipart form to upload via `/api/v4/projects/<id>/uploads`, 5) Use the returned markdown URL in a `glab mr update` command to update the MR description.",
+      "files": [],
+      "assertions": [
+        "Does NOT attempt `glab api -F file=@tmp/screenshot.png` or similar glab api upload",
+        "Uses `curl` with `--form file=@tmp/screenshot.png` for the multipart upload",
+        "Targets the correct GitLab uploads endpoint: `/api/v4/projects/<id>/uploads`",
+        "Extracts the auth token from `glab auth status -t`",
+        "Uses either `Authorization: Bearer` or `PRIVATE-TOKEN` header (not both, not neither)",
+        "Parses the upload response to extract the markdown image URL",
+        "Uses `glab mr update` (or `glab mr note`) to attach the image to MR !4"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "I need to attach a PDF report (reports/q4-summary.pdf) to issue #88 on our GitLab project. Can you upload it and add it as a comment?",
+      "expected_output": "The agent should use curl (not glab api) for the multipart file upload, then use the returned markdown link in a `glab issue note` command to comment on the issue with the attachment.",
+      "files": [],
+      "assertions": [
+        "Does NOT use `glab api` for the file upload",
+        "Does NOT use `glab release upload` (that's for release assets, not project uploads)",
+        "Uses `curl` with `--form file=@reports/q4-summary.pdf` for multipart upload",
+        "Uses the correct GitLab project uploads API endpoint",
+        "Includes proper authentication header in the curl command",
+        "Uses `glab issue note 88` to attach the file link as a comment on the issue",
+        "The comment includes the markdown link from the upload response"
+      ]
     }
   ]
 }

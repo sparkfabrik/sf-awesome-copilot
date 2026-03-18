@@ -39,7 +39,7 @@ glab api -X DELETE PATH              # DELETE
 
 - `-f key=value` -- string field
 - `-F key=value` -- typed field (numbers, booleans without quotes)
-- `-F key=@file.json` -- read value from file
+- `-F key=@file.json` -- read value from file as string (NOT multipart -- see "File uploads" in SKILL.md for binary files)
 - `--input file.json` -- send file as request body
 
 ### Pagination
