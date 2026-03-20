@@ -22,7 +22,7 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          if git diff --quiet skills/system/playwright-cli/upstream/; then
+          if git diff --quiet skills/system/playwright-cli/; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -44,7 +44,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git add skills/system/playwright-cli/upstream/
+          git add skills/system/playwright-cli/SKILL.md skills/system/playwright-cli/references/
           git commit -m "chore: sync playwright-cli skill from upstream"
           git push -u origin "$branch"
           gh pr create \
@@ -52,8 +52,11 @@ jobs:
             --body "$(cat <<'EOF'
           ## Automated sync
 
-          Updated `skills/system/playwright-cli/upstream/` from
+          Updated `skills/system/playwright-cli/` from
           [microsoft/playwright-cli](https://github.com/microsoft/playwright-cli).
+
+          The sync script rebuilds `SKILL.md` (upstream body + custom sections)
+          and updates `references/`. Custom content in `custom-sections.md` is preserved.
 
           **Before merging**, update `CHANGELOG.md` with a dated entry.
           EOF
