@@ -20,6 +20,11 @@ Changes are grouped by date.
 - `gh` skill: 12 eval scenarios covering issue/PR creation, CI monitoring, review comment replies, releases, search, and URL handling
 - `SYSTEM.md`: added `gh` to available skills list
 
+### Fixed
+
+- `glab` skill: AI attribution examples now use explicit two-step username capture pattern instead of hardcoded `@alice`
+- `gh` skill: AI attribution examples use `$GH_USERNAME` variable pattern to prevent hardcoded or missing usernames
+
 ## [2026-03-18]
 
 ### Added

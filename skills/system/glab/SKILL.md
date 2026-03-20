@@ -117,12 +117,16 @@ GITLAB_HOST=<hostname> glab api user | jq -r '.username'
 
 > **Note:** `glab api` does not support `--jq` (that's a `gh` feature). Always pipe to `jq` instead.
 
-**Example** — creating an MR:
+Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
 
 ```bash
+# Step 1: fetch the username (do this once per session)
+GL_USERNAME=$(GITLAB_HOST=<hostname> glab api user | jq -r '.username')
+
+# Step 2: use it in the content
 GITLAB_HOST=gitlab.example.com glab mr create \
   --title "feat: add dark mode" \
-  --description "🤖 *This was written by an AI agent on behalf of @alice.*
+  --description "🤖 *This was written by an AI agent on behalf of @${GL_USERNAME}.*
 
 ---
 
@@ -137,7 +141,7 @@ GITLAB_HOST=gitlab.example.com glab mr create \
 ```bash
 GITLAB_HOST=gitlab.example.com glab issue note 42 \
   -R group/project \
-  --message "🤖 *This was written by an AI agent on behalf of @alice.*
+  --message "🤖 *This was written by an AI agent on behalf of @${GL_USERNAME}.*
 
 ---
 
