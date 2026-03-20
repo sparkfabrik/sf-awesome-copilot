@@ -93,6 +93,72 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 - Commit messages: conventional commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
 - Always update `CHANGELOG.md` when making user-facing changes (see Changelog section below).
 
+## Upstream Skill Sync
+
+Some system skills are synced from external GitHub repositories. The sync
+mechanism uses a JSON manifest (`config/upstream-skills.json`) and a generic
+sync script (`scripts/sync-skill.sh`).
+
+### How it works
+
+1. `upstream-skills.json` declares each upstream skill: the source repo, branch,
+   path inside the repo, and optional frontmatter overrides.
+2. `sync-skill.sh` downloads repo tarballs (one per unique repo), extracts each
+   skill directory, patches the SKILL.md frontmatter if overrides are declared,
+   appends `custom-sections.md` if present, and writes the result to
+   `skills/system/<name>/`.
+3. Local-only files (`custom-sections.md`, `evals/`) are preserved across syncs.
+4. A weekly GitHub Actions workflow (`.github/workflows/sync-skills.yml`) runs
+   `./scripts/sync-skill.sh --all` and opens a PR if anything changed.
+
+### Usage
+
+```bash
+./scripts/sync-skill.sh <name>           # sync a single skill
+./scripts/sync-skill.sh <name> --check   # dry-run: exit 1 if stale
+./scripts/sync-skill.sh --all            # sync all skills from manifest
+./scripts/sync-skill.sh --all --check    # dry-run for all skills
+```
+
+Requires `jq` and `curl`.
+
+### Adding a new upstream skill
+
+1. Add an entry to `config/upstream-skills.json` (see schema below).
+2. Run `./scripts/sync-skill.sh <name>` to pull the skill.
+3. Optionally create `skills/system/<name>/custom-sections.md` with local additions.
+4. Update `SYSTEM.md`, `README.md`, and `CHANGELOG.md`.
+
+### Manifest schema (`upstream-skills.json`)
+
+The manifest format is defined by `config/upstream-skills.schema.json`. Each entry
+in the `skills` array has the following fields:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | yes | Skill name (`lowercase-with-hyphens`). Must match the target folder under `skills/system/`. |
+| `repo` | string | yes | GitHub repository in `owner/repo` format. |
+| `ref` | string | no | Branch or tag to sync from. Defaults to `main`. |
+| `path` | string | yes | Path to the skill directory inside the repo. |
+| `frontmatter_overrides` | object | no | YAML frontmatter fields to patch in the upstream SKILL.md. Only listed fields are replaced; all other upstream fields are kept as-is. |
+
+Example entry:
+
+```json
+{
+  "name": "playwright-cli",
+  "repo": "microsoft/playwright-cli",
+  "ref": "main",
+  "path": "skills/playwright-cli",
+  "frontmatter_overrides": {
+    "description": "Custom description optimized for auto-triggering keywords."
+  }
+}
+```
+
+When `frontmatter_overrides` is omitted, the upstream SKILL.md frontmatter is
+used as-is.
+
 ## Changelog
 
 This project maintains a `CHANGELOG.md` using the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.

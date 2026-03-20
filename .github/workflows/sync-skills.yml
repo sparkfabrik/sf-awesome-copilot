@@ -1,0 +1,69 @@
+name: Sync upstream skills
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Every Monday at 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate manifest against schema
+        run: npx ajv-cli validate -s config/upstream-skills.schema.json -d config/upstream-skills.json --spec=draft2020
+
+      - name: Run sync script
+        run: ./scripts/sync-skill.sh --all
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet skills/system/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for existing sync PR
+        if: steps.diff.outputs.changed == 'true'
+        id: existing
+        run: |
+          count=$(gh pr list --search "chore: sync upstream skills" --state open --json number --jq length)
+          echo "exists=$([ "$count" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create pull request
+        if: steps.diff.outputs.changed == 'true' && steps.existing.outputs.exists == 'false'
+        run: |
+          branch="chore/sync-upstream-skills-$(date +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add skills/system/
+          git commit -m "chore: sync upstream skills"
+          git push -u origin "$branch"
+          gh pr create \
+            --title "chore: sync upstream skills" \
+            --body "$(cat <<'EOF'
+          ## Automated sync
+
+          Updated upstream skills in `skills/system/` from their source repositories
+          as declared in `config/upstream-skills.json`.
+
+          The sync script rebuilds each `SKILL.md` (upstream body + optional frontmatter
+          overrides + custom sections) and updates all bundled assets. Local-only files
+          (`custom-sections.md`, `evals/`) are preserved.
+
+          **Before merging**, update `CHANGELOG.md` with a dated entry.
+          EOF
+          )"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

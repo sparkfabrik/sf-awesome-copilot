@@ -12,8 +12,20 @@ Changes are grouped by date.
 
 ### Added
 
+- `skill-creator` skill: create, iterate, and benchmark agent skills with eval-driven workflows. Synced from [anthropics/skills](https://github.com/anthropics/skills)
+- `doc-coauthoring` skill: structured workflow for co-authoring documentation, proposals, and technical specs. Synced from [anthropics/skills](https://github.com/anthropics/skills)
 - `gh` skill: GitHub CLI skill for issues, pull requests, Actions, releases, search, PR review comment replies, safety protocol, and API patterns reference with 12 eval scenarios
 - `README.md`: skills table and `AGENTS.md` rule to keep it updated when adding/removing skills
+- `playwright-cli` skill: browser automation skill synced from [microsoft/playwright-cli](https://github.com/microsoft/playwright-cli), with custom output file conventions (screenshots, PDFs, videos, traces directed to `.playwright-cli/` instead of project root)
+- Generic upstream skill sync: `scripts/sync-skill.sh` replaces per-skill sync scripts; `config/upstream-skills.json` manifest with JSON schema declares all upstream skills; `.github/workflows/sync-skills.yml` runs weekly auto-sync
+
+### Changed
+
+- Moved sync manifest and schema from `scripts/` to `config/`
+
+### Removed
+
+- `scripts/sync-playwright-cli.sh` and `.github/workflows/sync-playwright-cli.yml` replaced by generic sync mechanism
 
 ### Fixed
 
