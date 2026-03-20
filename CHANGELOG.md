@@ -13,6 +13,7 @@ Changes are grouped by date.
 ### Added
 
 - `gh` skill: GitHub CLI skill for issues, pull requests, Actions, releases, search, PR review comment replies, safety protocol, and API patterns reference with 12 eval scenarios
+- `README.md`: skills table and `AGENTS.md` rule to keep it updated when adding/removing skills
 
 ### Fixed
 

@@ -84,6 +84,7 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 3. Add any bundled assets (scripts, templates, data) to the skill folder
 4. Test with GitHub Copilot
 5. **Update `SYSTEM.md`** — if the skill belongs to `system/`, add or remove it from the "Available skills" list
+6. **Update `README.md`** — add or remove the skill from the skills table
 
 ## Git Workflow
 

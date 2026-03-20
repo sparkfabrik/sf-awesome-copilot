@@ -15,6 +15,11 @@ Inspired by [github/awesome-copilot](https://github.com/github/awesome-copilot/t
 
 ## Skills
 
+| Skill | Description | Path |
+|-------|-------------|------|
+| **glab** | GitLab CLI -- issues, merge requests, CI/CD pipelines, repositories | `skills/system/glab/` |
+| **gh** | GitHub CLI -- issues, pull requests, Actions, releases, PR review comments | `skills/system/gh/` |
+
 Skills are documents that provide context to Copilot on specific topics. Each skill contains:
 
 - Description and use cases
