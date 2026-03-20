@@ -76,7 +76,7 @@ Issues and PRs both use `#` prefix.
 Whenever you create or post content on GitHub on behalf of the user -- including **PR descriptions** (`gh pr create`), **issue descriptions** (`gh issue create`), **comments** (`gh pr comment`, `gh issue comment`), **reviews** (`gh pr review`), or **`gh api` body fields** -- you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
 
 ```
-> *This was written by an AI agent on behalf of @<username>.*
+🤖 *This was written by an AI agent on behalf of @<username>.*
 
 ---
 ```
@@ -92,7 +92,7 @@ gh api user --jq '.login'
 ```bash
 gh pr create \
   --title "feat: add dark mode" \
-  --body "> *This was written by an AI agent on behalf of @alice.*
+  --body "🤖 *This was written by an AI agent on behalf of @alice.*
 
 ---
 
@@ -106,7 +106,7 @@ gh pr create \
 
 ```bash
 gh issue comment 42 \
-  --body "> *This was written by an AI agent on behalf of @alice.*
+  --body "🤖 *This was written by an AI agent on behalf of @alice.*
 
 ---
 
@@ -260,7 +260,7 @@ Use the dedicated replies endpoint:
 
 ```bash
 gh api -X POST repos/{owner}/{repo}/pulls/15/comments/<comment_id>/replies \
-  -f body="> *This was written by an AI agent on behalf of @alice.*
+  -f body="🤖 *This was written by an AI agent on behalf of @alice.*
 
 ---
 
