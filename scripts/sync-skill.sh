@@ -4,7 +4,7 @@
 #
 # Downloads skill directories from upstream GitHub repos (via tarball) and
 # installs them into skills/system/<name>/. Reads the skill list and config
-# from scripts/upstream-skills.json.
+# from config/upstream-skills.json.
 #
 # For each skill the script:
 #   1. Downloads the repo tarball (one per unique repo, cached in tmpdir)
@@ -19,7 +19,7 @@
 #   ./scripts/sync-skill.sh --all            # sync all skills
 #   ./scripts/sync-skill.sh --all --check    # dry-run for all skills
 #
-# Requires: jq, curl, tar
+# Requires: bash 4+, jq, curl, tar
 
 set -euo pipefail
 
@@ -30,7 +30,7 @@ MANIFEST="${REPO_ROOT}/config/upstream-skills.json"
 # Helpers
 # ---------------------------------------------------------------------------
 
-die() { echo "ERROR: $*" >&2; exit 1; }
+die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "$1 is required but not installed."
@@ -55,9 +55,10 @@ download_tarball() {
 
   local tarball="${TMPDIR_ROOT}/${repo//\//_}_${ref}.tar.gz"
   local extract_dir="${TMPDIR_ROOT}/${repo//\//_}_${ref}"
-  local url="https://github.com/${repo}/archive/refs/heads/${ref}.tar.gz"
+  # Short-form URL works for both branches and tags.
+  local url="https://github.com/${repo}/archive/${ref}.tar.gz"
 
-  echo "Downloading ${repo}@${ref}..."
+  printf 'Downloading %s@%s...\n' "$repo" "$ref"
   if ! curl -sSfL "$url" -o "$tarball"; then
     die "Failed to download tarball from ${url}"
   fi
@@ -70,7 +71,7 @@ download_tarball() {
 
 get_tarball_dir() {
   local repo="$1" ref="$2"
-  echo "${TARBALL_CACHE[${repo}@${ref}]}"
+  printf '%s' "${TARBALL_CACHE[${repo}@${ref}]}"
 }
 
 # ---------------------------------------------------------------------------
@@ -83,49 +84,45 @@ patch_skill_md() {
   local upstream_skill_md="$1"
   local overrides_json="$2"  # JSON object or "null"
 
-  # Split upstream into frontmatter lines and body
-  local in_frontmatter=false
-  local frontmatter_done=false
-  local delimiter_count=0
-  local frontmatter_lines=()
-  local body=""
+  # Use awk to split into frontmatter and body at the second --- delimiter.
+  # Frontmatter lines go to fd 3, body goes to stdout.
+  local fm_file="${TMPDIR_ROOT}/fm_$$"
+  local body_file="${TMPDIR_ROOT}/body_$$"
+  awk '
+    BEGIN { delim = 0 }
+    /^---[[:space:]]*$/ {
+      delim++
+      if (delim <= 2) next
+    }
+    { if (delim < 2) print > "'"$fm_file"'"; else print > "'"$body_file"'" }
+  ' "$upstream_skill_md"
 
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    if ! $frontmatter_done; then
-      if [[ "$line" =~ ^---[[:space:]]*$ ]]; then
-        delimiter_count=$((delimiter_count + 1))
-        if [[ $delimiter_count -eq 1 ]]; then
-          in_frontmatter=true
-          continue
-        elif [[ $delimiter_count -eq 2 ]]; then
-          frontmatter_done=true
-          in_frontmatter=false
-          continue
-        fi
-      fi
-      if $in_frontmatter; then
-        frontmatter_lines+=("$line")
-      fi
-    else
-      body+="${line}"$'\n'
-    fi
-  done < "$upstream_skill_md"
+  # Read frontmatter lines into array
+  local frontmatter_lines=()
+  if [[ -f "$fm_file" ]]; then
+    while IFS= read -r line; do
+      frontmatter_lines+=("$line")
+    done < "$fm_file"
+    rm -f "$fm_file"
+  fi
 
   # If no overrides, emit the original frontmatter as-is
   if [[ "$overrides_json" == "null" ]] || [[ -z "$overrides_json" ]]; then
-    echo "---"
+    printf '%s\n' "---"
     for fm_line in "${frontmatter_lines[@]}"; do
-      echo "$fm_line"
+      printf '%s\n' "$fm_line"
     done
-    echo "---"
-    echo ""
-    printf '%s' "$body"
+    printf '%s\n\n' "---"
+    [[ -f "$body_file" ]] && cat "$body_file"
+    rm -f "$body_file"
     return
   fi
 
-  # Build a map of override keys
-  local override_keys
-  override_keys=$(echo "$overrides_json" | jq -r 'keys[]')
+  # Build a list of override keys
+  local override_keys=()
+  while IFS= read -r k; do
+    override_keys+=("$k")
+  done < <(printf '%s' "$overrides_json" | jq -r 'keys[]')
 
   # Parse existing frontmatter into an ordered list of key-value pairs.
   # We handle simple "key: value" and multi-line block scalars (>-, |, etc.)
@@ -137,21 +134,19 @@ patch_skill_md() {
     # Check if this is a new key (not indented, contains colon)
     if [[ "$fm_line" =~ ^([a-zA-Z_-]+):[[:space:]]*(.*) ]]; then
       current_key="${BASH_REMATCH[1]}"
-      local value="${BASH_REMATCH[2]}"
 
       # Check if this key has an override
       local override_value
-      override_value=$(echo "$overrides_json" | jq -r --arg k "$current_key" '.[$k] // empty')
+      override_value=$(printf '%s' "$overrides_json" | jq -r --arg k "$current_key" '.[$k] // empty')
 
       if [[ -n "$override_value" ]]; then
         # Check if the value needs multi-line YAML (contains quotes or is long)
         if [[ ${#override_value} -gt 80 ]] || [[ "$override_value" == *'"'* ]]; then
           patched_fm+=("${current_key}: >-")
           # Word-wrap the value at ~78 chars with 2-space indent
-          # Use process substitution to avoid subshell (pipe would lose array writes)
-          while IFS= read -r wrap_line; do
+          while IFS= read -r wrap_line || [[ -n "$wrap_line" ]]; do
             patched_fm+=("  ${wrap_line}")
-          done < <(echo "$override_value" | fold -s -w 76)
+          done < <(printf '%s' "$override_value" | fold -s -w 76)
         else
           patched_fm+=("${current_key}: ${override_value}")
         fi
@@ -172,22 +167,22 @@ patch_skill_md() {
   done
 
   # Add any override keys that weren't in the original frontmatter
-  for key in $override_keys; do
+  for key in "${override_keys[@]}"; do
     local found=false
     for fm_line in "${frontmatter_lines[@]}"; do
-      if [[ "$fm_line" =~ ^${key}: ]]; then
+      if [[ "$fm_line" == "${key}:"* ]]; then
         found=true
         break
       fi
     done
     if ! $found; then
       local override_value
-      override_value=$(echo "$overrides_json" | jq -r --arg k "$key" '.[$k]')
+      override_value=$(printf '%s' "$overrides_json" | jq -r --arg k "$key" '.[$k]')
       if [[ ${#override_value} -gt 80 ]] || [[ "$override_value" == *'"'* ]]; then
         patched_fm+=("${key}: >-")
-        while IFS= read -r wrap_line; do
+        while IFS= read -r wrap_line || [[ -n "$wrap_line" ]]; do
           patched_fm+=("  ${wrap_line}")
-        done < <(echo "$override_value" | fold -s -w 76)
+        done < <(printf '%s' "$override_value" | fold -s -w 76)
       else
         patched_fm+=("${key}: ${override_value}")
       fi
@@ -195,13 +190,13 @@ patch_skill_md() {
   done
 
   # Emit patched SKILL.md
-  echo "---"
+  printf '%s\n' "---"
   for fm_line in "${patched_fm[@]}"; do
-    echo "$fm_line"
+    printf '%s\n' "$fm_line"
   done
-  echo "---"
-  echo ""
-  printf '%s' "$body"
+  printf '%s\n\n' "---"
+  [[ -f "$body_file" ]] && cat "$body_file"
+  rm -f "$body_file"
 }
 
 # ---------------------------------------------------------------------------
@@ -240,7 +235,7 @@ sync_skill() {
     die "Path '${path}' not found in ${repo}@${ref} tarball."
   fi
 
-  echo "Syncing ${skill_name} from ${repo}@${ref}:${path}..."
+  printf 'Syncing %s from %s@%s:%s...\n' "$skill_name" "$repo" "$ref" "$path"
 
   # Build into temp directory
   mkdir -p "$build_dir"
@@ -260,7 +255,7 @@ sync_skill() {
       patched+=$'\n'
     fi
 
-    echo "$patched" > "$build_dir/SKILL.md"
+    printf '%s\n' "$patched" > "$build_dir/SKILL.md"
   fi
 
   # --check mode: compare build vs local
@@ -268,7 +263,7 @@ sync_skill() {
     local changed=false
 
     if [[ ! -d "$target_dir" ]]; then
-      echo "  ${skill_name}: target directory does not exist."
+      printf '  %s: target directory does not exist.\n' "$skill_name"
       changed=true
     else
       # Compare all files from build against target
@@ -277,20 +272,20 @@ sync_skill() {
         local local_file="${target_dir}/${rel}"
 
         if [[ ! -f "$local_file" ]]; then
-          echo "  ${skill_name}: ${rel} does not exist locally."
+          printf '  %s: %s does not exist locally.\n' "$skill_name" "$rel"
           changed=true
         elif ! diff -q "$file" "$local_file" > /dev/null 2>&1; then
-          echo "  ${skill_name}: ${rel} differs."
+          printf '  %s: %s differs.\n' "$skill_name" "$rel"
           changed=true
         fi
       done < <(find "$build_dir" -type f -print0)
     fi
 
     if $changed; then
-      echo "  ${skill_name}: OUT OF DATE"
+      printf '  %s: OUT OF DATE\n' "$skill_name"
       return 1
     else
-      echo "  ${skill_name}: up to date"
+      printf '  %s: up to date\n' "$skill_name"
       return 0
     fi
   fi
@@ -328,7 +323,7 @@ sync_skill() {
     fi
   done
 
-  echo "  ${skill_name}: synced to ${target_dir}"
+  printf '  %s: synced to %s\n' "$skill_name" "$target_dir"
 }
 
 # ---------------------------------------------------------------------------
@@ -362,12 +357,11 @@ fi
 any_stale=false
 
 if $sync_all; then
-  skill_names=$(jq -r '.skills[].name' "$MANIFEST")
-  for name in $skill_names; do
+  while IFS= read -r name; do
     if ! sync_skill "$name" "$check_mode"; then
       any_stale=true
     fi
-  done
+  done < <(jq -r '.skills[].name' "$MANIFEST")
 else
   if ! sync_skill "$skill_name" "$check_mode"; then
     any_stale=true
@@ -375,13 +369,10 @@ else
 fi
 
 if $check_mode && $any_stale; then
-  echo ""
-  echo "One or more skills are out of date."
+  printf '\nOne or more skills are out of date.\n'
   exit 1
 elif $check_mode; then
-  echo ""
-  echo "All skills up to date."
+  printf '\nAll skills up to date.\n'
 fi
 
-echo ""
-echo "Done."
+printf '\nDone.\n'
