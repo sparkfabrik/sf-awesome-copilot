@@ -1,0 +1,172 @@
+{
+  "skill_name": "gh",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I found a bug on the login page -- when you submit an empty password field the app crashes with a 500 error instead of showing a validation message. Can you create a GitHub issue for this? Make it a high priority bug and assign it to me.",
+      "expected_output": "The agent should use `gh issue create` with a descriptive title, detailed description including steps to reproduce, appropriate labels (bug, high-priority or similar), and --assignee @me. It should NOT use `glab issue create` or any GitLab-specific tooling.",
+      "files": [],
+      "assertions": [
+        "Uses `gh issue create` (not `glab issue create` or curl to the API)",
+        "Includes a descriptive --title flag with relevant bug description",
+        "Includes a --body flag with meaningful content (steps to reproduce or context)",
+        "Uses `--assignee @me` or equivalent to assign to the current user",
+        "Checks the git remote to confirm it's a GitHub project before running gh commands",
+        "Uses `--label` flag (not `--labels`) with a bug-related label",
+        "Discovers available labels via `gh label list` before creating, or uses well-known labels"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I've been working on this branch and my changes are ready. Create a pull request that targets the develop branch. The changes fix the login validation bug from issue #42. Make sure the PR description mentions it closes that issue, and request a review from my teammate 'marco'.",
+      "expected_output": "The agent should: 1) Check git status and branch state, 2) Push the branch if needed, 3) Use `gh pr create` with --base develop, a clear title, a body containing 'Closes #42', --reviewer marco. It should use GitHub PR terminology, not GitLab MR terminology.",
+      "files": [],
+      "assertions": [
+        "Uses `gh pr create` (not `glab mr create` or other GitLab tooling)",
+        "Specifies `--base develop` to target the correct branch",
+        "PR body contains 'Closes #42' or 'Fixes #42' to auto-close the issue on merge",
+        "Uses `--reviewer marco` to request review from the teammate",
+        "Checks git status and branch state before creating the PR",
+        "Pushes the branch to remote (with -u) before creating the PR",
+        "Analyzes the changes (git diff/log) to draft a meaningful PR title and description"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Can you check what's going on with PR #15? I want to see the comments, check if the CI passed, and then approve it with a note saying the implementation looks solid.",
+      "expected_output": "The agent should: 1) Use `gh pr view 15 --comments` to see the PR and its comments, 2) Use `gh pr checks 15` to check CI status, 3) Use `gh pr review 15 --approve --body '...'` to formally approve. Commands should use gh (not glab).",
+      "files": [],
+      "assertions": [
+        "Uses `gh pr view 15` (with --comments) to view the PR",
+        "Checks CI status using `gh pr checks 15` (not raw API calls)",
+        "Uses `gh pr review 15 --approve` for formal approval (GitHub's review system)",
+        "Includes `--body` with the approval note about the implementation",
+        "Uses gh commands throughout (not glab or curl)",
+        "Does NOT confuse `gh pr comment` (timeline comment) with `gh pr review --approve` (formal approval)"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Can you explain this PR to me? https://github.com/acme/webapp/pull/67",
+      "expected_output": "The agent should extract owner/repo (acme/webapp) and PR number (67) from the URL, use `gh pr view 67 -R acme/webapp` and `gh pr diff 67 -R acme/webapp` to fetch PR details. It should NOT attempt WebFetch, curl, or any browser-based approach.",
+      "files": [],
+      "assertions": [
+        "Does NOT attempt WebFetch or curl on the GitHub URL",
+        "Extracts the owner/repo (acme/webapp) from the URL",
+        "Extracts the PR number (67) from the URL",
+        "Uses `-R acme/webapp` to target the correct repository",
+        "Uses `gh pr view` to retrieve PR details",
+        "Uses `gh pr diff` to retrieve the changes",
+        "Provides a clear summary/explanation of the PR to the user"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want to create an issue on this project https://github.com/acme/webapp, using the issue template. Read it and ask me questions.",
+      "expected_output": "The agent should: 1) Extract owner/repo from the URL, 2) Check for issue templates via the API or filesystem, 3) Present available templates to the user, 4) After selection, read the template and ask the user to fill in the sections.",
+      "files": [],
+      "assertions": [
+        "Checks for issue templates (either via `gh api repos/acme/webapp/contents/.github/ISSUE_TEMPLATE` or filesystem)",
+        "Uses `-R acme/webapp` to target the correct repository",
+        "Presents the list of available templates to the user as choices before proceeding",
+        "After template selection, reads the template content",
+        "Asks the user for information required by the template sections",
+        "Does NOT skip the template check and jump straight to `gh issue create`",
+        "Uses `gh issue create --template <name>` when creating the final issue"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I just pushed a commit to main and I want to watch the CI run. Can you monitor it and let me know when it finishes?",
+      "expected_output": "The agent should first find the run ID using `gh run list --branch main`, then use `gh run watch <run-id>` to stream status in real-time. It should NOT pass --branch to `gh run watch` (which doesn't accept it) and should NOT fall back to a polling loop.",
+      "files": [],
+      "assertions": [
+        "Uses `gh run list --branch main` to find the run ID first",
+        "Uses `gh run watch <run-id>` to stream status in real-time",
+        "Does NOT pass `--branch` directly to `gh run watch` (that flag doesn't exist)",
+        "Does NOT use a manual polling loop with `gh api` + `sleep`",
+        "Reports the final status (success/failed) to the user"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "The CI on my PR #28 failed and I need to figure out what went wrong. Can you show me the failing logs?",
+      "expected_output": "The agent should use `gh pr checks 28` to see which checks failed, then `gh run view <run-id> --log-failed` to show only the failed step output. It should NOT dump the entire run log.",
+      "files": [],
+      "assertions": [
+        "Uses `gh pr checks 28` to identify which checks failed",
+        "Uses `gh run view <run-id> --log-failed` to show only failed step output",
+        "Does NOT dump the entire log (should use --log-failed, not --log)",
+        "Identifies the specific failing step or job",
+        "Presents the failure information clearly to the user"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "A reviewer left an inline comment on line 42 of src/auth.ts in PR #15 asking why I'm using a null check instead of optional chaining. Can you reply to that specific comment explaining that we need to support Node 12 which doesn't have optional chaining?",
+      "expected_output": "The agent should: 1) List review comments on PR #15 via `gh api repos/{owner}/{repo}/pulls/15/comments`, 2) Find the comment on src/auth.ts line 42, 3) Reply using the replies endpoint `gh api -X POST .../comments/<id>/replies`. It should NOT use `gh pr comment` (that creates a top-level comment, not a threaded reply).",
+      "files": [],
+      "assertions": [
+        "Lists review comments using `gh api repos/{owner}/{repo}/pulls/15/comments`",
+        "Identifies the correct comment by filtering on path (src/auth.ts) and line (42)",
+        "Replies using the review comment replies endpoint (`/comments/<id>/replies`)",
+        "Does NOT use `gh pr comment` (that would create a top-level timeline comment, not a threaded reply)",
+        "Includes the AI attribution header in the reply body",
+        "The reply explains the Node 12 compatibility reason as requested"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Can you go through all the review comments on PR #22 and summarize what the reviewers are asking for? Then help me respond to each one.",
+      "expected_output": "The agent should: 1) List all review comments via `gh api`, 2) Group them by thread (using in_reply_to_id), 3) Present a summary of each thread to the user, 4) Draft replies and get confirmation before posting.",
+      "files": [],
+      "assertions": [
+        "Lists all review comments using `gh api repos/{owner}/{repo}/pulls/22/comments`",
+        "Groups or filters comments to identify distinct threads (using in_reply_to_id)",
+        "Presents a clear summary of each review thread to the user",
+        "Drafts reply content for the user to review before posting",
+        "Does NOT post replies without user confirmation",
+        "Uses the correct reply endpoint for each comment when posting"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "We need to publish a new release. Tag it as v2.1.0, auto-generate the release notes from the commits, and upload the build artifact from ./dist/app.tar.gz.",
+      "expected_output": "The agent should use `gh release create v2.1.0 --generate-notes ./dist/app.tar.gz` to create the release with auto-generated notes and the asset in one command.",
+      "files": [],
+      "assertions": [
+        "Uses `gh release create` with the tag `v2.1.0`",
+        "Uses `--generate-notes` to auto-generate release notes",
+        "Includes `./dist/app.tar.gz` as an asset in the create command",
+        "Does NOT use `glab release` or curl",
+        "Asks for confirmation before creating the release (Tier 3 safety -- creates content)"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "I need to find all open issues labeled 'bug' across our organization's repos. Can you search for them?",
+      "expected_output": "The agent should use `gh search issues` with appropriate filters for label and state, scoped to the organization.",
+      "files": [],
+      "assertions": [
+        "Uses `gh search issues` (not `gh issue list` which is repo-scoped)",
+        "Filters by label 'bug' using `--label bug` or search syntax",
+        "Filters for open state using `--state open` or search syntax",
+        "Scopes to the organization using `--owner <org>` or search syntax",
+        "Presents results clearly to the user"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Can you use the GitHub API to get a list of all PR review comments grouped by file, along with the commenter's username? Use the --jq flag to filter the output.",
+      "expected_output": "The agent should use `gh api repos/{owner}/{repo}/pulls/<number>/comments --jq '...'` with a jq expression that groups by path and extracts usernames. It should use the native --jq flag, not pipe to external jq.",
+      "files": [],
+      "assertions": [
+        "Uses `gh api` with the pulls comments endpoint",
+        "Uses the native `--jq` flag (not piping to external `jq`)",
+        "The jq expression groups or organizes by file path",
+        "The jq expression includes the commenter's username (.user.login)",
+        "Does NOT use `glab api` or other non-GitHub tooling"
+      ]
+    }
+  ]
+}

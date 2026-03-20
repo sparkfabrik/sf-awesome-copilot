@@ -43,3 +43,4 @@ Skills are installed to a shared standard path used by all coding agent tools:
 ## Available skills
 
 - **glab** -- GitLab CLI skill for working with issues, merge requests, CI/CD pipelines, and repositories via the `glab` CLI.
+- **gh** -- GitHub CLI skill for working with issues, pull requests, Actions workflows, releases, and repositories via the `gh` CLI.

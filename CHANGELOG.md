@@ -8,6 +8,18 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-20]
+
+### Added
+
+- `gh` skill: initial implementation of the GitHub CLI skill for issues, pull requests, Actions workflows, releases, search, and repository operations
+- `gh` skill: PR comments and reviews section covering top-level comments, formal reviews, inline code comments, and threaded reply workflows via `gh api`
+- `gh` skill: three-tier safety protocol (Forbidden, Explicit Request Only, Safe With Confirmation) covering `gh`-specific risks including `--admin` merge bypass, secrets/variables management, and workflow control
+- `gh` skill: AI attribution header policy for all agent-created content
+- `gh` skill: API patterns reference with `--jq` filtering, GraphQL, pagination, and review comment thread management
+- `gh` skill: 12 eval scenarios covering issue/PR creation, CI monitoring, review comment replies, releases, search, and URL handling
+- `SYSTEM.md`: added `gh` to available skills list
+
 ## [2026-03-18]
 
 ### Added
