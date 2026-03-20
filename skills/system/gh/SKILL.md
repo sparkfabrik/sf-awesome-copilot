@@ -109,6 +109,19 @@ Root cause identified: ..."
 
 This applies to **every** piece of content the agent creates, regardless of length or context. Never skip the header.
 
+> **Heredoc warning:** when using `cat <<EOF` to build the body, **never** single-quote the delimiter (`<<'EOF'`). Single-quoted heredocs suppress variable expansion and produce the literal string `$GH_USERNAME` instead of the resolved value. Always use an unquoted delimiter:
+>
+> ```bash
+> gh pr create --title "feat: add dark mode" --body "$(cat <<EOF
+> > :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
+>
+> ## Summary
+>
+> - Adds dark mode toggle to settings page
+> EOF
+> )"
+> ```
+
 ---
 
 ## Issues
