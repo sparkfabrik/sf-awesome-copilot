@@ -19,6 +19,7 @@ Inspired by [github/awesome-copilot](https://github.com/github/awesome-copilot/t
 |-------|-------------|------|
 | **glab** | GitLab CLI -- issues, merge requests, CI/CD pipelines, repositories | `skills/system/glab/` |
 | **gh** | GitHub CLI -- issues, pull requests, Actions, releases, PR review comments | `skills/system/gh/` |
+| **playwright-cli** | Browser automation -- web testing, screenshots, form filling, data extraction | `skills/system/playwright-cli/` |
 
 Skills are documents that provide context to Copilot on specific topics. Each skill contains:
 
