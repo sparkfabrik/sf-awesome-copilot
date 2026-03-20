@@ -81,18 +81,16 @@ Whenever you create or post content on GitHub on behalf of the user -- including
 ---
 ```
 
-To get the current authenticated username:
+Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
 
 ```bash
-gh api user --jq '.login'
-```
+# Step 1: fetch the username (do this once per session)
+GH_USERNAME=$(gh api user --jq '.login')
 
-**Example** -- creating a PR:
-
-```bash
+# Step 2: use it in the content
 gh pr create \
   --title "feat: add dark mode" \
-  --body "🤖 *This was written by an AI agent on behalf of @alice.*
+  --body "🤖 *This was written by an AI agent on behalf of @${GH_USERNAME}.*
 
 ---
 
@@ -106,7 +104,7 @@ gh pr create \
 
 ```bash
 gh issue comment 42 \
-  --body "🤖 *This was written by an AI agent on behalf of @alice.*
+  --body "🤖 *This was written by an AI agent on behalf of @${GH_USERNAME}.*
 
 ---
 
@@ -260,7 +258,7 @@ Use the dedicated replies endpoint:
 
 ```bash
 gh api -X POST repos/{owner}/{repo}/pulls/15/comments/<comment_id>/replies \
-  -f body="🤖 *This was written by an AI agent on behalf of @alice.*
+  -f body="🤖 *This was written by an AI agent on behalf of @${GH_USERNAME}.*
 
 ---
 
