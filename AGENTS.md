@@ -131,7 +131,7 @@ Requires `jq` and `curl`.
 
 ### Manifest schema (`upstream-skills.json`)
 
-The manifest is validated by `config/upstream-skills.schema.json`. Each entry
+The manifest format is defined by `config/upstream-skills.schema.json`. Each entry
 in the `skills` array has the following fields:
 
 | Field | Type | Required | Description |

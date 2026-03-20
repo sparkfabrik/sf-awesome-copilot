@@ -53,8 +53,10 @@ download_tarball() {
     return
   fi
 
-  local tarball="${TMPDIR_ROOT}/${repo//\//_}_${ref}.tar.gz"
-  local extract_dir="${TMPDIR_ROOT}/${repo//\//_}_${ref}"
+  # Sanitize ref for filesystem use (e.g. "release/1.2" -> "release_1.2")
+  local safe_ref="${ref//\//_}"
+  local tarball="${TMPDIR_ROOT}/${repo//\//_}_${safe_ref}.tar.gz"
+  local extract_dir="${TMPDIR_ROOT}/${repo//\//_}_${safe_ref}"
   # Short-form URL works for both branches and tags.
   local url="https://github.com/${repo}/archive/${ref}.tar.gz"
 
@@ -266,7 +268,7 @@ sync_skill() {
       printf '  %s: target directory does not exist.\n' "$skill_name"
       changed=true
     else
-      # Compare all files from build against target
+      # Compare all files from build against target (new/modified)
       while IFS= read -r -d '' file; do
         local rel="${file#$build_dir/}"
         local local_file="${target_dir}/${rel}"
@@ -279,6 +281,19 @@ sync_skill() {
           changed=true
         fi
       done < <(find "$build_dir" -type f -print0)
+
+      # Detect stale files in target that no longer exist upstream
+      # (excluding preserved local-only paths)
+      while IFS= read -r -d '' file; do
+        local rel="${file#$target_dir/}"
+        case "$rel" in
+          custom-sections.md | evals | evals/*) continue ;;
+        esac
+        if [[ ! -f "${build_dir}/${rel}" ]]; then
+          printf '  %s: %s is stale (removed upstream).\n' "$skill_name" "$rel"
+          changed=true
+        fi
+      done < <(find "$target_dir" -type f -print0)
     fi
 
     if $changed; then
@@ -303,15 +318,15 @@ sync_skill() {
     fi
   done
 
-  # Remove upstream-managed files (everything except preserved items)
-  # We do this by removing all files that exist in build_dir from target_dir
-  while IFS= read -r -d '' file; do
-    local rel="${file#$build_dir/}"
-    local local_file="${target_dir}/${rel}"
-    if [[ -f "$local_file" ]]; then
-      rm -f "$local_file"
-    fi
-  done < <(find "$build_dir" -type f -print0)
+  # Wipe target directory (except preserved paths) so files removed upstream
+  # don't accumulate as stale artifacts.
+  while IFS= read -r -d '' path; do
+    local rel="${path#$target_dir/}"
+    case "$rel" in
+      custom-sections.md | evals | evals/*) continue ;;
+    esac
+    rm -rf -- "$path"
+  done < <(find "$target_dir" -mindepth 1 -maxdepth 1 -print0)
 
   # Copy built files
   cp -a "$build_dir"/. "$target_dir"/
