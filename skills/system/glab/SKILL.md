@@ -104,9 +104,7 @@ Issues use `#`, merge requests use `!`.
 Whenever you create or post content on GitLab on behalf of the user — including **MR descriptions** (`glab mr create`), **issue descriptions** (`glab issue create`), **comments/notes** (`glab issue note`, `glab mr note`), or **`glab api` body fields** — you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
 
 ```
-🤖 *This was written by an AI agent on behalf of @<username>.*
-
----
+> :robot: _This was written by an AI agent on behalf of @<username>._
 ```
 
 To get the current authenticated username run:
@@ -126,9 +124,7 @@ GL_USERNAME=$(GITLAB_HOST=<hostname> glab api user | jq -r '.username')
 # Step 2: use it in the content
 GITLAB_HOST=gitlab.example.com glab mr create \
   --title "feat: add dark mode" \
-  --description "🤖 *This was written by an AI agent on behalf of @${GL_USERNAME}.*
-
----
+  --description "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
 
 ## Summary
 
@@ -141,9 +137,7 @@ GITLAB_HOST=gitlab.example.com glab mr create \
 ```bash
 GITLAB_HOST=gitlab.example.com glab issue note 42 \
   -R group/project \
-  --message "🤖 *This was written by an AI agent on behalf of @${GL_USERNAME}.*
-
----
+  --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
 
 ## Triage
 

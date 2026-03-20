@@ -8,6 +8,12 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-21]
+
+### Fixed
+
+- `gh`, `glab` skills: AI attribution header now uses blockquote format (`) instead of bare text with `---` separator -- fixes double-separator rendering issues and provides consistent visual distinction on both GitHub and GitLab
+
 ## [2026-03-20]
 
 ### Added

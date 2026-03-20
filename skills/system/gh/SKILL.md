@@ -76,9 +76,7 @@ Issues and PRs both use `#` prefix.
 Whenever you create or post content on GitHub on behalf of the user -- including **PR descriptions** (`gh pr create`), **issue descriptions** (`gh issue create`), **comments** (`gh pr comment`, `gh issue comment`), **reviews** (`gh pr review`), or **`gh api` body fields** -- you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
 
 ```
-🤖 *This was written by an AI agent on behalf of @<username>.*
-
----
+> :robot: _This was written by an AI agent on behalf of @<username>._
 ```
 
 Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
@@ -90,9 +88,7 @@ GH_USERNAME=$(gh api user --jq '.login')
 # Step 2: use it in the content
 gh pr create \
   --title "feat: add dark mode" \
-  --body "🤖 *This was written by an AI agent on behalf of @${GH_USERNAME}.*
-
----
+  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
 
 ## Summary
 
@@ -104,9 +100,7 @@ gh pr create \
 
 ```bash
 gh issue comment 42 \
-  --body "🤖 *This was written by an AI agent on behalf of @${GH_USERNAME}.*
-
----
+  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
 
 ## Triage
 
@@ -258,9 +252,7 @@ Use the dedicated replies endpoint:
 
 ```bash
 gh api -X POST repos/{owner}/{repo}/pulls/15/comments/<comment_id>/replies \
-  -f body="🤖 *This was written by an AI agent on behalf of @${GH_USERNAME}.*
-
----
+  -f body="> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
 
 The null check is needed because..."
 ```
