@@ -1,4 +1,4 @@
-name: Sync playwright-cli skill
+name: Sync upstream skills
 
 on:
   schedule:
@@ -17,12 +17,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run sync script
-        run: ./scripts/sync-playwright-cli.sh
+        run: ./scripts/sync-skill.sh --all
 
       - name: Check for changes
         id: diff
         run: |
-          if git diff --quiet skills/system/playwright-cli/; then
+          if git diff --quiet skills/system/; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -32,7 +32,7 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         id: existing
         run: |
-          count=$(gh pr list --search "chore: sync playwright-cli" --state open --json number --jq length)
+          count=$(gh pr list --search "chore: sync upstream skills" --state open --json number --jq length)
           echo "exists=$([ "$count" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,23 +40,24 @@ jobs:
       - name: Create pull request
         if: steps.diff.outputs.changed == 'true' && steps.existing.outputs.exists == 'false'
         run: |
-          branch="chore/sync-playwright-cli-$(date +%Y-%m-%d)"
+          branch="chore/sync-upstream-skills-$(date +%Y-%m-%d)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git add skills/system/playwright-cli/SKILL.md skills/system/playwright-cli/references/
-          git commit -m "chore: sync playwright-cli skill from upstream"
+          git add skills/system/
+          git commit -m "chore: sync upstream skills"
           git push -u origin "$branch"
           gh pr create \
-            --title "chore: sync playwright-cli skill from upstream" \
+            --title "chore: sync upstream skills" \
             --body "$(cat <<'EOF'
           ## Automated sync
 
-          Updated `skills/system/playwright-cli/` from
-          [microsoft/playwright-cli](https://github.com/microsoft/playwright-cli).
+          Updated upstream skills in `skills/system/` from their source repositories
+          as declared in `config/upstream-skills.json`.
 
-          The sync script rebuilds `SKILL.md` (upstream body + custom sections)
-          and updates `references/`. Custom content in `custom-sections.md` is preserved.
+          The sync script rebuilds each `SKILL.md` (upstream body + optional frontmatter
+          overrides + custom sections) and updates all bundled assets. Local-only files
+          (`custom-sections.md`, `evals/`) are preserved.
 
           **Before merging**, update `CHANGELOG.md` with a dated entry.
           EOF

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "upstream-skills.schema.json",
+  "title": "Upstream Skills Manifest",
+  "description": "Declares upstream GitHub repositories and paths to sync as system skills.",
+  "type": "object",
+  "required": ["skills"],
+  "additionalProperties": false,
+  "properties": {
+    "skills": {
+      "type": "array",
+      "description": "List of upstream skills to sync.",
+      "items": {
+        "type": "object",
+        "required": ["name", "repo", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$",
+            "description": "Skill name (lowercase, hyphens). Must match the target folder name under skills/system/."
+          },
+          "repo": {
+            "type": "string",
+            "pattern": "^[^/]+/[^/]+$",
+            "description": "GitHub repository in owner/repo format (e.g. 'microsoft/playwright-cli')."
+          },
+          "ref": {
+            "type": "string",
+            "default": "main",
+            "description": "Git branch or tag to sync from. Defaults to 'main'."
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to the skill directory inside the repository (e.g. 'skills/playwright-cli')."
+          },
+          "frontmatter_overrides": {
+            "type": "object",
+            "description": "YAML frontmatter fields to override in the upstream SKILL.md. Only specified fields are replaced; all other upstream fields are kept as-is.",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Custom description for auto-triggering. Overrides the upstream description field."
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

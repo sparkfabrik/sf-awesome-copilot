@@ -1,13 +1,13 @@
 ---
 name: playwright-cli
 description: >-
-  Browser automation with the playwright-cli CLI tool. Use when the user needs
-  to automate browser interactions, navigate websites, test web applications,
-  take screenshots, fill forms, extract data from web pages, or interact with
-  headless browsers. Also use when the user mentions "playwright-cli",
-  "playwright", "browser automation", "headless browser", "web scraping",
-  "screenshot", "snapshot", "browser testing", or wants to open, click, fill,
-  or type in a web page.
+  Browser automation with the playwright-cli CLI tool. Use when the user 
+  needs to automate browser interactions, navigate websites, test web 
+  applications, take screenshots, fill forms, extract data from web pages, or 
+  interact with headless browsers. Also use when the user mentions 
+  "playwright-cli", "playwright", "browser automation", "headless browser", 
+  "web scraping", "screenshot", "snapshot", "browser testing", or wants to 
+  open, click, fill, or type in a web page.
 allowed-tools: Bash(playwright-cli:*)
 ---
 
@@ -284,7 +284,6 @@ playwright-cli close
 * **Test generation** [references/test-generation.md](references/test-generation.md)
 * **Tracing** [references/tracing.md](references/tracing.md)
 * **Video recording** [references/video-recording.md](references/video-recording.md)
-
 ---
 
 ## Output file conventions
@@ -329,3 +328,4 @@ traces/
 ### Cleanup
 
 `playwright-cli close` does not remove output files. When output files are no longer needed, remove them or inform the user where they were saved so they can decide.
+
