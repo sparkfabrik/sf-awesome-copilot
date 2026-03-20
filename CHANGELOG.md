@@ -14,6 +14,9 @@ Changes are grouped by date.
 
 - `gh` skill: GitHub CLI skill for issues, pull requests, Actions, releases, search, PR review comment replies, safety protocol, and API patterns reference with 12 eval scenarios
 - `README.md`: skills table and `AGENTS.md` rule to keep it updated when adding/removing skills
+- `playwright-cli` skill: browser automation skill synced from [microsoft/playwright-cli](https://github.com/microsoft/playwright-cli), with custom output file conventions (screenshots, PDFs, videos, traces directed to `.playwright-cli/` instead of project root)
+- `scripts/sync-playwright-cli.sh`: sync script to pull upstream skill content, rebuild `SKILL.md` with custom sections, supports `--check` dry-run mode
+- `.github/workflows/sync-playwright-cli.yml`: weekly scheduled workflow to auto-sync upstream changes and open a PR
 
 ### Fixed
 
