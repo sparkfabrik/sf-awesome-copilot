@@ -8,6 +8,17 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-20]
+
+### Added
+
+- `gh` skill: GitHub CLI skill for issues, pull requests, Actions, releases, search, PR review comment replies, safety protocol, and API patterns reference with 12 eval scenarios
+- `README.md`: skills table and `AGENTS.md` rule to keep it updated when adding/removing skills
+
+### Fixed
+
+- `glab` skill: AI attribution examples now use explicit two-step username capture pattern instead of hardcoded placeholder
+
 ## [2026-03-18]
 
 ### Added

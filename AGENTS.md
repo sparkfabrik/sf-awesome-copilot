@@ -84,6 +84,7 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 3. Add any bundled assets (scripts, templates, data) to the skill folder
 4. Test with GitHub Copilot
 5. **Update `SYSTEM.md`** — if the skill belongs to `system/`, add or remove it from the "Available skills" list
+6. **Update `README.md`** — add or remove the skill from the skills table
 
 ## Git Workflow
 
@@ -102,6 +103,7 @@ There is no semantic versioning — the latest commit is always the current vers
 - Move any relevant items from `[Unreleased]` to a dated section (e.g. `[2026-03-05]`) matching today's date, or add a new dated section if none exists for today.
 - Use the standard Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
 - Write entries from the perspective of a consumer of the skill/agent (what changed, not how).
+- Keep it concise: 1-2 entries per skill/agent per date section. Consolidate related changes into a single entry rather than listing each sub-feature separately.
 - The `[Unreleased]` section must always remain at the top, even if empty.
 
 ## References
