@@ -12,18 +12,11 @@ Changes are grouped by date.
 
 ### Added
 
-- `gh` skill: initial implementation of the GitHub CLI skill for issues, pull requests, Actions workflows, releases, search, and repository operations
-- `gh` skill: PR comments and reviews section covering top-level comments, formal reviews, inline code comments, and threaded reply workflows via `gh api`
-- `gh` skill: three-tier safety protocol (Forbidden, Explicit Request Only, Safe With Confirmation) covering `gh`-specific risks including `--admin` merge bypass, secrets/variables management, and workflow control
-- `gh` skill: AI attribution header policy for all agent-created content
-- `gh` skill: API patterns reference with `--jq` filtering, GraphQL, pagination, and review comment thread management
-- `gh` skill: 12 eval scenarios covering issue/PR creation, CI monitoring, review comment replies, releases, search, and URL handling
-- `SYSTEM.md`: added `gh` to available skills list
+- `gh` skill: GitHub CLI skill for issues, pull requests, Actions, releases, search, PR review comment replies, safety protocol, and API patterns reference with 12 eval scenarios
 
 ### Fixed
 
-- `glab` skill: AI attribution examples now use explicit two-step username capture pattern instead of hardcoded `@alice`
-- `gh` skill: AI attribution examples use `$GH_USERNAME` variable pattern to prevent hardcoded or missing usernames
+- `glab` skill: AI attribution examples now use explicit two-step username capture pattern instead of hardcoded placeholder
 
 ## [2026-03-18]
 

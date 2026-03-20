@@ -102,6 +102,7 @@ There is no semantic versioning — the latest commit is always the current vers
 - Move any relevant items from `[Unreleased]` to a dated section (e.g. `[2026-03-05]`) matching today's date, or add a new dated section if none exists for today.
 - Use the standard Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
 - Write entries from the perspective of a consumer of the skill/agent (what changed, not how).
+- Keep it concise: 1-2 entries per skill/agent per date section. Consolidate related changes into a single entry rather than listing each sub-feature separately.
 - The `[Unreleased]` section must always remain at the top, even if empty.
 
 ## References
