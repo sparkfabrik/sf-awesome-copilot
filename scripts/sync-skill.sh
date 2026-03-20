@@ -40,6 +40,33 @@ require_cmd jq
 require_cmd curl
 
 # ---------------------------------------------------------------------------
+# Manifest validation (structural checks via jq)
+# ---------------------------------------------------------------------------
+
+validate_manifest() {
+  [[ -f "$MANIFEST" ]] || die "Manifest not found: ${MANIFEST}"
+
+  jq -e '.skills | type == "array" and length > 0' "$MANIFEST" >/dev/null 2>&1 \
+    || die "Manifest must contain a non-empty 'skills' array."
+
+  local errors
+  errors=$(jq -r '
+    .skills | to_entries[] |
+    .key as $i | .value |
+    (if .name  | type != "string" or length == 0 then "skills[\($i)]: missing or empty \"name\""  else empty end),
+    (if .repo  | type != "string" or length == 0 then "skills[\($i)]: missing or empty \"repo\""  else empty end),
+    (if .path  | type != "string" or length == 0 then "skills[\($i)]: missing or empty \"path\""  else empty end),
+    (if .repo  | type == "string" and (test("^[^/]+/[^/]+$") | not) then "skills[\($i)]: \"repo\" must be owner/repo format" else empty end)
+  ' "$MANIFEST" 2>&1)
+
+  if [[ -n "$errors" ]]; then
+    die "Manifest validation failed:\n${errors}"
+  fi
+}
+
+validate_manifest
+
+# ---------------------------------------------------------------------------
 # Tarball cache — one download per unique repo+ref
 # ---------------------------------------------------------------------------
 
