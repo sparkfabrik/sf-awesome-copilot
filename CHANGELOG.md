@@ -10,6 +10,10 @@ Changes are grouped by date.
 
 ## [2026-03-21]
 
+### Changed
+
+- `playwright-cli` skill: proactively detect whether `playwright-cli` binary is installed and fall back to `npx playwright-cli` when not found
+
 ### Fixed
 
 - `gh`, `glab` skills: AI attribution header now uses blockquote format (`) instead of bare text with `---` separator -- fixes double-separator rendering issues and provides consistent visual distinction on both GitHub and GitLab
