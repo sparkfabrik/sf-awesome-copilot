@@ -1,5 +1,26 @@
 ---
 
+## Tool availability
+
+Before running the first `playwright-cli` command, check whether the binary is available:
+
+```bash
+command -v playwright-cli >/dev/null 2>&1 && echo "installed" || echo "not installed"
+```
+
+- If **installed**, use `playwright-cli` directly for all commands.
+- If **not installed**, use `npx -y playwright-cli` as a drop-in replacement for all commands. The `-y` flag skips the install confirmation prompt, which is required for non-interactive use.
+
+All examples in this skill use `playwright-cli` directly. When the binary is not found, prepend `npx -y` to each command. For example:
+
+```bash
+# Binary available
+playwright-cli open https://example.com
+
+# Binary not available -- use npx -y
+npx -y playwright-cli open https://example.com
+```
+
 ## Output file conventions
 
 By default, playwright-cli writes screenshots, PDFs, and other output files to the current working directory, which is usually the project root. This clutters the repo with temporary files that shouldn't be committed.
