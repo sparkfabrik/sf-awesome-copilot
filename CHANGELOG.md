@@ -8,6 +8,13 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-22]
+
+### Added
+
+- `create-agentsmd` skill: prompt for generating an AGENTS.md file for a repository. Synced from [github/awesome-copilot](https://github.com/github/awesome-copilot)
+- GitHub Actions workflow to validate the upstream skills manifest and verify synced skills are up to date
+
 ## [2026-03-21]
 
 ### Changed
