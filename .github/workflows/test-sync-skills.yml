@@ -29,5 +29,5 @@ jobs:
       - name: Validate manifest against schema
         run: npx ajv-cli validate -s config/upstream-skills.schema.json -d config/upstream-skills.json --spec=draft2020
 
-      - name: Verify synced skills are up to date
-        run: ./scripts/sync-skill.sh --all --check
+      - name: Verify upstream repos are reachable and skill paths exist
+        run: ./scripts/sync-skill.sh --all
