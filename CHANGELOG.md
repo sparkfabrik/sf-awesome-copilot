@@ -12,8 +12,17 @@ Changes are grouped by date.
 
 ### Added
 
+- `glab` skill: repository files section -- fetch file contents, browse directories, and handle cross-project file access via `glab api` instead of WebFetch/curl
+- `glab` skill: three new eval cases for repository file URL scenarios (raw file, blob, tree)
+- `gh`, `glab` skills: MR/PR titles must follow the Conventional Commits format (`<type>[(scope)]: <description>`)
+- `gh`, `glab` skills: new eval case for Conventional Commits title format in MR/PR creation
 - `create-agentsmd` skill: prompt for generating an AGENTS.md file for a repository. Synced from [github/awesome-copilot](https://github.com/github/awesome-copilot)
 - GitHub Actions workflow to validate the upstream skills manifest and verify synced skills are up to date
+
+### Changed
+
+- `glab` skill: "Before you start" section now explicitly calls out file URLs (`/-/raw/`, `/-/blob/`, `/-/tree/`) as GitLab resources that require `glab api`
+- `glab` skill: updated description to mention repository files and file URLs for better auto-triggering
 
 ## [2026-03-21]
 

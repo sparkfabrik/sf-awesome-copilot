@@ -6,11 +6,12 @@ This file covers common `glab api` patterns for operations that go beyond the bu
 
 1. [Authentication and basics](#authentication-and-basics)
 2. [Project information](#project-information)
-3. [Issues (advanced)](#issues-advanced)
-4. [Merge requests (advanced)](#merge-requests-advanced)
-5. [Users and members](#users-and-members)
-6. [Labels and milestones](#labels-and-milestones)
-7. [GraphQL queries](#graphql-queries)
+3. [Repository files](#repository-files)
+4. [Issues (advanced)](#issues-advanced)
+5. [Merge requests (advanced)](#merge-requests-advanced)
+6. [Users and members](#users-and-members)
+7. [Labels and milestones](#labels-and-milestones)
+8. [GraphQL queries](#graphql-queries)
 
 ---
 
@@ -75,6 +76,47 @@ glab api projects/:id | jq '.default_branch'
 # List project hooks/webhooks
 glab api projects/:id/hooks
 ```
+
+---
+
+## Repository files
+
+```bash
+# Get raw file content (plain text output)
+glab api "projects/:id/repository/files/.gitlab-ci.yml/raw?ref=main"
+
+# Get raw file from a subdirectory (URL-encode slashes as %2F)
+glab api "projects/:id/repository/files/src%2Fconfig%2Fapp.yml/raw?ref=develop"
+
+# Get file metadata (returns JSON with base64-encoded content)
+glab api "projects/:id/repository/files/.gitlab-ci.yml?ref=main"
+# Decode the content: ... | jq -r '.content' | base64 -d
+
+# List files in a directory
+glab api "projects/:id/repository/tree?ref=main&path=deploy"
+
+# Recursive directory listing
+glab api "projects/:id/repository/tree?ref=main&recursive=true&per_page=100" --paginate
+
+# List files with details (name, type, path)
+glab api "projects/:id/repository/tree?ref=main&path=src" | jq '.[] | {name, type, path}'
+
+# Get file from another project (URL-encode the project path too)
+GITLAB_HOST=gitlab.example.com glab api \
+  "projects/team%2Fother-project/repository/files/docker-compose.yml/raw?ref=main"
+
+# Compare files across branches using the compare API
+glab api "projects/:id/repository/compare?from=main&to=develop"
+```
+
+### File path encoding
+
+File paths with slashes must be URL-encoded (`/` → `%2F`). The project path in the URL must also be encoded when not using the `:id` placeholder:
+
+| What | Raw | Encoded |
+|------|-----|---------|
+| File path | `src/config/app.yml` | `src%2Fconfig%2Fapp.yml` |
+| Project path | `team/infra/platform` | `team%2Finfra%2Fplatform` |
 
 ---
 

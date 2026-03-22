@@ -1,6 +1,6 @@
 ---
 name: glab
-description: How to use the glab CLI to work with GitLab issues, merge requests, CI/CD pipelines, and repositories. Use this skill whenever the user provides a URL containing "gitlab" in the hostname (e.g., gitlab.com, gitlab.example.com), mentions merge requests, GitLab issues, GitLab CI pipelines, or wants to interact with a GitLab remote. Also use this skill when the user mentions "glab", "MR", "merge request", or when you detect the git remote points to a GitLab instance (look for "gitlab" in the remote URL). This skill is the GitLab equivalent of using `gh` for GitHub -- if the project is on GitLab, use this skill instead.
+description: How to use the glab CLI to work with GitLab issues, merge requests, CI/CD pipelines, repository files, and releases. Use this skill whenever the user provides a URL containing "gitlab" in the hostname (e.g., gitlab.com, gitlab.example.com), mentions merge requests, GitLab issues, GitLab CI pipelines, or wants to interact with a GitLab remote. Also use this skill when the user mentions "glab", "MR", "merge request", or when you detect the git remote points to a GitLab instance (look for "gitlab" in the remote URL). This includes GitLab file URLs (raw files, blobs, tree views) -- use glab api to fetch file contents instead of WebFetch or curl. This skill is the GitLab equivalent of using `gh` for GitHub -- if the project is on GitLab, use this skill instead.
 ---
 
 # glab CLI Skill
@@ -9,7 +9,7 @@ Use the `glab` CLI for ALL GitLab-related tasks including working with issues, m
 
 ## Before you start
 
-1. **Detect GitLab URLs**: If the user provided a URL containing "gitlab" in the hostname, this is a GitLab resource. Do NOT use WebFetch, curl, or browser-based tools -- GitLab instances require authentication that only `glab` can provide. Extract the hostname and project path from the URL and proceed with `glab` commands.
+1. **Detect GitLab URLs**: If the user provided a URL containing "gitlab" in the hostname, this is a GitLab resource. Do NOT use WebFetch, curl, or browser-based tools -- GitLab instances require authentication that only `glab` can provide. Extract the hostname and project path from the URL and proceed with `glab` commands. This applies to **all** GitLab URL types, including file URLs (`/-/raw/`, `/-/blob/`, `/-/tree/`) -- see the "Repository files" section for how to fetch file contents via `glab api`.
 2. **Confirm it's a GitLab project**: check `git remote -v` for "gitlab" in the URL. If so, use `glab` (not `gh`).
 3. **Verify authentication**: run `glab auth status`. If not authenticated for the relevant hostname, **stop and ask the user** -- do not proceed.
 
@@ -214,6 +214,30 @@ glab mr create --draft --fill      # draft MR
 
 Include `Closes #42` or `Fixes #42` in the description to auto-close issues on merge.
 
+### MR title format
+
+MR titles must follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format:
+
+```
+<type>[(optional scope)]: <description>
+```
+
+Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+
+Use a scope when the change is clearly scoped to a module, component, or area of the codebase. Keep the description lowercase, concise, and in imperative mood.
+
+**Examples:**
+```
+feat(auth): add JWT token refresh
+fix: prevent crash on empty password submission
+docs(api): update rate limiting section
+refactor(parser): simplify config validation logic
+ci: add deploy stage for staging environment
+chore: bump dependencies
+```
+
+Breaking changes append `!` before the colon: `feat(api)!: change response format for /users endpoint`.
+
 **MR creation checklist** (follow this carefully):
 
 1. **Inspect branch state**: `git status`, `git log <base>...HEAD --oneline`, `git diff <base>...HEAD`
@@ -296,6 +320,82 @@ glab ci trace --branch main --pipeline-id <pipeline-id>
 
 # 3. Check individual job statuses via API (when you need structured data)
 glab api "projects/:id/pipelines/<pipeline-id>/jobs" | jq '.[] | {name: .name, status: .status, stage: .stage}'
+```
+
+---
+
+## Repository files
+
+There is no `glab` subcommand for fetching file contents from a repository. Use `glab api` with the GitLab Repository Files API. This is the correct approach whenever a user shares a GitLab file URL or asks to read a file from a GitLab project -- **never** use WebFetch or curl, because GitLab instances (especially self-hosted ones) require authentication.
+
+### Recognizing file URLs
+
+GitLab file URLs follow these patterns:
+
+| URL pattern | Meaning |
+|---|---|
+| `.../<project>/-/raw/<branch>/<path>` | Raw file content |
+| `.../<project>/-/blob/<branch>/<path>` | File viewer (same file, different UI) |
+| `.../<project>/-/tree/<branch>/<path>` | Directory listing |
+
+When you see any of these, extract the **hostname**, **project path**, **branch**, and **file path**, then use `glab api`.
+
+**Example** -- parsing a real URL:
+
+```
+URL: https://gitlab.example.com/team/infra/platform/-/raw/main/deploy/docker-compose.yml?ref_type=heads
+
+  hostname: gitlab.example.com
+  project:  team/infra/platform
+  branch:   main
+  file:     deploy/docker-compose.yml
+```
+
+Ignore query parameters like `?ref_type=heads` -- they are UI artifacts, not needed for the API.
+
+### Fetching a file
+
+File paths in the API endpoint must be **URL-encoded** (slashes become `%2F`):
+
+```bash
+# File at root (no slashes in path -- no encoding needed):
+GITLAB_HOST=gitlab.example.com glab api \
+  "projects/team%2Finfra%2Fplatform/repository/files/.gitlab-ci.yml/raw?ref=main"
+
+# File in a subdirectory (slashes must be encoded):
+# deploy/docker-compose.yml → deploy%2Fdocker-compose.yml
+GITLAB_HOST=gitlab.example.com glab api \
+  "projects/team%2Finfra%2Fplatform/repository/files/deploy%2Fdocker-compose.yml/raw?ref=main"
+```
+
+The `/raw` suffix returns the file content directly as plain text. Without `/raw`, the API returns JSON with base64-encoded content -- use `/raw` unless you need the metadata.
+
+When you're **inside the target repo's git clone**, the `:id` placeholder is resolved automatically:
+
+```bash
+glab api "projects/:id/repository/files/.gitlab-ci.yml/raw?ref=main"
+```
+
+### Browsing a directory
+
+```bash
+# List files in a directory
+GITLAB_HOST=gitlab.example.com glab api \
+  "projects/team%2Finfra%2Fplatform/repository/tree?ref=main&path=deploy" \
+  | jq '.[].name'
+
+# Recursive listing (use recursive=true)
+glab api "projects/:id/repository/tree?ref=main&recursive=true" | jq '.[].path'
+```
+
+### Cross-project file access
+
+When the user references a file from a **different project** than the one you're currently in, you must URL-encode the full project path (slashes as `%2F`) and set `GITLAB_HOST`:
+
+```bash
+# Reading a file from another project on the same instance:
+GITLAB_HOST=gitlab.example.com glab api \
+  "projects/other-team%2Fshared-configs/repository/files/templates%2F.gitlab-ci.yml/raw?ref=main"
 ```
 
 ---
