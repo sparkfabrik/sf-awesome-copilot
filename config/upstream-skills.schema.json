@@ -7,6 +7,10 @@
   "required": ["skills"],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference for editor support."
+    },
     "skills": {
       "type": "array",
       "description": "List of upstream skills to sync.",
