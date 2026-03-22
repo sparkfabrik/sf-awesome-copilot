@@ -172,6 +172,71 @@
         "Uses `glab issue note 88` to attach the file link as a comment on the issue",
         "The comment includes the markdown link from the upload response"
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "Here's an example CI config from our infra project that I want to use as a reference: https://gitlab.sparkfabrik.com/team/infra/platform/-/raw/main/.gitlab-ci.yml?ref_type=heads -- can you read it and help me set up CI for this project?",
+      "expected_output": "The agent should parse the GitLab URL to extract hostname, project path, branch, and file path, then use `glab api` with the repository files endpoint to fetch the file. It must NOT use WebFetch or curl.",
+      "files": [],
+      "assertions": [
+        "Does NOT use WebFetch to fetch the GitLab URL",
+        "Does NOT use curl to fetch the GitLab URL",
+        "Extracts the hostname (gitlab.sparkfabrik.com) from the URL",
+        "Extracts the project path (team/infra/platform) from the URL",
+        "Extracts the branch (main) from the URL",
+        "Extracts the file path (.gitlab-ci.yml) from the URL",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
+        "Uses `glab api` with the `projects/.../repository/files/.../raw` endpoint",
+        "URL-encodes the project path (slashes as %2F) in the API endpoint"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Can you check what's in the docker-compose.yml on the develop branch of our other project? Here's the link: https://gitlab.sparkfabrik.com/team/backend/services/-/blob/develop/deploy/docker-compose.yml",
+      "expected_output": "The agent should recognize this as a GitLab blob URL, extract the project path, branch, and file path (including subdirectory), URL-encode the file path (deploy%2Fdocker-compose.yml), and fetch via glab api.",
+      "files": [],
+      "assertions": [
+        "Does NOT use WebFetch or curl to fetch the file",
+        "Extracts the hostname (gitlab.sparkfabrik.com) from the URL",
+        "Extracts the project path (team/backend/services) from the URL",
+        "Extracts the branch (develop) from the URL",
+        "Extracts the full file path (deploy/docker-compose.yml) from the URL",
+        "URL-encodes the file path with slashes as %2F (deploy%2Fdocker-compose.yml)",
+        "URL-encodes the project path (team%2Fbackend%2Fservices)",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com",
+        "Uses `glab api` with the repository files raw endpoint and correct ref parameter"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Can you list all the files in the deploy/ directory of our staging project? https://gitlab.sparkfabrik.com/team/ops/staging/-/tree/main/deploy",
+      "expected_output": "The agent should recognize this as a GitLab tree URL, extract the relevant parts, and use `glab api` with the repository tree endpoint to list directory contents.",
+      "files": [],
+      "assertions": [
+        "Does NOT use WebFetch or curl",
+        "Recognizes the `/-/tree/` URL pattern as a directory listing",
+        "Extracts the hostname (gitlab.sparkfabrik.com) from the URL",
+        "Extracts the project path (team/ops/staging) from the URL",
+        "Uses `glab api` with the `projects/.../repository/tree` endpoint",
+        "Includes `path=deploy` and `ref=main` as query parameters",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com",
+        "Presents the directory listing to the user"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "I've been working on this feature branch and my changes are ready. Create a merge request for this branch targeting main. The changes add a new authentication flow with OAuth2 support and refactor the existing session handling. Request a review from 'elena'.",
+      "expected_output": "The agent should create an MR with a Conventional Commits-formatted title (e.g., 'feat(auth): add OAuth2 authentication flow'). The title should use the correct type prefix and optionally a scope.",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr create` to create the merge request",
+        "MR title follows Conventional Commits format: `<type>[(scope)]: <description>`",
+        "Uses `feat` as the type (this is a new feature)",
+        "Title description is lowercase and concise",
+        "Does NOT use a generic title like 'Add new feature' or just restate the user's request verbatim",
+        "Uses `--reviewer elena` to request review",
+        "Pushes the branch before creating the MR"
+      ]
     }
   ]
 }

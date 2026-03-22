@@ -189,6 +189,30 @@ gh pr create --draft --fill           # draft PR
 
 Include `Closes #42` or `Fixes #42` in the body to auto-close issues on merge.
 
+### PR title format
+
+PR titles must follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format:
+
+```
+<type>[(optional scope)]: <description>
+```
+
+Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+
+Use a scope when the change is clearly scoped to a module, component, or area of the codebase. Keep the description lowercase, concise, and in imperative mood.
+
+**Examples:**
+```
+feat(auth): add JWT token refresh
+fix: prevent crash on empty password submission
+docs(api): update rate limiting section
+refactor(parser): simplify config validation logic
+ci: add deploy stage for staging environment
+chore: bump dependencies
+```
+
+Breaking changes append `!` before the colon: `feat(api)!: change response format for /users endpoint`.
+
 **PR creation checklist** (follow this carefully):
 
 1. **Inspect branch state**: `git status`, `git log <base>...HEAD --oneline`, `git diff <base>...HEAD`
