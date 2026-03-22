@@ -1,0 +1,33 @@
+name: Test sync skills
+
+on:
+  pull_request:
+    paths:
+      - 'config/upstream-skills.json'
+      - 'config/upstream-skills.schema.json'
+      - 'scripts/sync-skill.sh'
+      - 'skills/system/**'
+  push:
+    branches: [main]
+    paths:
+      - 'config/upstream-skills.json'
+      - 'config/upstream-skills.schema.json'
+      - 'scripts/sync-skill.sh'
+      - 'skills/system/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate manifest against schema
+        run: npx ajv-cli validate -s config/upstream-skills.schema.json -d config/upstream-skills.json --spec=draft2020
+
+      - name: Verify upstream repos are reachable and skill paths exist
+        run: ./scripts/sync-skill.sh --all

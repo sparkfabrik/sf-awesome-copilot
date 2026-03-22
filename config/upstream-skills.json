@@ -21,6 +21,12 @@
       "repo": "anthropics/skills",
       "ref": "main",
       "path": "skills/doc-coauthoring"
+    },
+    {
+      "name": "create-agentsmd",
+      "repo": "github/awesome-copilot",
+      "ref": "main",
+      "path": "skills/create-agentsmd"
     }
   ]
 }
