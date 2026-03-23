@@ -210,9 +210,12 @@ glab mr create --title "Fix login crash" --description "Closes #42" \
   --target-branch develop --reviewer "marco" --assignee "@me"
 glab mr create --fill              # title/description from commits
 glab mr create --draft --fill      # draft MR
+glab mr create --fill --squash-before-merge --remove-source-branch  # with merge behavior flags
 ```
 
 Include `Closes #42` or `Fixes #42` in the description to auto-close issues on merge.
+
+> **`--squash` vs `--squash-before-merge`**: these are different flags on different commands. `glab mr create` accepts `--squash-before-merge` (configures the MR so commits will be squashed when eventually merged). `glab mr merge` accepts `--squash` (squashes commits at merge time). Using `--squash` with `glab mr create` will fail with "Unknown flag". Same applies to `--remove-source-branch`: both commands support it, but `--when-pipeline-succeeds` is only available on `glab mr merge`.
 
 ### MR title format
 

@@ -237,6 +237,48 @@
         "Uses `--reviewer elena` to request review",
         "Pushes the branch before creating the MR"
       ]
+    },
+    {
+      "id": 17,
+      "prompt": "My feature branch is ready to go. Create a merge request for it -- make sure squash is enabled so all commits get squashed into one when it's merged. Assign it to me.",
+      "expected_output": "The agent should use `glab mr create` with `--squash-before-merge` (NOT `--squash`, which is only valid on `glab mr merge`). It should also use `--assignee @me`.",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr create` to create the merge request",
+        "Uses `--squash-before-merge` flag (NOT `--squash`)",
+        "Does NOT use `--squash` with `glab mr create` (that flag does not exist on this subcommand)",
+        "Uses `--assignee @me` or equivalent to assign to the current user",
+        "Pushes the branch before creating the MR",
+        "Checks git status and branch state before creating the MR"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "Create a merge request from this branch. I want commits squashed on merge and the source branch deleted afterward. Target the develop branch, and add the label 'ready-for-review'.",
+      "expected_output": "The agent should use `glab mr create` with `--squash-before-merge`, `--remove-source-branch`, `--target-branch develop`, and `--label ready-for-review`. It must NOT use `--squash` or `--when-pipeline-succeeds` (those are `glab mr merge` flags).",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr create` to create the merge request",
+        "Uses `--squash-before-merge` (NOT `--squash`) to configure squash behavior",
+        "Uses `--remove-source-branch` to delete the source branch on merge",
+        "Uses `--target-branch develop` to target the correct branch",
+        "Uses `--label ready-for-review` or `-l ready-for-review`",
+        "Does NOT use `--squash` with `glab mr create`",
+        "Does NOT use `--when-pipeline-succeeds` with `glab mr create` (that's a `glab mr merge` flag)"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "MR !38 has been approved and the pipeline passed. Go ahead and merge it -- squash the commits and delete the source branch.",
+      "expected_output": "The agent should use `glab mr merge 38 --squash --remove-source-branch`. Here `--squash` is correct because this is `glab mr merge`, not `glab mr create`. The agent should ask for confirmation before executing since merging is a Tier 2 operation.",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr merge 38` (not `glab mr create`)",
+        "Uses `--squash` flag (correct for `glab mr merge`)",
+        "Uses `--remove-source-branch` or `-d` flag",
+        "Asks for confirmation before executing the merge (Tier 2 safety protocol)",
+        "Does NOT use `--squash-before-merge` (that's a `glab mr create` flag)"
+      ]
     }
   ]
 }
