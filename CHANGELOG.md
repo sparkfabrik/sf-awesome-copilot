@@ -10,13 +10,14 @@ Changes are grouped by date.
 
 ## [2026-03-23]
 
+### Added
+
+- `skill-creator` skill: tool-agnostic usage section explaining how to use the skill with any coding agent (Copilot, OpenCode, etc.) instead of only Claude
+- `glab` skill: three new eval cases for squash/merge-behavior flag correctness on MR creation vs merge
+
 ### Fixed
 
 - `glab` skill: document `--squash-before-merge` flag for `glab mr create` and warn against using `--squash` (which only works on `glab mr merge`)
-
-### Added
-
-- `glab` skill: three new eval cases for squash/merge-behavior flag correctness on MR creation vs merge
 
 ## [2026-03-22]
 
