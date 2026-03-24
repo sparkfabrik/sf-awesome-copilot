@@ -8,6 +8,14 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-24]
+
+### Added
+
+- `security-audit` skill: two-phase security audit workflow for web applications and APIs -- Phase 1 runs automated open-source scanners (semgrep, trivy, gosec, govulncheck, npm audit, bandit, brakeman, bearer), Phase 2 guides a manual deep review across 10 OWASP-aligned categories with structured findings and a final report template
+- `security-audit` skill: Go security reference (`references/go-security.md`) covering SQL injection, command injection, path traversal, XSS in templates, cookie security, server hardening, open redirect, HMAC timing attacks, race conditions, and gosec rules
+- `security-audit` skill: Node.js/frontend security reference (`references/nodejs-security.md`) covering DOM XSS, prototype pollution, SQL/NoSQL injection, path traversal, SSRF, dependency security, Express hardening, CSP, and semgrep rules
+
 ## [2026-03-23]
 
 ### Fixed
