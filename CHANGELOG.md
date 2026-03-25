@@ -8,6 +8,16 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-25]
+
+### Added
+
+- `agentic-security-audit` skill: structured audit for AI agent configurations, instruction files, and LLM integration code -- two-phase workflow (discovery + LLM-driven review) mapped to the OWASP Top 10 for Agentic Applications (ASI01-ASI10), with reference files for OWASP agentic patterns and instruction file audit methodology across tools (Copilot, Cursor, OpenCode, Aider, MCP)
+
+### Changed
+
+- `security-audit` skill: restructured from two-phase to five-phase workflow (Discovery, Generate Containers, Native Scans, Docker Scans, Manual Review) with PHP/Drupal support, per-stack Docker container generation, and expanded tool matrix (17 tools across 6 container types)
+
 ## [2026-03-24]
 
 ### Added
