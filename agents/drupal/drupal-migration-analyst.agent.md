@@ -1,9 +1,15 @@
 ---
 name: drupal-migration-analyst
 description: Autonomous migration analysis agent for Drupal content migrations. Analyses source databases, produces field reports, and generates issue requirements. Orchestrates atomic migration skills based on user intent.
-argument-hint: Describe what you want to analyse (e.g., "Analyse paragraph type profile_card_with_modal", "Tech analysis of issue #210", "Generate migration issue for news nodes")
-tools: ["search", "read", "web", "edit", "bash", "browser", "mcp:chrome-devtools", "mcp:Context7"]
-model: claude-sonnet-4.5
+argument-hint: Describe what you want to analyse (e.g., "Analyse paragraph type profile_card_with_modal", "Tech analysis of issue \#210", "Generate migration issue for news nodes")
+tools: 
+   - websearch
+   - read
+   - edit
+   - shell
+   - browser
+   - mcp:chrome-devtools
+   - mcp:Context7
 ---
 
 # Migration Analyst Agent

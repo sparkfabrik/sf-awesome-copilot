@@ -1,0 +1,27 @@
+{
+  "eval_id": 1,
+  "eval_name": "happy-path",
+  "prompt": "We're kicking off the source analysis for the Drupal migration. Before anything else, let's make sure we can connect to the source database — can you check what's in settings.local.php and verify the connection works?",
+  "assertions": [
+    {
+      "name": "checks_project_config_first",
+      "description": "The response mentions checking .github/prompts/migrate-instructions.prompt.md before using defaults"
+    },
+    {
+      "name": "scans_settings_local_php",
+      "description": "The response scans src/drupal/web/sites/default/settings.local.php for database keys"
+    },
+    {
+      "name": "identifies_migrate_key",
+      "description": "The response identifies 'migrate' as the database key to use"
+    },
+    {
+      "name": "uses_drush_not_mysql",
+      "description": "The connectivity test uses 'drush sql:query --database=migrate' rather than a direct mysql command"
+    },
+    {
+      "name": "produces_standard_output",
+      "description": "The response includes db_key, drush_option, and connection_command_template in its output (as per skill's Output section)"
+    }
+  ]
+}

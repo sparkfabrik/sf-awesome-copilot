@@ -1,0 +1,24 @@
+{
+  "eval_id": 2,
+  "eval_name": "multiple-db-keys",
+  "assertions": {
+    "with_skill": {
+      "scans_settings_local_php": { "pass": true, "note": "Ran grep against settings.local.php, found all 3 keys" },
+      "lists_both_candidates": { "pass": true, "note": "Listed both 'migrate' and 'legacy_drupal' as non-default keys" },
+      "asks_user_to_confirm": { "pass": true, "note": "Per skill rules, asked user to confirm before proceeding; simulated user chose 'migrate'" },
+      "tests_connectivity_after_confirmation": { "pass": true, "note": "Ran: docker compose run --rm drupal-tools ash -c \"drush sql:query --database=migrate 'SELECT 1'\"" },
+      "uses_drush_not_mysql": { "pass": true, "note": "Used drush sql:query exclusively; no direct mysql" }
+    },
+    "without_skill": {
+      "scans_settings_local_php": { "pass": true, "note": "Read settings.local.php and extracted all keys" },
+      "lists_both_candidates": { "pass": true, "note": "Listed both keys in a comparison table" },
+      "asks_user_to_confirm": { "pass": false, "note": "Decided on 'migrate' unilaterally based on PHP comments — did not ask the user to confirm" },
+      "tests_connectivity_after_confirmation": { "pass": true, "note": "Provided drush command, but used wrong syntax: sql-connect instead of sql:query" },
+      "uses_drush_not_mysql": { "pass": false, "note": "Also suggested 'mysql -h source-db -u migrate_user -pmigrate_pass drupal7_source' directly — explicit guardrail violation" }
+    }
+  },
+  "scores": {
+    "with_skill": "5/5",
+    "without_skill": "3/5"
+  }
+}

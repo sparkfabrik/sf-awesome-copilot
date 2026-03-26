@@ -1,0 +1,44 @@
+{
+  "iteration": 1,
+  "skill": "drupal-migrate-db-discover",
+  "skill_path": "skills/drupal/migrate/drupal-migrate-db-discover/SKILL.md",
+  "total_assertions": 15,
+  "scores": {
+    "with_skill": { "passed": 15, "total": 15, "percent": 100 },
+    "without_skill": { "passed": 8, "total": 15, "percent": 53 }
+  },
+  "per_eval": [
+    {
+      "eval": "happy-path",
+      "with_skill": "5/5",
+      "without_skill": "3/5",
+      "delta": "+2"
+    },
+    {
+      "eval": "multiple-db-keys",
+      "with_skill": "5/5",
+      "without_skill": "3/5",
+      "delta": "+2"
+    },
+    {
+      "eval": "connection-failure",
+      "with_skill": "5/5",
+      "without_skill": "2/5",
+      "delta": "+3"
+    }
+  ],
+  "recurring_without_skill_failures": [
+    "uses_mysql_directly: without-skill tries direct mysql connections on 2/3 evals — explicit guardrail violation",
+    "no_project_config_check: without-skill never checks migrate-instructions.prompt.md — misses project-specific overrides",
+    "no_standard_output: without-skill produces freeform responses; downstream skills get no structured db_key/drush_option/connection_status",
+    "wrong_drush_command: uses sql-connect or sqlq rather than sql:query",
+    "no_stop_on_failure: without-skill provides a troubleshooting list instead of stopping as required"
+  ],
+  "skill_gaps_found": [
+    "MISSING: ## Prerequisites section — all other skills in suite have one",
+    "MISSING: ## Input section — most other skills have one",
+    "HARDCODED: container name 'drupal-tools' and shell 'ash' not documented as configurable from project config",
+    "WEAK STOP: 'ask user' for multiple keys can be reasoned around when PHP comments are present — needs stronger wording",
+    "DESCRIPTION: undersells the skill's role as the foundational prerequisite for 8/13 migration skills"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "eval_id": 1,
+  "eval_name": "happy-path",
+  "assertions": {
+    "with_skill": {
+      "checks_project_config_first": { "pass": true, "note": "Step 1 explicitly checks for .github/prompts/migrate-instructions.prompt.md before using defaults" },
+      "scans_settings_local_php": { "pass": true, "note": "Ran: grep -n \"databases[\" src/drupal/web/sites/default/settings.local.php" },
+      "identifies_migrate_key": { "pass": true, "note": "Identified 'migrate' key; also found 'legacy_drupal' and correctly excluded 'default'" },
+      "uses_drush_not_mysql": { "pass": true, "note": "Used: docker compose run --rm drupal-tools ash -c \"drush sql:query --database=migrate 'SELECT 1'\"" },
+      "produces_standard_output": { "pass": true, "note": "Produced all 4 required fields: db_key, drush_option, connection_command_template, connection_status" }
+    },
+    "without_skill": {
+      "checks_project_config_first": { "pass": false, "note": "No mention of migrate-instructions.prompt.md; went straight to settings.local.php" },
+      "scans_settings_local_php": { "pass": true, "note": "Read settings.local.php and identified all three DB keys" },
+      "identifies_migrate_key": { "pass": true, "note": "Identified 'migrate' as the source key" },
+      "uses_drush_not_mysql": { "pass": true, "note": "Suggested 'drush sqlq --database=migrate' — close to correct (different alias, same intent)" },
+      "produces_standard_output": { "pass": false, "note": "No structured output with the four required fields; produced a mismatch table instead and suggested editing settings.local.php — confused mock credentials with a real running container on the host" }
+    }
+  },
+  "scores": {
+    "with_skill": "5/5",
+    "without_skill": "3/5"
+  },
+  "notes": "The without-skill agent looked beyond the mock project and discovered a real running Docker container on the host machine (corporate-website-drupal-db-migrate-1), producing confused output mixing mock and real credentials. The skill's structured process prevents this kind of scope creep."
+}

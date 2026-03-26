@@ -1,0 +1,29 @@
+{
+  "skill_name": "drupal-migrate-db-discover",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're kicking off the source analysis for the Drupal migration. Before anything else, let's make sure we can connect to the source database — can you check what's in settings.local.php and verify the connection works?",
+      "expected_output": "The skill should: (1) check for migrate-instructions.prompt.md, (2) grep settings.local.php for non-default database keys, (3) identify the 'migrate' key, (4) run a drush sql:query connectivity test, (5) report the result in the standard ✅ format with db_key, drush_option, and connection_command_template.",
+      "files": [
+        "src/drupal/web/sites/default/settings.local.php"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I opened settings.local.php and I can see there's a `migrate` key and also a `legacy_drupal` key. I'm not sure which one is our actual migration source. Can you figure out which one to use and verify it?",
+      "expected_output": "The skill should: (1) scan settings.local.php, (2) list both non-default keys (migrate and legacy_drupal), (3) ask the user to confirm which is the source, (4) after confirmation, test connectivity with drush, (5) produce the standard output report.",
+      "files": [
+        "src/drupal/web/sites/default/settings.local.php"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The drush sql:query command is failing with a connection error when trying to hit the source database. Can you walk me through checking the database config and figuring out what's wrong?",
+      "expected_output": "The skill should: (1) check the project config file, (2) scan settings.php for the migrate database key, (3) attempt the drush connectivity test, (4) when it fails, report the error clearly, ask the user to check the DB config, and STOP — not attempt to proceed with migration analysis.",
+      "files": [
+        "src/drupal/web/sites/default/settings.local.php"
+      ]
+    }
+  ]
+}

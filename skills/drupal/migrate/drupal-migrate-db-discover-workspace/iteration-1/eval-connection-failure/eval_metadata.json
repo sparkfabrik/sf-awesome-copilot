@@ -1,0 +1,27 @@
+{
+  "eval_id": 3,
+  "eval_name": "connection-failure",
+  "prompt": "The drush sql:query command is failing with a connection error when trying to hit the source database. Can you walk me through checking the database config and figuring out what's wrong?",
+  "assertions": [
+    {
+      "name": "scans_settings_files",
+      "description": "The response scans settings.local.php and/or settings.php for the database key"
+    },
+    {
+      "name": "attempts_connectivity_test",
+      "description": "The response attempts a drush sql:query connectivity test and captures the error"
+    },
+    {
+      "name": "reports_failure_with_error",
+      "description": "The response clearly reports the connection failure, including the error message"
+    },
+    {
+      "name": "stops_after_failure",
+      "description": "The response explicitly stops and does NOT attempt to continue with migration analysis or further queries"
+    },
+    {
+      "name": "uses_drush_not_mysql",
+      "description": "The connectivity test uses 'drush sql:query' rather than a direct mysql command"
+    }
+  ]
+}

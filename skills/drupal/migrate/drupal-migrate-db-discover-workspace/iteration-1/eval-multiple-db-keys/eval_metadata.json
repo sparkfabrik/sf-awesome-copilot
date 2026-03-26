@@ -1,0 +1,27 @@
+{
+  "eval_id": 2,
+  "eval_name": "multiple-db-keys",
+  "prompt": "I opened settings.local.php and I can see there's a `migrate` key and also a `legacy_drupal` key. I'm not sure which one is our actual migration source. Can you figure out which one to use and verify it?",
+  "assertions": [
+    {
+      "name": "scans_settings_local_php",
+      "description": "The response scans settings.local.php for non-default database keys"
+    },
+    {
+      "name": "lists_both_candidates",
+      "description": "The response lists both 'migrate' and 'legacy_drupal' as non-default keys found"
+    },
+    {
+      "name": "asks_user_to_confirm",
+      "description": "The response asks the user to confirm which key is the source, rather than guessing or proceeding automatically"
+    },
+    {
+      "name": "tests_connectivity_after_confirmation",
+      "description": "After identifying the key, the response runs a drush sql:query connectivity test using the confirmed key"
+    },
+    {
+      "name": "uses_drush_not_mysql",
+      "description": "The connectivity test uses 'drush sql:query' rather than a direct mysql command"
+    }
+  ]
+}
