@@ -1,0 +1,23 @@
+{
+  "skill_name": "adr-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to create an ADR. We decided to use Redis for caching instead of Drupal's built-in database cache because our page load times were too slow under high traffic. The site gets about 50k requests per hour during peak and the DB cache was adding 200ms to each request. We evaluated Memcached too but Redis won because we also need it for queue processing. The consequence is that we now have an additional infrastructure dependency and need to plan for Redis high availability.",
+      "expected_output": "A well-formatted ADR markdown file with: correct numbering (next after existing ADRs), value-neutral Context section describing the performance problem and alternatives, active-voice Decision section, and complete Consequences section with both positive (performance improvement) and negative (infrastructure complexity) outcomes. Should detect existing ADR directory first.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create a new ADR. We're switching from MySQL to PostgreSQL for our main database. The main reasons are better JSON support, better full-text search, and the team has more Postgres experience. This supersedes our previous decision about using MySQL (ADR 3). Status should be Accepted.",
+      "expected_output": "A new ADR that supersedes ADR 3. Should detect existing ADRs, identify ADR 3, create the new file with correct next number, add 'Supersedes ADR 3' reference in Status, and if manual (no adr-tools), also update ADR 3's status to 'Superseded by ADR N'. Decision in active voice, consequences include migration effort.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I want to start documenting architecture decisions in my project. There's no ADR directory yet. The first real decision I want to record is that we chose Next.js with App Router over Remix and SvelteKit for our frontend because of the Vercel deployment story and the team's React experience.",
+      "expected_output": "Should detect no ADR directory exists, ask where to create one (or suggest doc/adr/), create ADR 0001 as the standard 'Record architecture decisions' meta-ADR, then create ADR 0002 for the Next.js decision. If adr-tools available use 'adr init' + 'adr new', otherwise create files manually.",
+      "files": []
+    }
+  ]
+}
