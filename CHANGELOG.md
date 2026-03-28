@@ -8,6 +8,17 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-28]
+
+### Fixed
+
+- `glab` skill: warn against `glab ci view` (requires interactive TTY, always fails in agent contexts) and document `glab ci get` as the correct non-interactive alternative for fetching pipeline details
+- `glab` skill: fix `glab ci artifact` documentation (wrong syntax and missing deprecation notice)
+
+### Added
+
+- `glab` skill: two new eval cases for pipeline detail retrieval, testing that agents avoid TTY commands and use correct flag syntax
+
 ## [2026-03-23]
 
 ### Fixed
