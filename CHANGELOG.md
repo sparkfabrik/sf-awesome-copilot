@@ -12,7 +12,7 @@ Changes are grouped by date.
 
 ### Added
 
-- `skill-creator` skill: tool-agnostic usage section explaining how to use the skill with any coding agent (Copilot, OpenCode, etc.) instead of only Claude
+- `skill-creator` skill: non-Claude agent guidance with bundled script compatibility table and correct terminology mapping for OpenCode/Copilot CLI
 - `glab` skill: three new eval cases for squash/merge-behavior flag correctness on MR creation vs merge
 
 ### Fixed
