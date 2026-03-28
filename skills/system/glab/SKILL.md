@@ -514,11 +514,9 @@ GITLAB_HOST=<hostname> glab api projects/:id | jq '.id'
 
 ### Step 2: Upload the file
 
+**Detecting token type:** if `glab auth status` shows `Logged in ... (keyring)` without mentioning a PAT (browser login), it's an OAuth token -- use `Authorization: Bearer`. If you provided a PAT directly, use `PRIVATE-TOKEN`. When in doubt, try Bearer first -- if you get a 401, retry with `PRIVATE-TOKEN`.
+
 ```bash
-# Auth header depends on login method:
-#   OAuth token (web login):  "Authorization: Bearer <token>"
-#   PAT (--token login):      "PRIVATE-TOKEN: <token>"
-# When in doubt, try Bearer first -- if 401, retry with PRIVATE-TOKEN.
 curl --silent --show-error --request POST \
   --header "Authorization: Bearer <token>" \
   --form "file=@path/to/image.png" \
