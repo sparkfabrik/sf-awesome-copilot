@@ -279,6 +279,32 @@
         "Asks for confirmation before executing the merge (Tier 2 safety protocol)",
         "Does NOT use `--squash-before-merge` (that's a `glab mr create` flag)"
       ]
+    },
+    {
+      "id": 20,
+      "prompt": "Can you get the details of pipeline 246179 on our GitLab project? I want to see which jobs ran and their statuses.",
+      "expected_output": "The agent should use `glab ci get -p 246179 -d` to fetch pipeline details with extended job information. It must NOT use `glab ci view` (requires TTY) and must NOT pass the pipeline ID as a positional argument to `glab ci get`.",
+      "files": [],
+      "assertions": [
+        "Uses `glab ci get` with `-p 246179` or `--pipeline-id 246179` flag",
+        "Does NOT use `glab ci view` (requires interactive TTY, always fails in non-interactive contexts)",
+        "Does NOT pass the pipeline ID as a positional argument (`glab ci get 246179` is invalid)",
+        "Uses `-d` or `--with-job-details` flag to show job-level information",
+        "Does NOT fall back to raw `glab api` calls when `glab ci get` can do the job"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "I want to see what happened in the latest pipeline on the develop branch. Can you show me the pipeline status and job details?",
+      "expected_output": "The agent should use `glab ci get -b develop -d` to get pipeline details for the develop branch with job information. It should NOT use `glab ci view` (TTY requirement). It may also use `glab ci status --branch develop` for a quick status check.",
+      "files": [],
+      "assertions": [
+        "Uses `glab ci get -b develop` or `glab ci status --branch develop` as the primary command",
+        "Does NOT use `glab ci view` (requires interactive TTY)",
+        "Uses `--branch` or `-b` flag to target the develop branch",
+        "If using `glab ci get`, passes the branch via `-b` flag (not as positional argument)",
+        "May use `-d` flag on `glab ci get` for extended job details"
+      ]
     }
   ]
 }
