@@ -17,6 +17,7 @@ Changes are grouped by date.
 ### Added
 
 - `glab` skill: two new eval cases for close-with-explanation scenarios (MR and issue)
+- `playwright-cli` skill: fix npx fallback to use correct package name `@playwright/cli` instead of deprecated `playwright-cli`
 
 ## [2026-03-28]
 
