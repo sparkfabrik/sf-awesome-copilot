@@ -12,6 +12,11 @@ Changes are grouped by date.
 
 ### Fixed
 
+- `glab` skill: document that `glab mr close`, `glab issue close`, `glab mr reopen`, and `glab issue reopen` do not accept `--message` -- close/reopen with an explanation requires a separate `note` command first
+
+### Added
+
+- `glab` skill: two new eval cases for close-with-explanation scenarios (MR and issue)
 - `playwright-cli` skill: fix npx fallback to use correct package name `@playwright/cli` instead of deprecated `playwright-cli`
 
 ## [2026-03-28]
