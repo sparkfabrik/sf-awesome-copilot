@@ -9,16 +9,16 @@ command -v playwright-cli >/dev/null 2>&1 && echo "installed" || echo "not insta
 ```
 
 - If **installed**, use `playwright-cli` directly for all commands.
-- If **not installed**, use `npx -y playwright-cli` as a drop-in replacement for all commands. The `-y` flag skips the install confirmation prompt, which is required for non-interactive use.
+- If **not installed**, use `npx -y @playwright/cli` as a drop-in replacement for all commands. The npm package is `@playwright/cli` (not `playwright-cli`, which is a deprecated old package). The `-y` flag skips the install confirmation prompt, which is required for non-interactive use.
 
-All examples in this skill use `playwright-cli` directly. When the binary is not found, prepend `npx -y` to each command. For example:
+All examples in this skill use `playwright-cli` directly. When the binary is not found, prepend `npx -y @playwright/cli` instead of `playwright-cli` in each command. For example:
 
 ```bash
 # Binary available
 playwright-cli open https://example.com
 
-# Binary not available -- use npx -y
-npx -y playwright-cli open https://example.com
+# Binary not available -- use npx with the correct package name
+npx -y @playwright/cli open https://example.com
 ```
 
 ## Output file conventions
