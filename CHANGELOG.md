@@ -8,6 +8,12 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-29]
+
+### Fixed
+
+- `playwright-cli` skill: fix npx fallback to use correct package name `@playwright/cli` instead of deprecated `playwright-cli`
+
 ## [2026-03-28]
 
 ### Fixed
