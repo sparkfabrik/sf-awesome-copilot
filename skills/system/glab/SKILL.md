@@ -174,6 +174,8 @@ glab issue close 42                               # close (ask confirmation firs
 glab issue reopen 42
 ```
 
+> **Closing/reopening with a comment**: `glab issue close` and `glab issue reopen` do not accept `--message`. Add a note first: `glab issue note 42 --message "..."`, then `glab issue close 42`.
+
 ### Issue template selection
 
 Many GitLab projects define issue templates (stored in `.gitlab/issue_templates/`) that encode the team's expected structure -- sections to fill, checklists, labels via quick actions. Skipping these creates issues that don't match the project's conventions and forces manual cleanup.
@@ -264,6 +266,17 @@ glab mr rebase 15                   # rebase onto target
 glab mr update 15 --add-label "reviewed"
 glab mr close 15                    # close without merging
 ```
+
+> **`close`/`reopen` do NOT accept `--message`**: unlike `gh pr close --comment`, `glab mr close` and `glab mr reopen` only accept `--repo` -- there is no `--message` or `--comment` flag. The same applies to `glab issue close` and `glab issue reopen`. To close (or reopen) with an explanation, add a note first as a separate command:
+>
+> ```bash
+> # CORRECT -- note first, then close:
+> glab mr note 15 --message "Closing: superseded by !20."
+> glab mr close 15
+>
+> # WRONG -- fails with "Unknown flag: --message":
+> glab mr close 15 --message "Closing: superseded by !20."
+> ```
 
 **Code review workflow**: view MR -> read diff -> check CI (`glab ci status`) -> read comments -> leave feedback -> approve or request changes.
 

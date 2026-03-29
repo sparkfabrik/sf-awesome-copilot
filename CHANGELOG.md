@@ -8,6 +8,16 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-03-29]
+
+### Fixed
+
+- `glab` skill: document that `glab mr close`, `glab issue close`, `glab mr reopen`, and `glab issue reopen` do not accept `--message` -- close/reopen with an explanation requires a separate `note` command first
+
+### Added
+
+- `glab` skill: two new eval cases for close-with-explanation scenarios (MR and issue)
+
 ## [2026-03-28]
 
 ### Fixed
