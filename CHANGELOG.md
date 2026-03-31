@@ -17,6 +17,7 @@ Changes are grouped by date.
 ### Changed
 
 - `security-audit` skill: restructured from two-phase to five-phase workflow (Discovery, Generate Containers, Native Scans, Docker Scans, Manual Review) with PHP/Drupal support, per-stack Docker container generation, and an expanded tool matrix spanning multiple container types
+- `security-audit` skill: pin all 17 scanner versions in Dockerfile templates with SHA-256 checksum verification for binary downloads (trivy, gitleaks, grype, syft, gosec, local-php-security-checker); replace `curl | sh` and `@latest` install patterns with versioned release URLs; add staleness check and version recording to the audit workflow
 
 ## [2026-03-29]
 

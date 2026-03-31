@@ -159,6 +159,19 @@ Write all generated files to `.security-audit/`:
 Generate a Dockerfile for each detected stack and for the universal container.
 Use the templates in `references/dockerfile-templates.md` as a basis.
 
+All tool versions are pinned in the templates. Binary downloads include SHA-256
+checksum verification. Before generating Dockerfiles:
+
+1. **Check the version table** in `references/dockerfile-templates.md`. Look at
+   the "Last verified" date for each tool relevant to the detected stacks.
+2. **If any tool is older than 90 days**, warn the user and offer to look up
+   the current version via `curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | jq -r .tag_name`.
+3. **If the user accepts a newer version**, update the version (and checksum
+   for binary downloads) in the generated Dockerfile. Do NOT modify the
+   template file itself -- the template serves as the known-good baseline.
+4. **Record which versions were used** -- you will need this for the audit
+   report (see "Tools and coverage" in the Final report section).
+
 Each Dockerfile installs only the tools relevant to its stack (see tool matrix
 below). The generated `scan.sh` runs each tool in sequence. Minimal readiness
 checks are allowed (e.g. checking whether `vendor/` or `go.sum` exists before
@@ -513,13 +526,13 @@ This audit followed a structured multi-phase approach:
 
 ### Tools executed
 
-| Tool | Source | Stack | Status |
-|------|--------|-------|--------|
-| phpcs | native | PHP | completed |
-| semgrep | docker | universal | completed |
-| trivy | docker | universal | completed |
-| psalm | docker | PHP | completed |
-| ... | | | |
+| Tool | Version | Source | Stack | Status |
+|------|---------|--------|-------|--------|
+| phpcs | 3.7.2 | native | PHP | completed |
+| semgrep | 1.156.0 | docker | universal | completed |
+| trivy | 0.69.3 | docker | universal | completed |
+| psalm | 6.16.1 | docker | PHP | completed |
+| ... | | | | |
 
 ### Tools skipped
 

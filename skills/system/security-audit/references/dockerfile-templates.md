@@ -4,9 +4,63 @@ Template Dockerfiles for each stack. The skill uses these as a basis when
 generating per-stack containers during Phase 2.
 
 Each template installs the tools listed in the SKILL.md tool matrix for that
-stack. Tool versions are pinned where practical; some templates intentionally
-track the latest upstream releases (e.g. via `@latest` or `/releases/latest`
-URLs), trading strict reproducibility for up-to-date security coverage.
+stack. **All tool versions are pinned.** Binary downloads are verified with
+SHA-256 checksums. Package-manager installs (pip, npm, composer, go install)
+use exact version constraints -- the package manager verifies integrity via its
+own checksums/hashes.
+
+> **Staleness**: The versions below were verified on the date shown. When
+> generating Dockerfiles, check whether any tool is more than 90 days old. If
+> so, warn the user and offer to look up the latest version via the GitHub
+> Releases API before proceeding. See the staleness check instructions in
+> SKILL.md Phase 2.
+
+## Pinned versions
+
+<!-- When updating a version: change the version, update the SHA-256 where
+     applicable, and set "Last verified" to today's date. -->
+
+| Tool | Version | Install method | SHA-256 (linux/amd64) | Last verified |
+|------|---------|---------------|-----------------------|---------------|
+| semgrep | 1.156.0 | pip | -- | 2026-03-31 |
+| trivy | 0.69.3 | binary tarball | `1816b632dfe52986...` | 2026-03-31 |
+| gitleaks | 8.30.1 | binary tarball | `551f6fc83ea457d6...` | 2026-03-31 |
+| grype | 0.110.0 | binary tarball | `aaa98d27d2d7efd9...` | 2026-03-31 |
+| syft | 1.42.3 | binary tarball | `0d6be741479eddd2...` | 2026-03-31 |
+| checkov | 3.2.513 | pip | -- | 2026-03-31 |
+| phpcs | 3.7.2 | composer | -- | 2026-03-31 |
+| drupal/coder | 7.2.2 | composer | -- | 2026-03-31 |
+| psalm | 6.16.1 | composer | -- | 2026-03-31 |
+| phpstan | 2.1.45 | composer | -- | 2026-03-31 |
+| drupal-check | 1.5.0 | composer | -- | 2026-03-31 |
+| local-php-security-checker | 2.1.3 | binary download | `db03c8c180692408...` | 2026-03-31 |
+| retire.js | 5.4.2 | npm | -- | 2026-03-31 |
+| gosec | 2.25.0 | binary tarball | `ca099f42e37bc8f9...` | 2026-03-31 |
+| govulncheck | 1.1.4 | go install | -- | 2026-03-31 |
+| bandit | 1.9.4 | pip | -- | 2026-03-31 |
+| pip-audit | 2.10.0 | pip | -- | 2026-03-31 |
+
+Full SHA-256 checksums (for copy-paste into Dockerfiles):
+
+```text
+# trivy 0.69.3 (trivy_0.69.3_Linux-64bit.tar.gz)
+1816b632dfe529869c740c0913e36bd1629cb7688bd5634f4a858c1d57c88b75
+
+# gitleaks 8.30.1 (gitleaks_8.30.1_linux_x64.tar.gz)
+551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+
+# grype 0.110.0 (grype_0.110.0_linux_amd64.tar.gz)
+aaa98d27d2d7efd9317c6a1ad6d9b15f3e65bab320e7d03bde41e251387bb71c
+
+# syft 1.42.3 (syft_1.42.3_linux_amd64.tar.gz)
+0d6be741479eddd2c8644a288990c04f3df0d609bbc1599a005532a9dff63509
+
+# gosec 2.25.0 (gosec_2.25.0_linux_amd64.tar.gz)
+ca099f42e37bc8f98ae54c23238e2b81b973c6d6a60c25c34da03f0292af0f32
+
+# local-php-security-checker 2.1.3 (local-php-security-checker_linux_amd64)
+db03c8c1806924081093fb6e3f752597a6d2ed6aea4621365e87e69d4814fd6c
+```
 
 ## Universal container
 
@@ -21,22 +75,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# semgrep
-RUN pip install --no-cache-dir semgrep
+# semgrep (pinned)
+RUN pip install --no-cache-dir semgrep==1.156.0
 
-# trivy
-RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+# trivy (pinned + checksum verified)
+RUN curl -sSfL https://github.com/aquasecurity/trivy/releases/download/v0.69.3/trivy_0.69.3_Linux-64bit.tar.gz \
+    -o /tmp/trivy.tar.gz \
+    && echo "1816b632dfe529869c740c0913e36bd1629cb7688bd5634f4a858c1d57c88b75  /tmp/trivy.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/trivy.tar.gz -C /usr/local/bin trivy \
+    && rm /tmp/trivy.tar.gz
 
-# gitleaks
-RUN curl -sSfL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64.tar.gz \
-    | tar -xz -C /usr/local/bin gitleaks
+# gitleaks (pinned + checksum verified)
+RUN curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+    -o /tmp/gitleaks.tar.gz \
+    && echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  /tmp/gitleaks.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks \
+    && rm /tmp/gitleaks.tar.gz
 
-# grype + syft (Anchore)
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
-RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+# grype (pinned + checksum verified)
+RUN curl -sSfL https://github.com/anchore/grype/releases/download/v0.110.0/grype_0.110.0_linux_amd64.tar.gz \
+    -o /tmp/grype.tar.gz \
+    && echo "aaa98d27d2d7efd9317c6a1ad6d9b15f3e65bab320e7d03bde41e251387bb71c  /tmp/grype.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/grype.tar.gz -C /usr/local/bin grype \
+    && rm /tmp/grype.tar.gz
 
-# checkov
-RUN pip install --no-cache-dir checkov
+# syft (pinned + checksum verified)
+RUN curl -sSfL https://github.com/anchore/syft/releases/download/v1.42.3/syft_1.42.3_linux_amd64.tar.gz \
+    -o /tmp/syft.tar.gz \
+    && echo "0d6be741479eddd2c8644a288990c04f3df0d609bbc1599a005532a9dff63509  /tmp/syft.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/syft.tar.gz -C /usr/local/bin syft \
+    && rm /tmp/syft.tar.gz
+
+# checkov (pinned)
+RUN pip install --no-cache-dir checkov==3.2.513
 
 COPY scan.sh /usr/local/bin/scan
 RUN chmod +x /usr/local/bin/scan
@@ -125,25 +196,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# phpcs + Drupal coding standards
+# phpcs + Drupal coding standards (pinned)
 RUN composer global require \
-    "squizlabs/php_codesniffer=*" \
-    "drupal/coder=*" \
+    "squizlabs/php_codesniffer:3.7.2" \
+    "drupal/coder:7.2.2" \
     --no-interaction --no-progress \
     && /root/.composer/vendor/bin/phpcs --config-set installed_paths /root/.composer/vendor/drupal/coder/coder_sniffer
 
-# psalm
-RUN composer global require "vimeo/psalm=*" --no-interaction --no-progress
+# psalm (pinned)
+RUN composer global require "vimeo/psalm:6.16.1" --no-interaction --no-progress
 
-# phpstan
-RUN composer global require "phpstan/phpstan=*" --no-interaction --no-progress
+# phpstan (pinned)
+RUN composer global require "phpstan/phpstan:2.1.45" --no-interaction --no-progress
 
-# drupal-check
-RUN composer global require "mglaman/drupal-check=*" --no-interaction --no-progress
+# drupal-check (pinned)
+RUN composer global require "mglaman/drupal-check:1.5.0" --no-interaction --no-progress
 
-# local-php-security-checker
-RUN curl -sSfL https://github.com/fabpot/local-php-security-checker/releases/latest/download/local-php-security-checker_linux_amd64 \
+# local-php-security-checker (pinned + checksum verified)
+RUN curl -sSfL https://github.com/fabpot/local-php-security-checker/releases/download/v2.1.3/local-php-security-checker_linux_amd64 \
     -o /usr/local/bin/local-php-security-checker \
+    && echo "db03c8c1806924081093fb6e3f752597a6d2ed6aea4621365e87e69d4814fd6c  /usr/local/bin/local-php-security-checker" | sha256sum -c - \
     && chmod +x /usr/local/bin/local-php-security-checker
 
 ENV PATH="/root/.composer/vendor/bin:${PATH}"
@@ -251,8 +323,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# retire.js
-RUN npm install -g retire
+# retire.js (pinned)
+RUN npm install -g retire@5.4.2
 
 COPY scan.sh /usr/local/bin/scan
 RUN chmod +x /usr/local/bin/scan
@@ -327,11 +399,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# gosec
-RUN go install github.com/securego/gosec/v2/cmd/gosec@latest
+# gosec (pinned + checksum verified -- binary instead of go install)
+RUN curl -sSfL https://github.com/securego/gosec/releases/download/v2.25.0/gosec_2.25.0_linux_amd64.tar.gz \
+    -o /tmp/gosec.tar.gz \
+    && echo "ca099f42e37bc8f98ae54c23238e2b81b973c6d6a60c25c34da03f0292af0f32  /tmp/gosec.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/gosec.tar.gz -C /usr/local/bin gosec \
+    && rm /tmp/gosec.tar.gz
 
-# govulncheck
-RUN go install golang.org/x/vuln/cmd/govulncheck@latest
+# govulncheck (pinned)
+RUN go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
 
 COPY scan.sh /usr/local/bin/scan
 RUN chmod +x /usr/local/bin/scan
@@ -415,11 +491,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# bandit
-RUN pip install --no-cache-dir bandit
+# bandit (pinned)
+RUN pip install --no-cache-dir bandit==1.9.4
 
-# pip-audit
-RUN pip install --no-cache-dir pip-audit
+# pip-audit (pinned)
+RUN pip install --no-cache-dir pip-audit==2.10.0
 
 COPY scan.sh /usr/local/bin/scan
 RUN chmod +x /usr/local/bin/scan
