@@ -174,6 +174,8 @@ glab issue close 42                               # close (ask confirmation firs
 glab issue reopen 42
 ```
 
+> **Closing/reopening with a comment**: `glab issue close` and `glab issue reopen` do not accept `--message`. Add a note first: `glab issue note 42 --message "..."`, then `glab issue close 42`.
+
 ### Issue template selection
 
 Many GitLab projects define issue templates (stored in `.gitlab/issue_templates/`) that encode the team's expected structure -- sections to fill, checklists, labels via quick actions. Skipping these creates issues that don't match the project's conventions and forces manual cleanup.
@@ -265,6 +267,17 @@ glab mr update 15 --add-label "reviewed"
 glab mr close 15                    # close without merging
 ```
 
+> **`close`/`reopen` do NOT accept `--message`**: unlike `gh pr close --comment`, `glab mr close` and `glab mr reopen` only accept `--repo` -- there is no `--message` or `--comment` flag. The same applies to `glab issue close` and `glab issue reopen`. To close (or reopen) with an explanation, add a note first as a separate command:
+>
+> ```bash
+> # CORRECT -- note first, then close:
+> glab mr note 15 --message "Closing: superseded by !20."
+> glab mr close 15
+>
+> # WRONG -- fails with "Unknown flag: --message":
+> glab mr close 15 --message "Closing: superseded by !20."
+> ```
+
 **Code review workflow**: view MR -> read diff -> check CI (`glab ci status`) -> read comments -> leave feedback -> approve or request changes.
 
 Approval and notes are separate commands -- `glab mr approve` handles GitLab's formal approval system, `glab mr note` posts a comment.
@@ -273,22 +286,39 @@ Approval and notes are separate commands -- `glab mr approve` handles GitLab's f
 
 ## CI/CD
 
+### TTY-only commands -- do NOT use
+
+`glab ci view` is a **full-screen terminal UI** (TUI) that requires an interactive TTY with keyboard input. It will **always fail** in non-interactive contexts (agent bash tools, scripts, piped commands). Never use it.
+
+| Command | Why it fails | Use instead |
+|---------|-------------|-------------|
+| `glab ci view` | Requires interactive TTY | `glab ci get` (structured data) or `glab ci status` (text summary) |
+
+### Pipeline commands
+
 ```bash
-glab ci status                      # pipeline status for current branch
-glab ci status --branch main        # pipeline status for a specific branch
-glab ci status --branch main --live # stream status in real-time until pipeline completes
-glab ci list                        # recent pipelines for current branch/project
-glab ci list --per-page 10          # show more pipelines
-glab ci trace                       # stream logs of the active job on current branch
-glab ci trace --branch main         # stream logs for a specific branch
-glab ci trace --branch main -p <id> # stream logs for a specific pipeline ID
-glab ci trace <job-name>            # stream logs for a specific job by name
-glab ci run                         # trigger new pipeline
-glab ci retry <pipeline-id>         # retry failed pipeline
-glab ci cancel <pipeline-id>        # cancel running pipeline
-glab ci artifact <job-id>           # download artifacts
-glab ci lint                        # validate .gitlab-ci.yml syntax
+glab ci status                       # pipeline status for current branch
+glab ci status --branch main         # pipeline status for a specific branch
+glab ci status --branch main --live  # stream status in real-time until pipeline completes
+glab ci get                          # pipeline details as JSON (current branch)
+glab ci get -b main                  # pipeline details for a specific branch
+glab ci get -p <pipeline-id>         # pipeline details for a specific pipeline ID
+glab ci get -p <pipeline-id> -d      # include extended job details
+glab ci get -p <pipeline-id> -F json # explicit JSON output format
+glab ci list                         # recent pipelines for current branch/project
+glab ci list --per-page 10           # show more pipelines
+glab ci trace                        # stream logs of the active job on current branch
+glab ci trace --branch main          # stream logs for a specific branch
+glab ci trace --branch main -p <id>  # stream logs for a specific pipeline ID
+glab ci trace <job-name>             # stream logs for a specific job by name
+glab ci run                          # trigger new pipeline
+glab ci retry <pipeline-id>          # retry failed pipeline
+glab ci cancel <pipeline-id>         # cancel running pipeline
+glab ci artifact <refName> <jobName> # download artifacts (deprecated: use `glab job artifact`)
+glab ci lint                         # validate .gitlab-ci.yml syntax
 ```
+
+**Important:** `glab ci get` accepts **zero positional arguments**. The pipeline ID must be passed via the `-p` / `--pipeline-id` flag, not as a positional argument. Passing it as `glab ci get <id>` will fail with "Accepts 0 arg(s)".
 
 Run `glab ci lint` before committing CI config changes to catch syntax errors early.
 
@@ -312,6 +342,16 @@ Without `--branch`, these commands look for a pipeline on the current branch, an
 glab ci status --branch main --live
 ```
 
+**For pipeline details** (non-interactive, structured data):
+
+```bash
+# Get pipeline details by ID (JSON output)
+glab ci get -p <pipeline-id>
+
+# With extended job details
+glab ci get -p <pipeline-id> -d
+```
+
 **For job-level detail** within a specific pipeline:
 
 ```bash
@@ -321,7 +361,7 @@ glab ci list --per-page 5
 # 2. Stream logs of a specific pipeline
 glab ci trace --branch main --pipeline-id <pipeline-id>
 
-# 3. Check individual job statuses via API (when you need structured data)
+# 3. Check individual job statuses via API (when you need structured data beyond what `glab ci get -d` provides)
 glab api "projects/:id/pipelines/<pipeline-id>/jobs" | jq '.[] | {name: .name, status: .status, stage: .stage}'
 ```
 
@@ -487,23 +527,14 @@ GITLAB_HOST=<hostname> glab api projects/:id | jq '.id'
 
 ### Step 2: Upload the file
 
-The token stored by `glab auth` may be an **OAuth token** (if you logged in via web/OAuth) or a **PAT** (if you provided a token directly). Use the correct auth header:
+**Detecting token type:** if `glab auth status` shows `Logged in ... (keyring)` without mentioning a PAT (browser login), it's an OAuth token -- use `Authorization: Bearer`. If you provided a PAT directly, use `PRIVATE-TOKEN`. When in doubt, try Bearer first -- if you get a 401, retry with `PRIVATE-TOKEN`.
 
 ```bash
-# For OAuth tokens (logged in via: glab auth login → "Web"):
 curl --silent --show-error --request POST \
   --header "Authorization: Bearer <token>" \
   --form "file=@path/to/image.png" \
   "https://<hostname>/api/v4/projects/<project-id>/uploads"
-
-# For PATs (logged in via: glab auth login --token):
-curl --silent --show-error --request POST \
-  --header "PRIVATE-TOKEN: <token>" \
-  --form "file=@path/to/image.png" \
-  "https://<hostname>/api/v4/projects/<project-id>/uploads"
 ```
-
-**How to tell which type you have**: if `glab auth status` shows `✓ Logged in ... (keyring)` without mentioning a PAT, and you originally logged in via the browser flow, it's an OAuth token -- use `Authorization: Bearer`. If you provided a PAT directly, use `PRIVATE-TOKEN`. When in doubt, try Bearer first -- if you get a 401, retry with `PRIVATE-TOKEN`.
 
 ### Step 3: Use the returned markdown URL
 

@@ -8,7 +8,7 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
-## [2026-03-25]
+## [2026-03-31]
 
 ### Added
 
@@ -17,6 +17,28 @@ Changes are grouped by date.
 ### Changed
 
 - `security-audit` skill: restructured from two-phase to five-phase workflow (Discovery, Generate Containers, Native Scans, Docker Scans, Manual Review) with PHP/Drupal support, per-stack Docker container generation, and expanded tool matrix (17 tools across 6 container types)
+
+## [2026-03-29]
+
+### Fixed
+
+- `glab` skill: document that `glab mr close`, `glab issue close`, `glab mr reopen`, and `glab issue reopen` do not accept `--message` -- close/reopen with an explanation requires a separate `note` command first
+
+### Added
+
+- `glab` skill: two new eval cases for close-with-explanation scenarios (MR and issue)
+- `playwright-cli` skill: fix npx fallback to use correct package name `@playwright/cli` instead of deprecated `playwright-cli`
+
+## [2026-03-28]
+
+### Fixed
+
+- `glab` skill: warn against `glab ci view` (requires interactive TTY, always fails in agent contexts) and document `glab ci get` as the correct non-interactive alternative for fetching pipeline details
+- `glab` skill: fix `glab ci artifact` documentation (wrong syntax and missing deprecation notice)
+
+### Added
+
+- `glab` skill: two new eval cases for pipeline detail retrieval, testing that agents avoid TTY commands and use correct flag syntax
 
 ## [2026-03-24]
 
@@ -28,13 +50,14 @@ Changes are grouped by date.
 
 ## [2026-03-23]
 
+### Added
+
+- `skill-creator` skill: non-Claude agent guidance with bundled script compatibility table and correct terminology mapping for OpenCode/Copilot CLI
+- `glab` skill: three new eval cases for squash/merge-behavior flag correctness on MR creation vs merge
+
 ### Fixed
 
 - `glab` skill: document `--squash-before-merge` flag for `glab mr create` and warn against using `--squash` (which only works on `glab mr merge`)
-
-### Added
-
-- `glab` skill: three new eval cases for squash/merge-behavior flag correctness on MR creation vs merge
 
 ## [2026-03-22]
 
