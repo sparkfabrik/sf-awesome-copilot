@@ -160,8 +160,10 @@ Generate a Dockerfile for each detected stack and for the universal container.
 Use the templates in `references/dockerfile-templates.md` as a basis.
 
 Each Dockerfile installs only the tools relevant to its stack (see tool matrix
-below). The generated `scan.sh` is a linear sequence of tool invocations -- no
-conditional logic. Every tool listed in the Dockerfile is invoked.
+below). The generated `scan.sh` runs each tool in sequence. Minimal readiness
+checks are allowed (e.g. checking whether `vendor/` or `go.sum` exists before
+running tools that need them, or detecting IaC files before running checkov),
+but the script should not contain complex branching logic.
 
 ### scan.sh generation
 
@@ -253,7 +255,6 @@ Pick scanners based on the detected stack. The universal container always runs.
 | **govulncheck** | go | Go dependency CVEs | Go projects |
 | **bandit** | python | Python SAST | Python projects |
 | **pip-audit** | python | Python dependency CVEs | Python projects |
-| **brakeman** | ruby | Ruby on Rails SAST | Rails projects |
 
 ### Running the containers
 

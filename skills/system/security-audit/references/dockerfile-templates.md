@@ -4,7 +4,9 @@ Template Dockerfiles for each stack. The skill uses these as a basis when
 generating per-stack containers during Phase 2.
 
 Each template installs the tools listed in the SKILL.md tool matrix for that
-stack. Tool versions are pinned where practical.
+stack. Tool versions are pinned where practical; some templates intentionally
+track the latest upstream releases (e.g. via `@latest` or `/releases/latest`
+URLs), trading strict reproducibility for up-to-date security coverage.
 
 ## Universal container
 
@@ -74,7 +76,7 @@ json.dump(t, sys.stdout)")
   tools_json=$(echo "$tools_json" | python3 -c "
 import sys, json
 t = json.load(sys.stdin)
-t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'findings'})
+t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'error'})
 json.dump(t, sys.stdout)")
 }
 
@@ -87,6 +89,12 @@ run_tool "syft" sh -c "syft dir:/src -o json > $OUTPUT/syft.json"
 # checkov: only if IaC files exist
 if ls /src/*.tf /src/Dockerfile /src/docker-compose.yml /src/k8s/ 2>/dev/null | head -1 > /dev/null; then
   run_tool "checkov" sh -c "checkov -d /src -o json > $OUTPUT/checkov.json 2>&1"
+else
+  tools_json=$(echo "$tools_json" | python3 -c "
+import sys, json
+t = json.load(sys.stdin)
+t.append({'name': 'checkov', 'exitCode': None, 'outputFile': None, 'status': 'skipped', 'reason': 'no IaC files detected'})
+json.dump(t, sys.stdout)")
 fi
 
 echo "$tools_json" | python3 -c "
@@ -111,6 +119,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     unzip \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Composer
@@ -177,7 +186,7 @@ json.dump(t, sys.stdout)")
   tools_json=$(echo "$tools_json" | python3 -c "
 import sys, json
 t = json.load(sys.stdin)
-t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'findings'})
+t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'error'})
 json.dump(t, sys.stdout)")
 }
 
@@ -194,11 +203,15 @@ json.dump(t, sys.stdout)")
 # composer audit (works without vendor/)
 if [ -f /src/composer.lock ]; then
   run_tool "composer-audit" sh -c "cd /src && composer audit --format=json > $OUTPUT/composer-audit.json 2>&1"
+else
+  skip_tool "composer-audit" "composer.lock not found -- dependency audit requires lockfile"
 fi
 
 # local-php-security-checker (works without vendor/)
 if [ -f /src/composer.lock ]; then
   run_tool "security-checker" sh -c "local-php-security-checker --path=/src/composer.lock --format=json > $OUTPUT/security-checker.json 2>&1"
+else
+  skip_tool "security-checker" "composer.lock not found -- dependency audit requires lockfile"
 fi
 
 # phpcs (works without vendor/ for basic analysis)
@@ -263,11 +276,27 @@ mkdir -p "$OUTPUT"
 # Note: npm audit should be run directly (Phase 3) since npm ships locally.
 # This container focuses on tools the project doesn't already have.
 
-echo "Running retire.js..."
-retire --path /src --outputformat json --outputpath "$OUTPUT/retire.json" 2>/dev/null
-RETIRE_EC=$?
+if echo ",$SKIP," | grep -qi ",retire,"; then
+  cat > "$MANIFEST" <<EOFMANIFEST
+{
+  "stack": "node",
+  "tools": [
+    {
+      "name": "retire",
+      "exitCode": null,
+      "outputFile": null,
+      "status": "skipped",
+      "reason": "already run in Phase 3"
+    }
+  ]
+}
+EOFMANIFEST
+else
+  echo "Running retire.js..."
+  retire --path /src --outputformat json --outputpath "$OUTPUT/retire.json" 2>/dev/null
+  RETIRE_EC=$?
 
-cat > "$MANIFEST" <<EOFMANIFEST
+  cat > "$MANIFEST" <<EOFMANIFEST
 {
   "stack": "node",
   "tools": [
@@ -275,11 +304,12 @@ cat > "$MANIFEST" <<EOFMANIFEST
       "name": "retire",
       "exitCode": $RETIRE_EC,
       "outputFile": "retire.json",
-      "status": "$([ $RETIRE_EC -eq 0 ] && echo 'success' || echo 'findings')"
+      "status": "$([ $RETIRE_EC -eq 0 ] && echo 'success' || echo 'error')"
     }
   ]
 }
 EOFMANIFEST
+fi
 
 echo "Done. Results in $OUTPUT/"
 ```
@@ -294,6 +324,7 @@ FROM golang:1.22-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # gosec
@@ -340,7 +371,7 @@ json.dump(t, sys.stdout)")
   tools_json=$(echo "$tools_json" | python3 -c "
 import sys, json
 t = json.load(sys.stdin)
-t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'findings'})
+t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'error'})
 json.dump(t, sys.stdout)")
 }
 
@@ -428,7 +459,7 @@ json.dump(t, sys.stdout)")
   tools_json=$(echo "$tools_json" | python3 -c "
 import sys, json
 t = json.load(sys.stdin)
-t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'findings'})
+t.append({'name': '$name', 'exitCode': $ec, 'outputFile': '$outfile', 'status': 'success' if $ec == 0 else 'error'})
 json.dump(t, sys.stdout)")
 }
 
