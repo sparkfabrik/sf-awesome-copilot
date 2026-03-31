@@ -1,9 +1,9 @@
 ---
-name: security-audit
-description: 'Multi-stack security audit workflow for web applications and APIs. Use when the user wants to perform a security audit, find vulnerabilities, run security scans, check for XSS/CSRF/injection issues, or harden an application. Also use when the user mentions "security review", "pen test", "vulnerability scan", "OWASP", "semgrep", "trivy", "gosec", "govulncheck", "phpcs", "phpstan", "psalm", "drupal-check", "composer audit", or "npm audit".'
+name: code-security-audit
+description: 'Multi-stack code security audit workflow for web applications and APIs. Use when the user wants to perform a security audit, find vulnerabilities, run security scans, check for XSS/CSRF/injection issues, or harden an application. Also use when the user mentions "code security", "security review", "pen test", "vulnerability scan", "OWASP", "semgrep", "trivy", "gosec", "govulncheck", "phpcs", "phpstan", "psalm", "drupal-check", "composer audit", or "npm audit".'
 ---
 
-# Security Audit Skill
+# Code Security Audit Skill
 
 Structured multi-phase security audit for web applications and APIs. The skill
 discovers the project's stacks and existing tools, augments coverage with
@@ -130,10 +130,10 @@ First, check that Docker is available. If it is not:
 
 ### Output directory structure
 
-Write all generated files to `.security-audit/`:
+Write all generated files to `.code-security-audit/`:
 
 ```
-.security-audit/
+.code-security-audit/
 ├── universal/
 │   ├── Dockerfile
 │   ├── scan.sh
@@ -273,20 +273,20 @@ Pick scanners based on the detected stack. The universal container always runs.
 
 ```bash
 # Build
-docker build -t security-audit-universal .security-audit/universal/
-docker build -t security-audit-php .security-audit/php/
+docker build -t code-security-audit-universal .code-security-audit/universal/
+docker build -t code-security-audit-php .code-security-audit/php/
 
 # Run (can be parallel for different stacks)
 docker run --rm \
   -v "$(pwd)":/src:ro \
-  -v "$(pwd)"/.security-audit/universal/output:/output \
-  security-audit-universal
+  -v "$(pwd)"/.code-security-audit/universal/output:/output \
+  code-security-audit-universal
 
 docker run --rm \
   -v "$(pwd)":/src:ro \
-  -v "$(pwd)"/.security-audit/php/output:/output \
+  -v "$(pwd)"/.code-security-audit/php/output:/output \
   -e SKIP_TOOLS=phpcs,phpstan \
-  security-audit-php
+  code-security-audit-php
 ```
 
 Pass `SKIP_TOOLS` with tools already run successfully in Phase 3.
@@ -484,7 +484,7 @@ For each checklist category:
 ## Final report
 
 After Phase 5 (or after Phase 4 for scan-only runs), write a consolidated
-report to `.security-audit/report.md`. This file is the primary deliverable of
+report to `.code-security-audit/report.md`. This file is the primary deliverable of
 the audit -- it must be self-contained, readable by someone who was not present
 during the audit, and presentable to technical leads, clients, or auditors.
 
@@ -628,7 +628,7 @@ fixes. If yes:
 2. **One fix per commit** -- each vulnerability fix should be a separate,
    reviewable commit.
 3. **Re-run affected scanners** after fixes to verify resolution.
-4. **Update the report** -- mark fixed findings in `.security-audit/report.md`
+4. **Update the report** -- mark fixed findings in `.code-security-audit/report.md`
    with a `**Status**: Fixed (<commit hash>)` line.
 
 ## Tips

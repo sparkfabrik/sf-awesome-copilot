@@ -23,7 +23,7 @@ Inspired by [github/awesome-copilot](https://github.com/github/awesome-copilot/t
 | **skill-creator** | Create, iterate, and benchmark agent skills with eval-driven workflows | `skills/system/skill-creator/` |
 | **doc-coauthoring** | Structured workflow for co-authoring docs, proposals, and technical specs | `skills/system/doc-coauthoring/` |
 | **create-agentsmd** | Prompt for generating an AGENTS.md file for a repository | `skills/system/create-agentsmd/` |
-| **security-audit** | Multi-stack security audit -- automated scans (Docker-based) + manual deep review | `skills/system/security-audit/` |
+| **code-security-audit** | Multi-stack code security audit -- automated scans (Docker-based) + manual deep review | `skills/system/code-security-audit/` |
 | **agentic-security-audit** | AI agent security audit -- instruction files, MCP configs, LLM integration, OWASP Agentic Top 10 | `skills/system/agentic-security-audit/` |
 
 Skills are documents that provide context to Copilot on specific topics. Each skill contains:

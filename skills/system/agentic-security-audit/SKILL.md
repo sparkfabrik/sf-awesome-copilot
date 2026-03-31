@@ -9,7 +9,7 @@ Structured audit for AI agent configurations and LLM integration code. The skill
 discovers AI-related files and dependencies, reviews them against the OWASP Top
 10 for Agentic Applications (ASI01-ASI10), and produces a markdown report.
 
-This skill is **complementary** to the `security-audit` skill. That skill audits
+This skill is **complementary** to the `code-security-audit` skill. That skill audits
 application code (SQL injection, XSS, dependency CVEs). This skill audits the AI
 integration layer: instruction files, tool configurations, prompt construction,
 and trust boundaries.

@@ -6,7 +6,7 @@ Per-stack Docker container generation for security scanning -- Dockerfile templa
 
 ### Requirement: Generate per-stack Dockerfiles based on discovery results
 
-The skill SHALL generate one Dockerfile per detected stack, plus one universal Dockerfile for cross-cutting scanning tools. Dockerfiles SHALL be written to `.security-audit/<stack>/Dockerfile`.
+The skill SHALL generate one Dockerfile per detected stack, plus one universal Dockerfile for cross-cutting scanning tools. Dockerfiles SHALL be written to `.code-security-audit/<stack>/Dockerfile`.
 
 Each Dockerfile SHALL use a base image appropriate for the stack:
 
@@ -21,8 +21,8 @@ Each Dockerfile SHALL use a base image appropriate for the stack:
 #### Scenario: PHP project generates PHP and universal Dockerfiles
 
 - **WHEN** Phase 0 detected PHP as the only stack
-- **THEN** the skill SHALL generate `.security-audit/php/Dockerfile` with PHP-specific tools
-- **THEN** the skill SHALL generate `.security-audit/universal/Dockerfile` with semgrep, trivy, gitleaks, grype, and checkov
+- **THEN** the skill SHALL generate `.code-security-audit/php/Dockerfile` with PHP-specific tools
+- **THEN** the skill SHALL generate `.code-security-audit/universal/Dockerfile` with semgrep, trivy, gitleaks, grype, and checkov
 
 #### Scenario: Mixed PHP and Node.js project
 
@@ -90,11 +90,11 @@ The skill SHALL pass a skip list to the Docker scan based on what Phase 1a alrea
 The skill SHALL build each generated Dockerfile using `docker build` and run the resulting image with the project source mounted as a read-only volume and an output directory mounted for writing.
 
 ```
-docker build -t security-audit-<stack> .security-audit/<stack>/
+docker build -t code-security-audit-<stack> .code-security-audit/<stack>/
 docker run --rm \
   -v $(pwd):/src:ro \
-  -v $(pwd)/.security-audit/<stack>/output:/output \
-  security-audit-<stack>
+  -v $(pwd)/.code-security-audit/<stack>/output:/output \
+  code-security-audit-<stack>
 ```
 
 Containers for different stacks SHALL be run in parallel when possible.

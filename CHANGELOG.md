@@ -16,8 +16,9 @@ Changes are grouped by date.
 
 ### Changed
 
-- `security-audit` skill: restructured from two-phase to five-phase workflow (Discovery, Generate Containers, Native Scans, Docker Scans, Manual Review) with PHP/Drupal support, per-stack Docker container generation, and an expanded tool matrix spanning multiple container types
-- `security-audit` skill: pin all 17 scanner versions in Dockerfile templates with SHA-256 checksum verification for binary downloads (trivy, gitleaks, grype, syft, gosec, local-php-security-checker); replace `curl | sh` and `@latest` install patterns with versioned release URLs; add staleness check and version recording to the audit workflow
+- `code-security-audit` skill: renamed from `security-audit` to `code-security-audit` to clearly differentiate from `agentic-security-audit` (code security vs AI integration security)
+- `code-security-audit` skill: restructured from two-phase to five-phase workflow (Discovery, Generate Containers, Native Scans, Docker Scans, Manual Review) with PHP/Drupal support, per-stack Docker container generation, and an expanded tool matrix spanning multiple container types
+- `code-security-audit` skill: pin all 17 scanner versions in Dockerfile templates with SHA-256 checksum verification for binary downloads (trivy, gitleaks, grype, syft, gosec, local-php-security-checker); replace `curl | sh` and `@latest` install patterns with versioned release URLs; add staleness check and version recording to the audit workflow
 
 ## [2026-03-29]
 
@@ -45,9 +46,9 @@ Changes are grouped by date.
 
 ### Added
 
-- `security-audit` skill: two-phase security audit workflow for web applications and APIs -- Phase 1 runs automated open-source scanners (semgrep, trivy, gosec, govulncheck, npm audit, bandit), Phase 2 guides a manual deep review across 10 OWASP-aligned categories with structured findings and a final report template
-- `security-audit` skill: Go security reference (`references/go-security.md`) covering SQL injection, command injection, path traversal, XSS in templates, cookie security, server hardening, open redirect, HMAC timing attacks, race conditions, and gosec rules
-- `security-audit` skill: Node.js/frontend security reference (`references/nodejs-security.md`) covering DOM XSS, prototype pollution, SQL/NoSQL injection, path traversal, SSRF, dependency security, Express hardening, CSP, and semgrep rules
+- `code-security-audit` skill: two-phase security audit workflow for web applications and APIs -- Phase 1 runs automated open-source scanners (semgrep, trivy, gosec, govulncheck, npm audit, bandit), Phase 2 guides a manual deep review across 10 OWASP-aligned categories with structured findings and a final report template
+- `code-security-audit` skill: Go security reference (`references/go-security.md`) covering SQL injection, command injection, path traversal, XSS in templates, cookie security, server hardening, open redirect, HMAC timing attacks, race conditions, and gosec rules
+- `code-security-audit` skill: Node.js/frontend security reference (`references/nodejs-security.md`) covering DOM XSS, prototype pollution, SQL/NoSQL injection, path traversal, SSRF, dependency security, Express hardening, CSP, and semgrep rules
 
 ## [2026-03-23]
 
