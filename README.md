@@ -15,16 +15,17 @@ Inspired by [github/awesome-copilot](https://github.com/github/awesome-copilot/t
 
 ## Skills
 
-| Skill | Description | Path |
-|-------|-------------|------|
-| **glab** | GitLab CLI -- issues, merge requests, CI/CD pipelines, repositories | `skills/system/glab/` |
-| **gh** | GitHub CLI -- issues, pull requests, Actions, releases, PR review comments | `skills/system/gh/` |
-| **playwright-cli** | Browser automation -- web testing, screenshots, form filling, data extraction | `skills/system/playwright-cli/` |
-| **skill-creator** | Create, iterate, and benchmark agent skills with eval-driven workflows | `skills/system/skill-creator/` |
-| **doc-coauthoring** | Structured workflow for co-authoring docs, proposals, and technical specs | `skills/system/doc-coauthoring/` |
-| **create-agentsmd** | Prompt for generating an AGENTS.md file for a repository | `skills/system/create-agentsmd/` |
-| **code-security-audit** | Multi-stack code security audit -- automated scans (Docker-based) + manual deep review | `skills/system/code-security-audit/` |
+| Skill                      | Description                                                                                      | Path                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------- |
+| **glab**                   | GitLab CLI -- issues, merge requests, CI/CD pipelines, repositories                              | `skills/system/glab/`                   |
+| **gh**                     | GitHub CLI -- issues, pull requests, Actions, releases, PR review comments                       | `skills/system/gh/`                     |
+| **playwright-cli**         | Browser automation -- web testing, screenshots, form filling, data extraction                    | `skills/system/playwright-cli/`         |
+| **skill-creator**          | Create, iterate, and benchmark agent skills with eval-driven workflows                           | `skills/system/skill-creator/`          |
+| **doc-coauthoring**        | Structured workflow for co-authoring docs, proposals, and technical specs                        | `skills/system/doc-coauthoring/`        |
+| **create-agentsmd**        | Prompt for generating an AGENTS.md file for a repository                                         | `skills/system/create-agentsmd/`        |
+| **code-security-audit**    | Multi-stack code security audit -- automated scans (Docker-based) + manual deep review           | `skills/system/code-security-audit/`    |
 | **agentic-security-audit** | AI agent security audit -- instruction files, MCP configs, LLM integration, OWASP Agentic Top 10 | `skills/system/agentic-security-audit/` |
+| **githuman**               | Review AI-generated code before committing via GitHuman Docker instances (sjust/ajust)           | `skills/system/githuman/`               |
 
 Skills are documents that provide context to Copilot on specific topics. Each skill contains:
 
@@ -52,11 +53,13 @@ To enable Agent Skills:
 2. Enable the setting in your workspace or user settings:
 
 **Via Settings UI:**
+
 - Open Settings (`Ctrl+,` or `Cmd+,`)
 - Search for `chat.useAgentSkills`
 - Enable the checkbox
 
 **Via JSON configuration** (`.vscode/settings.json`):
+
 ```json
 {
   "chat.useAgentSkills": true
@@ -85,6 +88,7 @@ Context7 provides up-to-date, version-specific documentation for libraries and f
 **Create `.vscode/mcp.json` in your workspace:**
 
 **Remote server (recommended):**
+
 ```json
 {
   "mcpServers": {
@@ -99,6 +103,7 @@ Context7 provides up-to-date, version-specific documentation for libraries and f
 ```
 
 **Local server:**
+
 ```json
 {
   "mcpServers": {
@@ -113,6 +118,7 @@ Context7 provides up-to-date, version-specific documentation for libraries and f
 **Start the MCP server:** Open Command Palette (`Ctrl+Shift+P`) and run `MCP: List Servers`
 
 **Add a rule** to auto-invoke Context7 (optional):
+
 - Go to `Cursor Settings > Rules` or create `.github/copilot-instructions.md`
 - Add: `Always use Context7 MCP when I need library/API documentation, code generation, or configuration steps.`
 

@@ -8,6 +8,13 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-04-02]
+
+### Added
+
+- `githuman` skill: review AI-generated code before committing via GitHuman Docker instances managed by Just recipes (`sjust` on macOS, `ajust` on Linux). Synced from [mcollina/githuman-skills](https://github.com/mcollina/githuman-skills) with frontmatter description override and custom sections that override upstream `npx githuman` examples with sjust/ajust command mapping, infrastructure conventions, and troubleshooting — upstream rules files are the authoritative reference
+- `githuman` skill: 8 eval scenarios (review, list/cleanup, troubleshooting, inline comments, resolve-and-commit, todos, export, selective staging) enforcing Just recipe usage, plus 20 trigger evals for description auto-triggering tests
+
 ## [2026-03-31]
 
 ### Added

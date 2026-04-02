@@ -21,9 +21,9 @@ own file in a subfolder, but the prompt body is kept identical across tools --
 only the YAML frontmatter differs to match each tool's configuration format.
 There is no shared standard yet.
 
-| Tool | Install path |
-|---|---|
-| Copilot | `~/.copilot/agents/<agent-name>.agent.md` |
+| Tool     | Install path                                |
+| -------- | ------------------------------------------- |
+| Copilot  | `~/.copilot/agents/<agent-name>.agent.md`   |
 | OpenCode | `~/.config/opencode/agents/<agent-name>.md` |
 
 ### Skills
@@ -32,8 +32,8 @@ System skills follow the standard skill format (folder with `SKILL.md`). They
 may include bundled assets such as scripts, reference data, or eval definitions.
 Skills are installed to a shared standard path used by all coding agent tools:
 
-| Install path |
-|---|
+| Install path                     |
+| -------------------------------- |
 | `~/.agents/skills/<skill-name>/` |
 
 ## Available agents
@@ -50,3 +50,4 @@ Skills are installed to a shared standard path used by all coding agent tools:
 - **create-agentsmd** -- Prompt for generating an AGENTS.md file for a repository. Synced from [github/awesome-copilot](https://github.com/github/awesome-copilot).
 - **code-security-audit** -- Multi-phase code security audit workflow (discovery, container generation, native scans, Docker scans, manual review) for web applications and APIs. Open-source tools only.
 - **agentic-security-audit** -- Audit AI agent configurations, instruction files, and LLM integration code for security risks mapped to the OWASP Top 10 for Agentic Applications (2026).
+- **githuman** -- Review AI-generated code before committing via GitHuman Docker instances managed by Just recipes (`sjust`/`ajust`). Synced from [mcollina/githuman-skills](https://github.com/mcollina/githuman-skills) with SparkFabrik-specific commands, review workflow, and troubleshooting.
