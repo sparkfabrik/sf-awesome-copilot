@@ -1,0 +1,53 @@
+{
+  "skill_name": "auto-format",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a README.md file in /tmp/test-auto-format-1/ for a small Node.js library called \"date-utils\". Include a title, description, installation instructions, a usage example with a code block, and a license section.",
+      "expected_output": "A README.md file is created and format-md is run on it",
+      "files": [],
+      "expectations": [
+        "The agent created a README.md file in /tmp/test-auto-format-1/",
+        "The agent ran $JUST_CMD format-md (or ajust/sjust format-md) on the created file",
+        "The agent did NOT run npx prettier directly",
+        "The agent detected the platform (uname) to choose sjust or ajust"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Edit the file /tmp/test-auto-format-2/CHANGELOG.md to add a new entry under today's date for a feature called \"dark mode toggle\". The file already exists with some content.",
+      "expected_output": "The CHANGELOG.md is edited and format-md is run on it afterward",
+      "files": ["/tmp/test-auto-format-2/CHANGELOG.md"],
+      "expectations": [
+        "The agent edited /tmp/test-auto-format-2/CHANGELOG.md with a dark mode toggle entry",
+        "The agent ran $JUST_CMD format-md (or ajust/sjust format-md) AFTER editing the file",
+        "The agent did NOT attempt to manually format the Markdown content",
+        "The agent detected the platform (uname) to choose sjust or ajust"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create two files in /tmp/test-auto-format-3/: a CONTRIBUTING.md with guidelines for pull requests and code style, and an API.md documenting three REST endpoints (GET /users, POST /users, DELETE /users/:id). Include request/response examples.",
+      "expected_output": "Both .md files are created and format-md is run on both",
+      "files": [],
+      "expectations": [
+        "The agent created CONTRIBUTING.md in /tmp/test-auto-format-3/",
+        "The agent created API.md in /tmp/test-auto-format-3/",
+        "The agent ran $JUST_CMD format-md on both files (either in one call or two separate calls)",
+        "The agent did NOT run npx prettier directly"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I just finished building a microservices app in /tmp/test-auto-format-4/ with three services: auth, billing, and notifications. Can you document the high-level architecture? Include how the services communicate and what tech stack each one uses.",
+      "expected_output": "A Markdown documentation file is created and format-md is run on it, even though the user never explicitly asked for Markdown",
+      "files": [],
+      "expectations": [
+        "The agent created a .md file (any name) in /tmp/test-auto-format-4/",
+        "The agent ran $JUST_CMD format-md (or ajust/sjust format-md) on the created file",
+        "The agent detected the platform (uname) to choose sjust or ajust",
+        "The agent did NOT attempt to manually reformat the Markdown content"
+      ]
+    }
+  ]
+}
