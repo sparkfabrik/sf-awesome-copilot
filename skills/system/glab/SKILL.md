@@ -176,28 +176,14 @@ glab issue reopen 42
 
 ### State filtering (open / closed / all)
 
-`glab issue list` and `glab mr list` do **not** have a `--state` flag (that's `gh`, not `glab`). Using `--state` will fail with "Unknown flag". Instead, state filtering is controlled by these flags:
+`glab` does **not** have a `--state` flag (that's `gh`, not `glab`) — using it fails with "Unknown flag". Use these flags instead:
 
 | What you want | `glab issue list` | `glab mr list` |
 |---|---|---|
-| Open only (default) | `glab issue list` | `glab mr list` |
-| Closed only | `glab issue list --closed` | `glab mr list --closed` |
-| All (open + closed) | `glab issue list --all` | `glab mr list --all` |
-| Merged only | n/a | `glab mr list --merged` |
-
-```bash
-# CORRECT -- open issues (the default, no flag needed):
-glab issue list -R group/project
-
-# CORRECT -- closed issues only:
-glab issue list -R group/project --closed
-
-# CORRECT -- all issues regardless of state:
-glab issue list -R group/project --all
-
-# WRONG -- fails with "Unknown flag: --state":
-glab issue list -R group/project --state opened
-```
+| Open only (default) | _(no flag)_ | _(no flag)_ |
+| Closed only | `--closed` | `--closed` |
+| All (open + closed) | `--all` | `--all` |
+| Merged only | n/a | `--merged` |
 
 > **Closing/reopening with a comment**: `glab issue close` and `glab issue reopen` do not accept `--message`. Add a note first: `glab issue note 42 --message "..."`, then `glab issue close 42`.
 
