@@ -8,6 +8,16 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-04-08]
+
+### Fixed
+
+- `glab` skill: document correct state filtering for `glab issue list` and `glab mr list` -- `glab` uses `--closed`/`--all` flags, not `--state` (which is a `gh` flag and fails with "Unknown flag")
+
+### Added
+
+- `glab` skill: three new eval cases for issue/MR state filtering (open issues, closed issues, all MRs) testing that agents use `--closed`/`--all` instead of the invalid `--state` flag
+
 ## [2026-04-02]
 
 ### Added
