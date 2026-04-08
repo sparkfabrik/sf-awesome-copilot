@@ -174,6 +174,17 @@ glab issue close 42                               # close (ask confirmation firs
 glab issue reopen 42
 ```
 
+### State filtering (open / closed / all)
+
+`glab` does **not** have a `--state` flag (that's `gh`, not `glab`) — using it fails with "Unknown flag". Use these flags instead:
+
+| What you want | `glab issue list` | `glab mr list` |
+|---|---|---|
+| Open only (default) | _(no flag)_ | _(no flag)_ |
+| Closed only | `--closed` | `--closed` |
+| All (open + closed) | `--all` | `--all` |
+| Merged only | n/a | `--merged` |
+
 > **Closing/reopening with a comment**: `glab issue close` and `glab issue reopen` do not accept `--message`. Add a note first: `glab issue note 42 --message "..."`, then `glab issue close 42`.
 
 ### Issue template selection

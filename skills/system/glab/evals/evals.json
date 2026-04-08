@@ -305,6 +305,46 @@
         "If using `glab ci get`, passes the branch via `-b` flag (not as positional argument)",
         "May use `-d` flag on `glab ci get` for extended job details"
       ]
+    },
+    {
+      "id": 22,
+      "prompt": "Can you list only the open issues on our GitLab project https://gitlab.sparkfabrik.com/sparkfabrik-innovation-team/r-d/ai/poc-drupal-rag-intelligence? I want to see what's still pending.",
+      "expected_output": "The agent should use `glab issue list` without any state flag, since open issues are the default. It must NOT use `--state opened` or `--state open` (those flags do not exist in glab and will fail with 'Unknown flag').",
+      "files": [],
+      "assertions": [
+        "Uses `glab issue list` to list issues",
+        "Does NOT use `--state opened` or `--state open` (not a valid glab flag)",
+        "Does NOT use `--opened` (deprecated flag)",
+        "Lists open issues by relying on the default behavior (no state flag needed) or uses `--all` only if showing all states",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
+        "Uses `-R` with the correct project path"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "Show me all closed issues in project https://gitlab.sparkfabrik.com/team/backend/api -- I want to review what we've completed this quarter.",
+      "expected_output": "The agent should use `glab issue list --closed` to filter for closed issues. It must NOT use `--state closed` (not a valid glab flag).",
+      "files": [],
+      "assertions": [
+        "Uses `glab issue list` with the `--closed` or `-c` flag",
+        "Does NOT use `--state closed` (not a valid glab flag)",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
+        "Uses `-R` with the correct project path (team/backend/api)",
+        "Does NOT use `gh issue list` or any GitHub-specific tooling"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "I need to see all merge requests on our project regardless of whether they're open, closed, or merged. Can you list them? We're on https://gitlab.sparkfabrik.com/team/frontend/app.",
+      "expected_output": "The agent should use `glab mr list --all` to show all merge requests regardless of state. It must NOT use `--state all` or `--state opened` (not valid glab flags).",
+      "files": [],
+      "assertions": [
+        "Uses `glab mr list` with the `--all` or `-A` flag",
+        "Does NOT use `--state all` or `--state` in any form (not a valid glab flag)",
+        "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
+        "Uses `-R` with the correct project path (team/frontend/app)",
+        "Does NOT use `gh pr list` or any GitHub-specific tooling"
+      ]
     }
   ]
 }
