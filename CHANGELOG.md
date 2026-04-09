@@ -8,6 +8,12 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-04-09]
+
+### Added
+
+- `auto-format-doc` skill: auto-format files after creating or modifying them using external formatters managed by Just recipes (`sjust` on macOS, `ajust` on Linux) -- currently supports Markdown via Prettier (`format-md` recipe), with warn-and-continue error handling
+
 ## [2026-04-08]
 
 ### Fixed
