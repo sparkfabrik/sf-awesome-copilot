@@ -51,4 +51,4 @@ Skills are installed to a shared standard path used by all coding agent tools:
 - **code-security-audit** -- Multi-phase code security audit workflow (discovery, container generation, native scans, Docker scans, manual review) for web applications and APIs. Open-source tools only.
 - **agentic-security-audit** -- Audit AI agent configurations, instruction files, and LLM integration code for security risks mapped to the OWASP Top 10 for Agentic Applications (2026).
 - **githuman** -- Review AI-generated code before committing via GitHuman Docker instances managed by Just recipes (`sjust`/`ajust`). Synced from [mcollina/githuman-skills](https://github.com/mcollina/githuman-skills) with SparkFabrik-specific commands, review workflow, and troubleshooting.
-- **auto-format** -- Auto-format files after creating or modifying them using external formatters managed by Just recipes (`sjust`/`ajust`). Currently supports Markdown via Prettier.
+- **auto-format-doc** -- Auto-format files after creating or modifying them using external formatters managed by Just recipes (`sjust`/`ajust`). Currently supports Markdown via Prettier.

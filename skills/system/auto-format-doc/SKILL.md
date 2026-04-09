@@ -1,13 +1,13 @@
 ---
-name: auto-format
+name: auto-format-doc
 description: >
   Auto-format files after creating or modifying them using external formatters
   managed by Just recipes (sjust/ajust). Use this skill whenever you write,
   create, or edit a Markdown file (.md). Also use when the user mentions
   "format markdown", "prettier", "format-md", "format-md-check",
-  "auto-format", or asks you to fix or check Markdown formatting. This skill applies even if you are not explicitly
-  asked to format -- any time a .md file is written or modified, run the
-  formatter on it.
+  "auto-format", "auto-format-doc", or asks you to fix or check Markdown
+  formatting. This skill applies even if you are not explicitly asked to
+  format -- any time a .md file is written or modified, run the formatter on it.
 ---
 
 # Auto Format
