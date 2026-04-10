@@ -35,8 +35,7 @@ all of that. Focus on content; let the tool handle style.
 ## Platform detection
 
 The command runner depends on the operating system. Detect the platform once
-at the start of your session and reuse the result. If neither `sjust` nor
-`ajust` is installed, clear the variable so the fallback kicks in:
+at the start of your session and reuse the result:
 
 ```bash
 if [[ "$(uname)" == "Linux" ]]; then
@@ -44,38 +43,36 @@ if [[ "$(uname)" == "Linux" ]]; then
 else
     JUST_CMD="sjust"
 fi
-
-if ! command -v "$JUST_CMD" &>/dev/null; then
-    JUST_CMD=""
-fi
 ```
 
 ## Formatting commands
 
 ### Markdown (.md)
 
-When `$JUST_CMD` is set (preferred):
+Try the Just recipe first. If it fails for any reason (command not found,
+recipe missing, permission error), fall back to the `npx` equivalent:
+
+**Preferred (Just recipe):**
 
 ```bash
 $JUST_CMD format-md <path> [<path> ...]
 ```
 
-When `$JUST_CMD` is empty (fallback):
+**Fallback (direct npx):**
 
 ```bash
 npx --yes prettier@3 --write <path> [<path> ...]
 ```
 
 The fallback runs the exact same command the Just recipe uses under the hood,
-so the result is identical.
+so the result is identical. The key thing is that the agent always tries the
+Just recipe first -- it may carry project-specific Prettier configuration or
+version pins -- and only resorts to `npx` when that fails.
 
 - Pass the **specific file path(s)** you just wrote or edited.
 - You can pass multiple paths in a single call if you modified several files.
 - Do **not** run the command without a path argument -- that would format every
   Markdown file in the project, which is slow and noisy.
-- Prefer the Just recipe when available. It ensures the project's Prettier
-  version and config are respected. Fall back to `npx --yes prettier@3` only
-  when the Just runner is not installed.
 
 **Example -- single file:**
 
@@ -92,15 +89,15 @@ $JUST_CMD format-md README.md docs/setup.md CHANGELOG.md
 ### Checking without writing
 
 To verify whether files are correctly formatted without modifying them, use the
-check variant.
+check variant. Same try-then-fallback pattern:
 
-When `$JUST_CMD` is set:
+**Preferred:**
 
 ```bash
 $JUST_CMD format-md-check <path> [<path> ...]
 ```
 
-When `$JUST_CMD` is empty (fallback):
+**Fallback:**
 
 ```bash
 npx --yes prettier@3 --check <path> [<path> ...]
@@ -124,8 +121,8 @@ Example warning:
 
 ## Rules summary
 
-1. After writing or editing any `.md` file, format it: try `$JUST_CMD format-md <path>`, fall back to `npx --yes prettier@3 --write <path>`.
+1. After writing or editing any `.md` file, format it: try `$JUST_CMD format-md <path>` first, fall back to `npx --yes prettier@3 --write <path>` if it fails.
 2. Always pass explicit file paths -- never run without arguments.
 3. Never format Markdown by hand -- delegate to the command.
-4. Prefer the Just recipe when available; fall back to `npx` when it is not.
-5. On failure of both methods, warn the user and move on.
+4. Always try the Just recipe first; only fall back to `npx` when it fails.
+5. If both methods fail, warn the user and move on.
