@@ -13,11 +13,17 @@ AGENTS.md is an open format ([agents.md specification](https://agents.md/)) that
 
 Determine the mode based on what exists in the project root:
 
-1. **Pkg-managed project detected** (`fs-pkg.json` exists): warn the user that AGENTS.md is managed by the infrastructure package system. Suggest editing `.agents/AGENTS.project.md` for project-specific additions instead. **Stop — do not generate.**
+1. **Pkg-managed project** (`fs-pkg.json` exists): the root AGENTS.md is managed by the infrastructure package system — **never overwrite it**. Instead, check for `.agents/AGENTS.project.md`:
+
+   a. **File exists and has real content** (not just whitespace or empty frontmatter): warn the user that both AGENTS.md and the project additions file are already populated. **Stop — do not generate.**
+
+   b. **File exists but is empty**: switch to **Project Additions mode** — run the normal discovery, but generate content into `.agents/AGENTS.project.md` instead of the root AGENTS.md. Focus on project-specific additions that complement the pkg-managed base (project overview, setup specifics, code style overrides, testing commands, etc.). Do not duplicate conventions already covered by the pkg-managed AGENTS.md.
+
+   c. **File does not exist**: check whether the root AGENTS.md references `.agents/AGENTS.project.md`. If referenced (the slot exists but the file is missing), offer to create and populate it — same as case (b). If not referenced, warn the user that this is a pkg-managed project with no project extension point and suggest they create `.agents/AGENTS.project.md` manually or update their package to include the reference.
 
 2. **No AGENTS.md exists** → **Scaffold mode**: discover the project and generate a full AGENTS.md.
 
-3. **AGENTS.md exists** → **Review mode**: discover the project, compare against the existing AGENTS.md, report gaps and suggest updates.
+3. **AGENTS.md exists** (not pkg-managed) → **Review mode**: discover the project, compare against the existing AGENTS.md, report gaps and suggest updates.
 
 ## Step 1: Discover the Project
 

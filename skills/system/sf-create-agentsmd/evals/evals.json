@@ -43,15 +43,15 @@
     },
     {
       "id": 3,
-      "name": "pkg-managed-bailout",
+      "name": "pkg-managed-detection",
       "prompt": "Create an AGENTS.md for this project please.",
-      "expected_output": "Should detect fs-pkg.json, warn that AGENTS.md is managed by the package system, suggest editing .agents/AGENTS.project.md instead, and stop without generating a full AGENTS.md.",
+      "expected_output": "Should detect fs-pkg.json and recognize the project is pkg-managed. Should check for .agents/AGENTS.project.md — if empty or missing, switch to Project Additions mode and generate content into .agents/AGENTS.project.md (not root AGENTS.md). If .agents/AGENTS.project.md has content, stop. Should never overwrite the pkg-managed root AGENTS.md.",
       "files": [],
       "assertions": [
         {"name": "detects_pkg", "type": "contains", "check": "Mentions fs-pkg.json or package-managed project"},
-        {"name": "warns_user", "type": "behavior", "check": "Warns user not to create AGENTS.md manually"},
-        {"name": "suggests_project_md", "type": "contains", "check": "Suggests .agents/AGENTS.project.md as alternative"},
-        {"name": "does_not_generate", "type": "not_contains", "check": "Does NOT output a full AGENTS.md with sections like Project Overview, Setup, etc."}
+        {"name": "checks_project_md", "type": "behavior", "check": "Checks whether .agents/AGENTS.project.md exists and whether it has content"},
+        {"name": "targets_project_md", "type": "contains", "check": "Targets .agents/AGENTS.project.md for output, not root AGENTS.md"},
+        {"name": "does_not_overwrite_root", "type": "not_contains", "check": "Does NOT overwrite or replace the pkg-managed root AGENTS.md"}
       ]
     }
   ]
