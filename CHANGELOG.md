@@ -12,6 +12,7 @@ Changes are grouped by date.
 
 ### Added
 
+- `config/catalog.json`: machine-readable short descriptions for all system skills and agents, consumed by `sparkdock-agents-status` for a DESCRIPTION column in the terminal table -- includes JSON Schema (`config/catalog.schema.json`) for editor support and validation
 - `sf-create-agentsmd` skill: discovery-driven AGENTS.md generator and reviewer for non-pkg projects -- inspects project structure, languages, package managers, task runners, Docker setup, and CI config, then generates or audits an AGENTS.md with supply chain safety (live registry checks, 5-day release quarantine), tiered command safety policy, git workflow conventions, and OpenSpec change management
 - `AGENTS.md`: distribution section documenting the sparkdock sync pipeline (`skills/system/` and `agents/system/` to developer workstations via `sjust sf-agents-refresh`)
 

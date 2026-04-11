@@ -1,0 +1,43 @@
+{
+  "$schema": "./catalog.schema.json",
+  "skills": {
+    "adr-creator": {
+      "description": "Create Architecture Decision Records (Nygard format)"
+    },
+    "agentic-security-audit": {
+      "description": "Audit AI agent configs for OWASP agentic risks"
+    },
+    "auto-format-doc": {
+      "description": "Auto-format files with external formatters (Just)"
+    },
+    "code-security-audit": {
+      "description": "Multi-phase security audit for web apps and APIs"
+    },
+    "doc-coauthoring": {
+      "description": "Co-author docs, proposals, and technical specs"
+    },
+    "gh": {
+      "description": "GitHub CLI (issues, PRs, Actions, releases)"
+    },
+    "githuman": {
+      "description": "Review AI-generated code changes before committing"
+    },
+    "glab": {
+      "description": "GitLab CLI (issues, MRs, pipelines, repos)"
+    },
+    "playwright-cli": {
+      "description": "Browser automation, testing, screenshots, scraping"
+    },
+    "sf-create-agentsmd": {
+      "description": "Generate and review AGENTS.md for projects"
+    },
+    "skill-creator": {
+      "description": "Create, iterate, and benchmark agent skills"
+    }
+  },
+  "agents": {
+    "the-architect": {
+      "description": "Discovery, brainstorming, architecture oracle"
+    }
+  }
+}

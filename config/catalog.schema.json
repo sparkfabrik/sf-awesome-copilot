@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "catalog.schema.json",
+  "title": "Resource Catalog",
+  "description": "Machine-readable short descriptions for system skills and agents. Consumed by sparkdock-agents-status for the DESCRIPTION column.",
+  "type": "object",
+  "required": ["skills", "agents"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference for editor support."
+    },
+    "skills": {
+      "type": "object",
+      "description": "System skills keyed by skill name.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description"],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Short human-friendly description for terminal table display (max ~60 chars)."
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "description": "System agents keyed by agent name.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description"],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Short human-friendly description for terminal table display (max ~60 chars)."
+          }
+        }
+      }
+    }
+  }
+}
