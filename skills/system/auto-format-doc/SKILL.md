@@ -45,22 +45,34 @@ else
 fi
 ```
 
-When in doubt, default to `sjust`.
-
 ## Formatting commands
 
 ### Markdown (.md)
+
+Try the Just recipe first. If it fails for any reason (command not found,
+recipe missing, permission error), fall back to the `npx` equivalent:
+
+**Preferred (Just recipe):**
 
 ```bash
 $JUST_CMD format-md <path> [<path> ...]
 ```
 
+**Fallback (direct npx):**
+
+```bash
+npx --yes prettier@3 --write <path> [<path> ...]
+```
+
+The fallback runs the exact same command the Just recipe uses under the hood,
+so the result is identical. The key thing is that the agent always tries the
+Just recipe first -- it may carry project-specific Prettier configuration or
+version pins -- and only resorts to `npx` when that fails.
+
 - Pass the **specific file path(s)** you just wrote or edited.
 - You can pass multiple paths in a single call if you modified several files.
 - Do **not** run the command without a path argument -- that would format every
   Markdown file in the project, which is slow and noisy.
-- Do **not** run `npx prettier` directly. Always go through the Just recipe so
-  the project's Prettier version and config are respected.
 
 **Example -- single file:**
 
@@ -77,10 +89,18 @@ $JUST_CMD format-md README.md docs/setup.md CHANGELOG.md
 ### Checking without writing
 
 To verify whether files are correctly formatted without modifying them, use the
-check variant:
+check variant. Same try-then-fallback pattern:
+
+**Preferred:**
 
 ```bash
 $JUST_CMD format-md-check <path> [<path> ...]
+```
+
+**Fallback:**
+
+```bash
+npx --yes prettier@3 --check <path> [<path> ...]
 ```
 
 This exits with a non-zero status if any file is not formatted. It is useful
@@ -89,20 +109,20 @@ committing to confirm everything is clean. It never writes to disk.
 
 ## Error handling
 
-If the format command fails (e.g., `npx` is not installed, network issues
-downloading Prettier, or the Just recipe is missing), **warn the user and
-continue**. Formatting is cosmetic -- a failure should not block the task.
+If both the Just recipe and the `npx` fallback fail (e.g., Node.js is not
+installed at all), **warn the user and continue**. Formatting is cosmetic -- a
+failure should not block the task.
 
 Example warning:
 
-> Markdown formatting with `$JUST_CMD format-md` failed. The file content is
-> correct but may not match the project's formatting conventions. You can run
-> the formatter manually later.
+> Markdown formatting failed (neither `$JUST_CMD format-md` nor
+> `npx prettier` succeeded). The file content is correct but may not match the
+> project's formatting conventions. You can run the formatter manually later.
 
 ## Rules summary
 
-1. After writing or editing any `.md` file, run `$JUST_CMD format-md <path>`.
+1. After writing or editing any `.md` file, format it: try `$JUST_CMD format-md <path>` first, fall back to `npx --yes prettier@3 --write <path>` if it fails.
 2. Always pass explicit file paths -- never run without arguments.
 3. Never format Markdown by hand -- delegate to the command.
-4. Never call `npx prettier` directly -- use the Just recipe.
-5. On failure, warn the user and move on.
+4. Always try the Just recipe first; only fall back to `npx` when it fails.
+5. If both methods fail, warn the user and move on.

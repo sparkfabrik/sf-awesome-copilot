@@ -12,7 +12,8 @@ Changes are grouped by date.
 
 ### Added
 
-- `auto-format-doc` skill: auto-format files after creating or modifying them using external formatters managed by Just recipes (`sjust` on macOS, `ajust` on Linux) -- currently supports Markdown via Prettier (`format-md` recipe), with warn-and-continue error handling
+- `auto-format-doc` skill: auto-format files after creating or modifying them using external formatters managed by Just recipes (`sjust` on macOS, `ajust` on Linux) -- supports Markdown via Prettier with try-Just-then-npx fallback chain (`format-md` recipe preferred, `npx prettier@3` when it fails), format-check support, and warn-and-continue error handling
+- `auto-format-doc` skill: 6 eval scenarios (create, edit, multi-file, implicit trigger, fallback-on-recipe-failure, check-without-writing)
 
 ## [2026-04-08]
 
