@@ -105,6 +105,7 @@ Content with examples, commands, code snippets...
 2. Add the file to the appropriate directory under `agents/`
 3. Test with GitHub Copilot
 4. **Update `SYSTEM.md`** — if the agent belongs to `system/`, add or remove it from the "Available agents" list
+5. **Update `config/catalog.json`** — add or update the short description in the `agents` section
 
 System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Each tool gets its own file in a subfolder, but the prompt body must be kept identical across tools — only the YAML frontmatter differs to match each tool's configuration format. There is no shared standard yet.
 
@@ -115,7 +116,8 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 3. Add any bundled assets (scripts, templates, data) to the skill folder
 4. Test with GitHub Copilot
 5. **Update `SYSTEM.md`** — if the skill belongs to `system/`, add or remove it from the "Available skills" list
-6. **Update `README.md`** — add or remove the skill from the skills table
+6. **Update `config/catalog.json`** — add or update the short description in the `skills` section
+7. **Update `README.md`** — add or remove the skill from the skills table
 
 ## Git Workflow
 
@@ -158,7 +160,7 @@ Requires `jq` and `curl`.
 1. Add an entry to `config/upstream-skills.json` (see schema below).
 2. Run `./scripts/sync-skill.sh <name>` to pull the skill.
 3. Optionally create `skills/system/<name>/custom-sections.md` with local additions.
-4. Update `SYSTEM.md`, `README.md`, and `CHANGELOG.md`.
+4. Update `SYSTEM.md`, `README.md`, `config/catalog.json`, and `CHANGELOG.md`.
 
 ### Manifest schema (`upstream-skills.json`)
 

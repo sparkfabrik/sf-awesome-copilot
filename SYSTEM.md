@@ -36,6 +36,15 @@ Skills are installed to a shared standard path used by all coding agent tools:
 | -------------------------------- |
 | `~/.agents/skills/<skill-name>/` |
 
+## Catalog metadata
+
+`config/catalog.json` provides machine-readable short descriptions for all
+system skills and agents. It is consumed by `sparkdock-agents-status` to display
+a DESCRIPTION column in the terminal table. The schema is defined in
+`config/catalog.schema.json`.
+
+When adding or modifying a system skill or agent, update the catalog entry too.
+
 ## Available agents
 
 - **the-architect** -- Conversational AI oracle for discovery, brainstorming, architecture, and general knowledge. Not a code agent.
