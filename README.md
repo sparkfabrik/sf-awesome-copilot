@@ -27,6 +27,7 @@ Inspired by [github/awesome-copilot](https://github.com/github/awesome-copilot/t
 | **agentic-security-audit** | AI agent security audit -- instruction files, MCP configs, LLM integration, OWASP Agentic Top 10 | `skills/system/agentic-security-audit/` |
 | **githuman**               | Review AI-generated code before committing via GitHuman Docker instances (sjust/ajust)           | `skills/system/githuman/`               |
 | **auto-format-doc**        | Auto-format files after writing/editing them via Just recipes (sjust/ajust) -- Markdown/Prettier | `skills/system/auto-format-doc/`        |
+| **sf-create-agentsmd**     | Discovery-driven AGENTS.md generator and reviewer with supply chain safety and command policy     | `skills/system/sf-create-agentsmd/`     |
 
 Skills are documents that provide context to Copilot on specific topics. Each skill contains:
 
