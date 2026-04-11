@@ -14,6 +14,37 @@ This content is largely AI-generated and experimental.
 ├── skills/           # Agent Skills folders (each with SKILL.md and optional bundled assets)
 ```
 
+## Distribution
+
+This repository is the **upstream source** for system skills and agent profiles
+distributed to developer workstations via [sparkdock](https://github.com/sparkfabrik/sparkdock).
+
+The sync is managed by `sparkdock-agents-sync` and triggered with:
+
+```bash
+sjust sf-agents-refresh          # sync all skills and agents
+sjust sf-agents-refresh --force  # overwrite local modifications
+sjust sf-agents-status           # show installed resources and update status
+```
+
+### What gets synced
+
+| Source (this repo) | Install target | Description |
+|--------------------|---------------|-------------|
+| `skills/system/<name>/` | `~/.agents/skills/<name>/` | Agent skills (SKILL.md + bundled assets) |
+| `agents/system/<name>/copilot/` | `~/.copilot/agents/` | GitHub Copilot agent profiles |
+| `agents/system/<name>/opencode/` | `~/.config/opencode/agents/` | OpenCode agent profiles |
+
+The sync is SHA-tracked via a manifest at `~/.cache/sparkdock/sf-skills-manifest.json`.
+Local modifications are detected and preserved unless `--force` is used.
+
+### Implications for contributors
+
+- **Skills and agents created here reach all team members** via `sjust sf-agents-refresh`.
+- Test changes locally before merging — they will be distributed automatically.
+- The `skills/system/` and `agents/system/` directories are the distribution source of truth.
+- Non-system skills (e.g., `skills/drupal/`) are not synced and exist only in this repo.
+
 ## File Formats
 
 ### Agent Files (*.agent.md)
