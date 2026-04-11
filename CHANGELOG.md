@@ -15,6 +15,10 @@ Changes are grouped by date.
 - `sf-create-agentsmd` skill: discovery-driven AGENTS.md generator and reviewer for non-pkg projects -- inspects project structure, languages, package managers, task runners, Docker setup, and CI config, then generates or audits an AGENTS.md with supply chain safety (live registry checks, 5-day release quarantine), tiered command safety policy, git workflow conventions, and OpenSpec change management
 - `AGENTS.md`: distribution section documenting the sparkdock sync pipeline (`skills/system/` and `agents/system/` to developer workstations via `sjust sf-agents-refresh`)
 
+### Removed
+
+- `create-agentsmd` skill: removed generic upstream skill (from `github/awesome-copilot`) -- superseded by `sf-create-agentsmd` which includes discovery-driven generation, supply chain safety, command safety policy, and monorepo considerations
+
 ## [2026-04-09]
 
 ### Added

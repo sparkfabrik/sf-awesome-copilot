@@ -1,0 +1,58 @@
+{
+  "skill_name": "sf-create-agentsmd",
+  "evals": [
+    {
+      "id": 1,
+      "name": "scaffold-drupal-docker",
+      "prompt": "I just started a new Drupal project with a Python RAG backend. The project has a Justfile, compose.yml with multiple services, pytest tests, openspec directory, and a GitLab CI pipeline. There's no AGENTS.md yet. Please create one for this project.",
+      "expected_output": "A complete AGENTS.md with all mandatory sections (Project Overview, Setup, Key Conventions, Code Style, Git Workflow, Package Management with Dependency Safety, Testing, Command Safety, Important Rules) plus conditional sections for OpenSpec and CI/CD. Should detect Docker-first convention, document Justfile commands, include live registry checks for Python/PyPI, and classify actual commands from the Justfile into safety tiers.",
+      "files": [],
+      "assertions": [
+        {"name": "has_project_overview", "type": "contains", "check": "Project Overview section exists"},
+        {"name": "has_setup", "type": "contains", "check": "Setup section with Docker-based commands"},
+        {"name": "has_docker_first", "type": "contains", "check": "Mentions Docker-first convention or running commands inside Docker"},
+        {"name": "has_justfile_commands", "type": "contains", "check": "References actual Justfile recipes (just build, just test, etc.)"},
+        {"name": "has_git_workflow", "type": "contains", "check": "Git workflow with commits, branching, and rebasing subsections"},
+        {"name": "has_conventional_commits", "type": "contains", "check": "Mentions Conventional Commits format"},
+        {"name": "has_package_management", "type": "contains", "check": "Package management section with Python/uv"},
+        {"name": "has_dependency_safety", "type": "contains", "check": "Dependency Safety subsection with live registry check commands"},
+        {"name": "has_pypi_check", "type": "contains", "check": "PyPI curl command for version verification"},
+        {"name": "has_5day_quarantine", "type": "contains", "check": "5-day release quarantine rule"},
+        {"name": "has_testing", "type": "contains", "check": "Testing section mentioning pytest"},
+        {"name": "has_command_safety", "type": "contains", "check": "Command Safety section with Safe/Dangerous/Destructive tiers"},
+        {"name": "has_important_rules", "type": "contains", "check": "Important Rules section aggregating key guardrails"},
+        {"name": "has_openspec", "type": "contains", "check": "OpenSpec Change Management section"},
+        {"name": "has_ci_cd", "type": "contains", "check": "CI/CD section mentioning GitLab CI"},
+        {"name": "no_makefile_reference", "type": "not_contains", "check": "Should not reference Makefile when Justfile exists"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "review-existing-agentsmd",
+      "prompt": "This project already has an AGENTS.md. Please review it for completeness and suggest any missing sections or improvements based on what you find in the project.",
+      "expected_output": "A gap analysis comparing the existing AGENTS.md against the skill blueprint. Should identify missing sections (e.g., Dependency Safety with registry checks, Command Safety tiers, OpenSpec section if openspec/ exists) and stale or incomplete content. Should NOT regenerate the whole file unprompted — should present findings and offer to fix.",
+      "files": [],
+      "assertions": [
+        {"name": "reads_existing_agentsmd", "type": "behavior", "check": "Reads and acknowledges the existing AGENTS.md content"},
+        {"name": "identifies_gaps", "type": "contains", "check": "Lists specific missing or incomplete sections"},
+        {"name": "mentions_dependency_safety", "type": "contains", "check": "Flags missing or incomplete dependency safety / registry checks"},
+        {"name": "mentions_command_safety", "type": "contains", "check": "Flags missing command safety tiers if absent"},
+        {"name": "offers_to_fix", "type": "behavior", "check": "Offers to generate missing sections or rewrite, rather than just dumping a full replacement"},
+        {"name": "no_hallucinated_tools", "type": "not_contains", "check": "Does not mention tools or configs that don't exist in the project"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "pkg-managed-bailout",
+      "prompt": "Create an AGENTS.md for this project please.",
+      "expected_output": "Should detect fs-pkg.json, warn that AGENTS.md is managed by the package system, suggest editing .agents/AGENTS.project.md instead, and stop without generating a full AGENTS.md.",
+      "files": [],
+      "assertions": [
+        {"name": "detects_pkg", "type": "contains", "check": "Mentions fs-pkg.json or package-managed project"},
+        {"name": "warns_user", "type": "behavior", "check": "Warns user not to create AGENTS.md manually"},
+        {"name": "suggests_project_md", "type": "contains", "check": "Suggests .agents/AGENTS.project.md as alternative"},
+        {"name": "does_not_generate", "type": "not_contains", "check": "Does NOT output a full AGENTS.md with sections like Project Overview, Setup, etc."}
+      ]
+    }
+  ]
+}

@@ -440,6 +440,15 @@ Aggregated guardrails — the critical "always/never" rules for agents working o
 - [...]
 ```
 
+## Monorepo Considerations
+
+For monorepos with multiple packages or services under `src/`:
+
+- Place the main AGENTS.md at the repository root covering shared conventions (git workflow, command safety, supply chain safety).
+- Create additional AGENTS.md files in subproject directories for package-specific instructions (language-specific linting, test commands, build steps).
+- The closest AGENTS.md file takes precedence for any given location — agents read the nearest one first.
+- Keep shared rules in the root file to avoid duplication across subproject files.
+
 ## Writing Guidelines
 
 - **Be specific.** Include exact commands, not vague descriptions. Agents execute what you write.

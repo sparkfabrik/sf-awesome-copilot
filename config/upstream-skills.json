@@ -23,12 +23,6 @@
       "path": "skills/doc-coauthoring"
     },
     {
-      "name": "create-agentsmd",
-      "repo": "github/awesome-copilot",
-      "ref": "main",
-      "path": "skills/create-agentsmd"
-    },
-    {
       "name": "githuman",
       "repo": "mcollina/githuman-skills",
       "ref": "main",
