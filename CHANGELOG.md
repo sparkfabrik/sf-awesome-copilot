@@ -8,6 +8,16 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+## [2026-04-13]
+
+### Added
+
+- `glab` skill: group-level API patterns (list projects in a group, subgroups, descendant projects) in both SKILL.md and `references/api-patterns.md`
+
+### Fixed
+
+- `glab` skill: document `--paginate` concatenation pitfall -- paginated responses produce invalid JSON (`[...][...]`) that breaks `jq`; added `jq -s 'add'` workaround with examples
+
 ## [2026-04-11]
 
 ### Added
