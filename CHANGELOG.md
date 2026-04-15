@@ -8,6 +8,10 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+### Added
+
+- `drupal-major-upgrade-validation` skill (`skills/drupal/`): validate Drupal major version upgrades (e.g., D10 to D11) by capturing a browser-automation baseline on the stable branch, applying the upgrade, re-running the same tests, and producing a structured comparison report with per-page status, console error diffs, and screenshot references
+
 ### Changed
 
 - README: Removed VS Code Insiders requirement for `chat.useAgentSkills` directive -- Agent Skills are now available in the standard VS Code release
