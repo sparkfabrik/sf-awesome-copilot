@@ -193,7 +193,15 @@ Before touching any branch, gather project context from the
    - Wait for the page to fully load
    - Record the page title
    - Record any console errors
-   - Take a screenshot: `.playwright-cli/baseline/NN-test-name.png`
+   - Take a **full-page screenshot** that captures the entire page, not just the
+     visible viewport. Use `playwright-cli run-code` with Playwright's native
+     full-page option:
+     ```bash
+     playwright-cli run-code "async page => {
+       await page.screenshot({ path: '.playwright-cli/baseline/NN-test-name.png', fullPage: true });
+     }"
+     ```
+     This scrolls the page internally and stitches the result into a single image.
    - For form pages, verify that fields are present and interactive
 
    **Save the test manifest** -- the ordered list of (number, name, URL, type)
@@ -250,7 +258,13 @@ Before touching any branch, gather project context from the
 2. **Replay the test manifest** saved in Phase 2. Visit the exact same URLs in
    the same order, using the same screenshot names. Do not re-discover the menu
    or re-sample subpages -- use the recorded manifest so the comparison is
-   apples-to-apples. Save screenshots to the `validation/` directory.
+   apples-to-apples. Save full-page screenshots to the `validation/` directory
+   using the same `run-code` technique from Phase 2:
+   ```bash
+   playwright-cli run-code "async page => {
+     await page.screenshot({ path: '.playwright-cli/validation/NN-test-name.png', fullPage: true });
+   }"
+   ```
 
 3. **Editorial checks:** Validate that content creation workflows still function
    after the upgrade. All test content created in this step is deleted at the end.
@@ -436,6 +450,13 @@ Validation screenshots: `.playwright-cli/validation/`
 - **Large test plans:** For projects with many pages, prioritize: homepage, main
   content types, search, admin login, and content creation. Skip repetitive
   variations of the same page type.
+
+- **Full-page screenshots:** Always use `page.screenshot({ fullPage: true })` via
+  `playwright-cli run-code` instead of the plain `playwright-cli screenshot`
+  command. The plain command only captures the visible viewport, missing content
+  below the fold. Full-page mode scrolls internally and stitches the entire page
+  into a single image, which is essential for detecting layout or rendering issues
+  further down the page.
 
 - **Resuming interrupted validations:** If the process is interrupted, check which
   screenshots already exist in `.playwright-cli/baseline/` and
