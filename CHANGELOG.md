@@ -8,6 +8,10 @@ Changes are grouped by date.
 
 ## [Unreleased]
 
+### Changed
+
+- README: Removed VS Code Insiders requirement for `chat.useAgentSkills` directive -- Agent Skills are now available in the standard VS Code release
+
 ## [2026-04-13]
 
 ### Added

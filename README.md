@@ -46,12 +46,7 @@ Browse the `agents/` directory for available agents.
 
 ### Prerequisites
 
-> ⚠️ **Warning:** Agent Skills support in VS Code is currently in preview and only available in **VS Code Insiders**.
-
-To enable Agent Skills:
-
-1. Install [VS Code Insiders](https://code.visualstudio.com/insiders/)
-2. Enable the setting in your workspace or user settings:
+To enable Agent Skills, set the following configuration in your workspace or user settings:
 
 **Via Settings UI:**
 
