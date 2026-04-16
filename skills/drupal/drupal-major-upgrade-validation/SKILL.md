@@ -416,6 +416,20 @@ Validation screenshots: `.playwright-cli/validation/`
 <list any issues found, recommended fixes, or follow-up actions>
 ```
 
+### Posting Results to External Systems
+
+**IMPORTANT: Never post reports, comments, or any content to external systems
+(GitLab issues, GitHub PRs, Slack, etc.) without explicit human approval.**
+
+Before posting:
+1. Show the full report content to the user in the conversation.
+2. Ask for explicit confirmation to post (e.g., "Shall I post this to issue #N?").
+3. Only post after the user approves. If the user requests changes, revise and
+   show again before posting.
+
+This applies to all external interactions: creating issue comments, uploading
+attachments referenced in reports, updating issue labels or status, etc.
+
 ### Status Classification
 
 - **PASS:** Page works identically or better in the upgraded version
