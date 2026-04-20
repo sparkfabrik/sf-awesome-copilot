@@ -11,7 +11,7 @@ Changes are grouped by date.
 ### Added
 
 - `sf-commit-convention` skill (`skills/system/`): enforce SparkFabrik commit message and branch naming conventions -- conventional commits (preferred) with automatic legacy format fallback via git hook detection, mandatory issue references (same-project and cross-project), branch naming (`feat/<issue>-<desc>`, `fix/<issue>-<desc>`, etc.), and `Assisted-by` AI trailer on every commit
-- `skill-creator` custom section: document `opencode run` as an alternative to `claude -p` for running skill evals, including OpenCode JSON event schema and skill-trigger detection pattern
+- `skill-creator` custom section: document `opencode run` as an alternative to `claude -p` for running skill evals, including OpenCode JSON event schema and skill-trigger detection pattern; enforce `github-copilot/gpt-4.1` as default model for evals to avoid premium model costs
 - `gh` and `glab` skills: warn about accidental issue auto-linking -- wrap `#N` in backticks when used as examples rather than intentional references
 - `drupal-major-upgrade-validation` skill (`skills/drupal/`): validate Drupal major version upgrades (e.g., D10 to D11) by capturing a browser-automation baseline on the stable branch, applying the upgrade, re-running the same tests, and producing a structured comparison report with per-page status, console error diffs, and screenshot references
 

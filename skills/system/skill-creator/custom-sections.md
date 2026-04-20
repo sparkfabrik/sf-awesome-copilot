@@ -19,15 +19,15 @@ For description optimization, skip the scripts and apply the principles manually
 
 ### Running test cases with OpenCode
 
-Instead of `claude -p`, use `opencode run` to execute test prompts:
+Instead of `claude -p`, use `opencode run` to execute test prompts. Always use `github-copilot/gpt-4.1` for eval runs — do not use premium models (claude-opus, o1, etc.) for iterative skill testing to avoid unnecessary costs.
 
 ```bash
-opencode run --model <provider/model> --pure "<prompt>" 2>&1
+opencode run --model github-copilot/gpt-4.1 --pure "<prompt>" 2>&1
 ```
 
 Key flags:
 - `--pure` — runs without external plugins, for reproducible results
-- `--model` — specify the model (e.g. `github-copilot/gpt-4.1`)
+- `--model` — always use `github-copilot/gpt-4.1` for evals
 - `--format json` — outputs NDJSON events for programmatic parsing
 
 #### OpenCode JSON event schema
