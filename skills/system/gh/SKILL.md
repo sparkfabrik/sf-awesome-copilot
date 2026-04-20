@@ -122,9 +122,9 @@ This applies to **every** piece of content the agent creates, regardless of leng
 > )"
 > ```
 
----
+> **Accidental issue links:** GitHub auto-links `#N` patterns in markdown to issues. When `#N` appears as an example, in a table, or in any context where it is not an intentional issue reference, wrap it in backticks (`` `#18` ``) to prevent auto-linking. Only leave `#N` bare when you want GitHub to create an actual issue link (e.g., `Closes #42` in a PR body).
 
-## Issues
+---
 
 ```bash
 gh issue create --title "Bug: ..." --body "..." --label bug --label "high-priority" --assignee "@me"

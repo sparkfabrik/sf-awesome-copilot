@@ -159,9 +159,9 @@ This applies to **every** piece of content the agent creates, regardless of leng
 > )"
 > ```
 
----
+> **Accidental issue links:** GitLab auto-links `#N` patterns in markdown to issues. When `#N` appears as an example, in a table, or in any context where it is not an intentional issue reference, wrap it in backticks (`` `#18` ``) to prevent auto-linking. Only leave `#N` bare when you want GitLab to create an actual issue link (e.g., `Closes #42` in an MR body).
 
-## Issues
+---
 
 ```bash
 glab issue create --title "Bug: ..." --description "..." --label "type::bug,priority::high" --assignee "@me"
@@ -580,6 +580,20 @@ glab api -X POST projects/:id/issues -f title="New" -f description="..." # POST
 glab api -X PUT projects/:id/merge_requests/15 -f title="Updated"   # PUT
 glab api projects/:id/issues --paginate                              # paginate
 ```
+
+### `-f` vs `-F` -- file reading with `@`
+
+`-f key=@file` sends the **literal string** `@file` as the value. `-F key=@file` **reads the file** and sends its content. Using `-f` with `@` silently corrupts the data -- no error, just the wrong value.
+
+```bash
+# WRONG -- sends literal "@/tmp/body.txt":
+glab api -X PUT projects/:id/issues/42/notes/99999 -f body=@/tmp/body.txt
+
+# CORRECT -- sends file content:
+glab api -X PUT projects/:id/issues/42/notes/99999 -F body=@/tmp/body.txt
+```
+
+Use `-f` for short inline values (`-f title="Bug fix"`), `-F` for file-backed content (`-F body=@/tmp/note.txt`).
 
 > **`--paginate` concatenation:** `--paginate` outputs each page's JSON array back-to-back (`[...][...]`), which is not valid JSON. Always merge with `jq -s 'add'`:
 >
