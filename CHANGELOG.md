@@ -16,6 +16,10 @@ Changes are grouped by date.
 
 - README: Removed VS Code Insiders requirement for `chat.useAgentSkills` directive -- Agent Skills are now available in the standard VS Code release
 
+### Fixed
+
+- `glab` skill: document `-f` vs `-F` flag difference for `glab api` — `-f key=@file` sends the literal string while `-F key=@file` reads the file content; using the wrong flag silently corrupts note/description updates
+
 ## [2026-04-13]
 
 ### Added
