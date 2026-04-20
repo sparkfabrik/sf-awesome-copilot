@@ -581,6 +581,20 @@ glab api -X PUT projects/:id/merge_requests/15 -f title="Updated"   # PUT
 glab api projects/:id/issues --paginate                              # paginate
 ```
 
+### `-f` vs `-F` -- file reading with `@`
+
+`-f key=@file` sends the **literal string** `@file` as the value. `-F key=@file` **reads the file** and sends its content. Using `-f` with `@` silently corrupts the data -- no error, just the wrong value.
+
+```bash
+# WRONG -- sends literal "@/tmp/body.txt":
+glab api -X PUT projects/:id/issues/42/notes/99999 -f body=@/tmp/body.txt
+
+# CORRECT -- sends file content:
+glab api -X PUT projects/:id/issues/42/notes/99999 -F body=@/tmp/body.txt
+```
+
+Use `-f` for short inline values (`-f title="Bug fix"`), `-F` for file-backed content (`-F body=@/tmp/note.txt`).
+
 > **`--paginate` concatenation:** `--paginate` outputs each page's JSON array back-to-back (`[...][...]`), which is not valid JSON. Always merge with `jq -s 'add'`:
 >
 > ```bash
