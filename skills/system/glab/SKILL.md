@@ -23,6 +23,7 @@ Before running any `glab` command, determine the project context:
 
 1. **User provided a GitLab URL** (e.g., `https://gitlab.example.com/team/project/-/issues/42` or `https://gitlab.example.com/team/project/-/boards/1`):
    Extract the **hostname** and **group/project path** from the URL, then use `GITLAB_HOST` + `-R`:
+
    ```bash
    # URL: https://gitlab.example.com/team/project/-/boards/123
    # Extracted hostname: gitlab.example.com
@@ -87,15 +88,53 @@ glab auth login --hostname <hostname> --token <token> --use-keyring
 
 ## Core terminology
 
-| GitHub | GitLab | CLI |
-|--------|--------|-----|
-| Pull Request | **Merge Request** | `glab mr` |
-| Gist | **Snippet** | `glab snippet` |
-| Actions | **CI/CD** | `glab ci` |
-| `OWNER/REPO` | `GROUP/PROJECT` (supports nesting: `GROUP/SUBGROUP/PROJECT`) | -- |
-| PR `#15` | MR `!15` | -- |
+| GitHub       | GitLab                                                       | CLI            |
+| ------------ | ------------------------------------------------------------ | -------------- |
+| Pull Request | **Merge Request**                                            | `glab mr`      |
+| Gist         | **Snippet**                                                  | `glab snippet` |
+| Actions      | **CI/CD**                                                    | `glab ci`      |
+| `OWNER/REPO` | `GROUP/PROJECT` (supports nesting: `GROUP/SUBGROUP/PROJECT`) | --             |
+| PR `#15`     | MR `!15`                                                     | --             |
 
-Issues use `#`, merge requests use `!`.
+Issues use `#`, merge requests use `!`. When writing content (descriptions, comments, notes), always use fully-qualified references -- see "Fully-qualified references" below.
+
+### Fully-qualified references
+
+When writing any content that will be posted to GitLab -- issue descriptions, MR descriptions, comments, notes -- **always use fully-qualified references** for issues and merge requests. Short references like `#42` or `!15` only resolve within the same project. They break in group-level views, cross-project links, boards, notifications, and any context where the reader is not already inside the originating project.
+
+**Correct (fully-qualified):**
+
+```
+Closes team/project#42
+See also team/project!15
+
+# Nested subgroups work the same way:
+Relates to team/frontend/webapp#8
+Superseded by team/backend/api!102
+```
+
+**Incorrect (short refs -- fragile):**
+
+```
+Closes #42
+See also !15
+```
+
+**How to get the project path:** resolve it from the API before writing content. Do this every time -- the user may switch projects or reference resources across multiple projects during a session.
+
+```bash
+# For the current repo:
+glab api projects/:id | jq -r '.path_with_namespace'
+# → team/subgroup/project
+
+# For a different project (URL-encode slashes):
+GITLAB_HOST=gitlab.example.com glab api \
+  "projects/team%2Ffrontend%2Fwebapp" | jq -r '.path_with_namespace'
+```
+
+When referencing resources from **multiple projects** in the same description or comment, resolve each project path individually.
+
+This rule applies **only to written content** (descriptions, comments, closing keywords). CLI arguments like `glab issue view 42` target the current project implicitly and do not need qualification.
 
 ---
 
@@ -178,12 +217,12 @@ glab issue reopen 42
 
 `glab` does **not** have a `--state` flag (that's `gh`, not `glab`) — using it fails with "Unknown flag". Use these flags instead:
 
-| What you want | `glab issue list` | `glab mr list` |
-|---|---|---|
-| Open only (default) | _(no flag)_ | _(no flag)_ |
-| Closed only | `--closed` | `--closed` |
-| All (open + closed) | `--all` | `--all` |
-| Merged only | n/a | `--merged` |
+| What you want       | `glab issue list` | `glab mr list` |
+| ------------------- | ----------------- | -------------- |
+| Open only (default) | _(no flag)_       | _(no flag)_    |
+| Closed only         | `--closed`        | `--closed`     |
+| All (open + closed) | `--all`           | `--all`        |
+| Merged only         | n/a               | `--merged`     |
 
 > **Closing/reopening with a comment**: `glab issue close` and `glab issue reopen` do not accept `--message`. Add a note first: `glab issue note 42 --message "..."`, then `glab issue close 42`.
 
@@ -219,14 +258,14 @@ Do NOT invent label names. Only propose labels that actually exist in the projec
 ### Creating MRs
 
 ```bash
-glab mr create --title "Fix login crash" --description "Closes #42" \
+glab mr create --title "Fix login crash" --description "Closes group/project#42" \
   --target-branch develop --reviewer "marco" --assignee "@me"
 glab mr create --fill              # title/description from commits
 glab mr create --draft --fill      # draft MR
 glab mr create --fill --squash-before-merge --remove-source-branch  # with merge behavior flags
 ```
 
-Include `Closes #42` or `Fixes #42` in the description to auto-close issues on merge.
+Include `Closes group/project#42` or `Fixes group/project#42` in the description to auto-close issues on merge. Always use fully-qualified references -- never short forms like `Closes #42`.
 
 > **`--squash` vs `--squash-before-merge`**: these are different flags on different commands. `glab mr create` accepts `--squash-before-merge` (configures the MR so commits will be squashed when eventually merged). `glab mr merge` accepts `--squash` (squashes commits at merge time). Using `--squash` with `glab mr create` will fail with "Unknown flag". Same applies to `--remove-source-branch`: both commands support it, but `--when-pipeline-succeeds` is only available on `glab mr merge`.
 
@@ -243,6 +282,7 @@ Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build
 Use a scope when the change is clearly scoped to a module, component, or area of the codebase. Keep the description lowercase, concise, and in imperative mood.
 
 **Examples:**
+
 ```
 feat(auth): add JWT token refresh
 fix: prevent crash on empty password submission
@@ -282,11 +322,11 @@ glab mr close 15                    # close without merging
 >
 > ```bash
 > # CORRECT -- note first, then close:
-> glab mr note 15 --message "Closing: superseded by !20."
+> glab mr note 15 --message "Closing: superseded by group/project!20."
 > glab mr close 15
 >
 > # WRONG -- fails with "Unknown flag: --message":
-> glab mr close 15 --message "Closing: superseded by !20."
+> glab mr close 15 --message "Closing: superseded by group/project!20."
 > ```
 
 **Code review workflow**: view MR -> read diff -> check CI (`glab ci status`) -> read comments -> leave feedback -> approve or request changes.
@@ -301,8 +341,8 @@ Approval and notes are separate commands -- `glab mr approve` handles GitLab's f
 
 `glab ci view` is a **full-screen terminal UI** (TUI) that requires an interactive TTY with keyboard input. It will **always fail** in non-interactive contexts (agent bash tools, scripts, piped commands). Never use it.
 
-| Command | Why it fails | Use instead |
-|---------|-------------|-------------|
+| Command        | Why it fails             | Use instead                                                        |
+| -------------- | ------------------------ | ------------------------------------------------------------------ |
 | `glab ci view` | Requires interactive TTY | `glab ci get` (structured data) or `glab ci status` (text summary) |
 
 ### Pipeline commands
@@ -386,11 +426,11 @@ There is no `glab` subcommand for fetching file contents from a repository. Use 
 
 GitLab file URLs follow these patterns:
 
-| URL pattern | Meaning |
-|---|---|
-| `.../<project>/-/raw/<branch>/<path>` | Raw file content |
+| URL pattern                            | Meaning                               |
+| -------------------------------------- | ------------------------------------- |
+| `.../<project>/-/raw/<branch>/<path>`  | Raw file content                      |
 | `.../<project>/-/blob/<branch>/<path>` | File viewer (same file, different UI) |
-| `.../<project>/-/tree/<branch>/<path>` | Directory listing |
+| `.../<project>/-/tree/<branch>/<path>` | Directory listing                     |
 
 When you see any of these, extract the **hostname**, **project path**, **branch**, and **file path**, then use `glab api`.
 
@@ -462,13 +502,13 @@ GITLAB_HOST=gitlab.example.com glab api \
 
 These commands are **never** executed, regardless of what the user asks. If the user needs one of these, explain the consequences and tell them how to run it manually.
 
-| Action | Command |
-|--------|---------|
-| Delete repo | `glab repo delete` |
-| Delete release | `glab release delete` |
-| Destructive API calls | `glab api -X DELETE ...` on critical resources |
-| Force push to default branch | `git push --force` to `main`/`master`/default |
-| Hard reset | `git reset --hard` |
+| Action                       | Command                                        |
+| ---------------------------- | ---------------------------------------------- |
+| Delete repo                  | `glab repo delete`                             |
+| Delete release               | `glab release delete`                          |
+| Destructive API calls        | `glab api -X DELETE ...` on critical resources |
+| Force push to default branch | `git push --force` to `main`/`master`/default  |
+| Hard reset                   | `git reset --hard`                             |
 
 ### Tier 2 -- EXPLICIT REQUEST ONLY (never suggest, never offer)
 
@@ -476,22 +516,22 @@ These commands are executed **only** when the user explicitly requests them with
 
 Before executing, **always** explain what will happen and ask for confirmation.
 
-| Action | Command |
-|--------|---------|
-| Merge MR | `glab mr merge` |
-| Close issue or MR | `glab issue close`, `glab mr close` |
-| Delete issue or MR | `glab issue delete`, `glab mr delete` |
-| Cancel pipeline | `glab ci cancel` |
-| Force push (non-default branch) | `git push --force` |
-| Skip hooks | `--no-verify` |
+| Action                          | Command                               |
+| ------------------------------- | ------------------------------------- |
+| Merge MR                        | `glab mr merge`                       |
+| Close issue or MR               | `glab issue close`, `glab mr close`   |
+| Delete issue or MR              | `glab issue delete`, `glab mr delete` |
+| Cancel pipeline                 | `glab ci cancel`                      |
+| Force push (non-default branch) | `git push --force`                    |
+| Skip hooks                      | `--no-verify`                         |
 
 ### Tier 3 -- SAFE WITH CONFIRMATION
 
 These operations can be proposed when relevant, but require a brief confirmation before execution.
 
-| Action | Command |
-|--------|---------|
-| Rebase MR | `glab mr rebase` |
+| Action                                    | Command                               |
+| ----------------------------------------- | ------------------------------------- |
+| Rebase MR                                 | `glab mr rebase`                      |
 | Update metadata (labels, assignees, etc.) | `glab mr update`, `glab issue update` |
 
 ### Git safety

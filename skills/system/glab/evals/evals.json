@@ -19,12 +19,14 @@
     {
       "id": 2,
       "prompt": "I've been working on this branch and my changes are ready. Create a merge request that targets the develop branch. The changes fix the login validation bug from issue #42. Make sure the MR description mentions it closes that issue, and request a review from my teammate 'marco'.",
-      "expected_output": "The agent should: 1) Check git status and branch state, 2) Push the branch if needed, 3) Use `glab mr create` with --target-branch develop, a clear title, a description containing 'Closes #42', --reviewer marco. It should use GitLab MR terminology, not GitHub PR terminology.",
+      "expected_output": "The agent should: 1) Check git status and branch state, 2) Push the branch if needed, 3) Resolve the project's path_with_namespace via `glab api projects/:id`, 4) Use `glab mr create` with --target-branch develop, a clear title, a description containing the fully-qualified closing reference (e.g., 'Closes group/project#42'), --reviewer marco. It must NOT use the short form '#42' in the MR description.",
       "files": [],
       "assertions": [
         "Uses `glab mr create` (not `gh pr create` or other GitHub tooling)",
         "Specifies `--target-branch develop` to target the correct branch",
-        "MR description contains 'Closes #42' or 'Fixes #42' to auto-close the issue",
+        "Resolves the project path via `glab api projects/:id` (or equivalent) before writing content",
+        "MR description contains a fully-qualified closing reference like 'Closes group/project#42' (not just 'Closes #42')",
+        "Does NOT use the short form '#42' in the MR description body",
         "Uses `--reviewer marco` to request review from the teammate",
         "Checks git status and branch state before creating the MR",
         "Pushes the branch to remote (with -u) before creating the MR",
@@ -344,6 +346,35 @@
         "Sets GITLAB_HOST=gitlab.sparkfabrik.com for the self-hosted instance",
         "Uses `-R` with the correct project path (team/frontend/app)",
         "Does NOT use `gh pr list` or any GitHub-specific tooling"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "We just noticed that the regression from merge request !34 broke the OAuth flow again. Create a bug issue about it -- mention that MR in the description, and also reference issue #12 where we originally fixed this. Label it as a regression and assign to me.",
+      "expected_output": "The agent should resolve the current project path via glab api, then create an issue where all references in the description use the fully-qualified form (e.g., group/project!34, group/project#12). It must NOT use short refs !34 or #12 in the description body.",
+      "files": [],
+      "assertions": [
+        "Resolves the project path via `glab api projects/:id` (or equivalent) before writing content",
+        "Issue description contains a fully-qualified MR reference like 'group/project!34' (not just '!34')",
+        "Issue description contains a fully-qualified issue reference like 'group/project#12' (not just '#12')",
+        "Does NOT use the short form '!34' or '#12' in the issue description body",
+        "Uses `glab issue create` to create the issue",
+        "Uses `--assignee @me` or equivalent",
+        "Uses a regression-related label"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "Add a comment on MR !22 explaining that this fixes the deployment issue reported in issue #55 on project https://gitlab.sparkfabrik.com/team/infra/platform, and that it supersedes MR !10 from the same infra project.",
+      "expected_output": "The agent should resolve both the current project path and the referenced project path (team/infra/platform), then write a comment where all references use fully-qualified forms. Local MR !22 should be referenced as current-group/current-project!22, and cross-project refs should use team/infra/platform#55 and team/infra/platform!10.",
+      "files": [],
+      "assertions": [
+        "Resolves the current project path via `glab api projects/:id` before writing content",
+        "Comment references issue #55 as 'team/infra/platform#55' (not just '#55')",
+        "Comment references MR !10 as 'team/infra/platform!10' (not just '!10')",
+        "Does NOT use any short-form references in the comment body",
+        "Uses `glab mr note 22` to add the comment",
+        "Sets GITLAB_HOST for the self-hosted instance when resolving the cross-project path"
       ]
     }
   ]

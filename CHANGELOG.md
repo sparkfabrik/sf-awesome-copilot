@@ -15,6 +15,7 @@ Changes are grouped by date.
 ### Changed
 
 - README: Removed VS Code Insiders requirement for `chat.useAgentSkills` directive -- Agent Skills are now available in the standard VS Code release
+- `glab` skill: require fully-qualified references (`group/project#N`, `group/project!N`) in all written content (descriptions, comments, notes) to prevent broken cross-project links
 
 ### Fixed
 
