@@ -10,6 +10,8 @@ Changes are grouped by date.
 
 ### Added
 
+- `sf-commit-convention` skill (`skills/system/`): enforce SparkFabrik commit message conventions -- conventional commits (preferred) with automatic legacy format fallback via git hook detection, mandatory issue references (same-project and cross-project), and `Assisted-by` AI trailer on every commit
+- `skill-creator` custom section: document `opencode run` as an alternative to `claude -p` for running skill evals, including OpenCode JSON event schema and skill-trigger detection pattern
 - `drupal-major-upgrade-validation` skill (`skills/drupal/`): validate Drupal major version upgrades (e.g., D10 to D11) by capturing a browser-automation baseline on the stable branch, applying the upgrade, re-running the same tests, and producing a structured comparison report with per-page status, console error diffs, and screenshot references
 
 ### Changed

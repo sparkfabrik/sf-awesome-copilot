@@ -1,0 +1,23 @@
+{
+  "skill_name": "sf-commit-convention",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just fixed a bug in the authentication module where OAuth tokens were not being refreshed. The related issue is #18. Please create the git commit message for me (don't actually run git commit, just output the full git commit command I should run).",
+      "expected_output": "A conventional commit with fix(auth) type/scope, #18 in subject, Refs or Closes footer, and Assisted-by trailer",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I added a new feature to the RAG pipeline that handles PDF ingestion. The issue is tracked in a different project: sparkfabrik-innovation-team/r-d/ai/poc-drupal-rag-intelligence#72. Write the git commit command for me (don't actually run it).",
+      "expected_output": "Conventional commit with feat(rag) type/scope, NO issue number in subject line (cross-project), Refs footer with full cross-project path, and Assisted-by trailer",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I updated the CI pipeline configuration to add a new linting step. There's no related issue for this. Write the git commit command (don't run it).",
+      "expected_output": "The agent should ask if there is a related issue before producing the commit. If confirmed none, output conventional commit with ci scope, no issue ref, and Assisted-by trailer",
+      "files": []
+    }
+  ]
+}
