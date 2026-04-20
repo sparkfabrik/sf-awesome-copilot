@@ -18,6 +18,18 @@
       "prompt": "I updated the CI pipeline configuration to add a new linting step. There's no related issue for this. Write the git commit command (don't run it).",
       "expected_output": "The agent should ask if there is a related issue before producing the commit. If confirmed none, output conventional commit with ci scope, no issue ref, and Assisted-by trailer",
       "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I need to start working on issue #42 which is about adding PDF export functionality. I haven't created a branch yet. What branch name should I use? Just tell me the branch name, don't create it.",
+      "expected_output": "Branch name following feat/<issue>-<description> pattern, e.g. feat/42-add-pdf-export. All lowercase, hyphens as separators.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "I need to create a branch for a bug fix. The issue is #7, it's about a broken redirect after login. What should I name the branch? Just output the name.",
+      "expected_output": "Branch name following fix/<issue>-<description> pattern, e.g. fix/7-broken-login-redirect. All lowercase, hyphens as separators.",
+      "files": []
     }
   ]
 }

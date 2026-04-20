@@ -1,11 +1,50 @@
 ---
 name: sf-commit-convention
-description: 'Enforce SparkFabrik commit message conventions including conventional commits, legacy format detection, issue references, and the mandatory Assisted-by trailer. MUST be loaded before EVERY git commit, commit message preparation, MR/PR title creation, or any commit-related operation. Use whenever the agent is about to run git commit, write a commit message, or prepare a merge request or pull request title. Also use when the user mentions "commit", "git commit", "conventional commit", "commit message", "refs #", "assisted-by", or "commit convention". Never create a commit without consulting this skill first.'
+description: 'Enforce SparkFabrik commit message and branch naming conventions including conventional commits, legacy format detection, issue references, branch prefixes, and the mandatory Assisted-by trailer. MUST be loaded before EVERY git commit, commit message preparation, MR/PR title creation, branch creation, or any commit-related operation. Use whenever the agent is about to run git commit, git checkout -b, git branch, write a commit message, create a branch, or prepare a merge request or pull request title. Also use when the user mentions "commit", "git commit", "conventional commit", "commit message", "refs #", "assisted-by", "commit convention", "branch name", "new branch", or "feature branch". Never create a commit or branch without consulting this skill first.'
 ---
 
 # SparkFabrik Commit Convention
 
-This skill enforces SparkFabrik commit message conventions. Follow these rules for every commit you create.
+This skill enforces SparkFabrik commit message and branch naming conventions. Follow these rules for every commit and branch you create.
+
+## Branch Naming
+
+Create branches following this pattern:
+
+```
+<prefix>/<issue-number>-<description>
+```
+
+- **All lowercase**, hyphens as word separators
+- **Issue number required** (except `release/` branches)
+- **Description**: 2-4 words, concise
+
+### Prefixes
+
+| Prefix | When to use |
+|---|---|
+| `feat/` | New features |
+| `fix/` | Bug fixes |
+| `docs/` | Documentation only |
+| `chore/` | Maintenance, dependencies, config |
+| `refactor/` | Code restructuring, no behavior change |
+| `ci/` | CI/CD pipeline changes |
+| `test/` | Test additions or fixes |
+| `release/` | Release branches — use `release/vX.Y.Z` (no issue number) |
+
+### Examples
+
+```
+feat/42-add-pdf-ingestion
+fix/18-oauth-token-refresh
+docs/33-update-api-reference
+chore/71-bump-dependencies
+release/v1.2.0
+```
+
+### When to create a branch
+
+When work should happen on a separate branch (new feature, bug fix, or any issue-tracked work), create a branch following this convention before committing. If the user asks to start work on an issue and no branch exists, propose a branch name and confirm with the user before creating it.
 
 ## Format Detection
 
