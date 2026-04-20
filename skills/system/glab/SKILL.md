@@ -159,7 +159,7 @@ This applies to **every** piece of content the agent creates, regardless of leng
 > )"
 > ```
 
-> **Accidental issue links:** GitLab auto-links `#N` patterns in markdown to issues. When `#N` appears as an example, in a table, or in any context where it is not an intentional issue reference, wrap it in backticks (`` `#18` ``) to prevent auto-linking. Only leave `#N` bare when you want GitLab to create an actual issue link (e.g., `Closes #42` in an MR body).
+> **Issue auto-linking:** GitLab renders bare `#N` as a clickable link to issue N. Use backticks (`` `#18` ``) when referring to issue numbers as text (examples, tables, logs). Leave `#N` bare only when it should link to an actual issue (e.g., `Closes #42`).
 
 ---
 
