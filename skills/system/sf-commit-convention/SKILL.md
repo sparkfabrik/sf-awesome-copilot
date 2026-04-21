@@ -21,16 +21,16 @@ Create branches following this pattern:
 
 ### Prefixes
 
-| Prefix | When to use |
-|---|---|
-| `feat/` | New features |
-| `fix/` | Bug fixes |
-| `docs/` | Documentation only |
-| `chore/` | Maintenance, dependencies, config |
-| `refactor/` | Code restructuring, no behavior change |
-| `ci/` | CI/CD pipeline changes |
-| `test/` | Test additions or fixes |
-| `release/` | Release branches — use `release/vX.Y.Z` (no issue number) |
+| Prefix      | When to use                                               |
+| ----------- | --------------------------------------------------------- |
+| `feat/`     | New features                                              |
+| `fix/`      | Bug fixes                                                 |
+| `docs/`     | Documentation only                                        |
+| `chore/`    | Maintenance, dependencies, config                         |
+| `refactor/` | Code restructuring, no behavior change                    |
+| `ci/`       | CI/CD pipeline changes                                    |
+| `test/`     | Test additions or fixes                                   |
+| `release/`  | Release branches — use `release/vX.Y.Z` (no issue number) |
 
 ### Examples
 
@@ -91,10 +91,10 @@ Skipping the reference is the exception, not the norm. Never silently omit it.
 
 Run `git remote get-url origin` and parse the namespace/project path. Compare against the issue reference:
 
-| Issue reference | Detection | Subject line | Footer |
-|---|---|---|---|
-| `#35` | Same repo | Append `#35` at end of subject | `Refs: #35` or `Closes: #35` |
-| `owner/project#35` | Cross-repo (contains `/`) | Omit from subject (too long) | `Refs: owner/project#35` or `Closes: owner/project#35` |
+| Issue reference    | Detection                 | Footer                                                 |
+| ------------------ | ------------------------- | ------------------------------------------------------ |
+| `#35`              | Same repo                 | `Refs: #35` or `Closes: #35`                           |
+| `owner/project#35` | Cross-repo (contains `/`) | `Refs: owner/project#35` or `Closes: owner/project#35` |
 
 Use `Closes:` when the commit fully resolves the issue. Use `Refs:` otherwise.
 
@@ -106,27 +106,28 @@ The issue reference is part of the subject line (`refs #N: ...`). No separate fo
 
 **Mandatory on every commit**, regardless of format (legacy or conventional).
 
-- Format: `Assisted-by: <AgentName>/<full-model-id>`
+- Format: `Assisted-by: <agentname>/<full-model-id>` (agent name MUST be all lowercase)
 - Applied via `--trailer` flag on `git commit`
 - Substitute your own runtime identity (agent name and model ID)
 
-Example for OpenCode with claude-opus-4.6:
+Example for opencode with claude-opus-4.6:
+
 ```
-Assisted-by: OpenCode/github-copilot/claude-opus-4.6
+Assisted-by: opencode/github-copilot/claude-opus-4.6
 ```
 
 ## MR/PR Titles
 
-Follow the same conventional commit format as the subject line. Issue reference goes in the MR/PR description body (not the title) when cross-project.
+Follow the same conventional commit format as the subject line. Issue reference goes in the MR/PR description body, never in the title.
 
 ## Git Command Examples
 
 ### Conventional, same-project issue
 
 ```bash
-git commit -m "feat(rag): add document ingestion pipeline #35" \
+git commit -m "feat(rag): add document ingestion pipeline" \
   --trailer "Refs: #35" \
-  --trailer "Assisted-by: OpenCode/github-copilot/claude-opus-4.6"
+  --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
 
 ### Conventional, cross-project issue
@@ -134,27 +135,27 @@ git commit -m "feat(rag): add document ingestion pipeline #35" \
 ```bash
 git commit -m "feat(rag): add document ingestion pipeline" \
   --trailer "Refs: sparkfabrik-innovation-team/r-d/ai/poc-drupal-rag-intelligence#35" \
-  --trailer "Assisted-by: OpenCode/github-copilot/claude-opus-4.6"
+  --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
 
 ### Conventional, auto-closing same-project issue
 
 ```bash
-git commit -m "fix(discovery): handle symlink loops in file scanning #42" \
+git commit -m "fix(discovery): handle symlink loops in file scanning" \
   --trailer "Closes: #42" \
-  --trailer "Assisted-by: OpenCode/github-copilot/claude-opus-4.6"
+  --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
 
 ### Conventional, no issue (user confirmed none)
 
 ```bash
 git commit -m "chore(deps): bump lockfile" \
-  --trailer "Assisted-by: OpenCode/github-copilot/claude-opus-4.6"
+  --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
 
 ### Legacy format
 
 ```bash
 git commit -m "refs #35: add document ingestion pipeline" \
-  --trailer "Assisted-by: OpenCode/github-copilot/claude-opus-4.6"
+  --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
