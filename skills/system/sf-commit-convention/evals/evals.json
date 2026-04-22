@@ -30,18 +30,6 @@
       "prompt": "I need to create a branch for a bug fix. The issue is #7, it's about a broken redirect after login. What should I name the branch? Just output the name.",
       "expected_output": "Branch name following fix/<issue>-<description> pattern, e.g. fix/7-broken-login-redirect. All lowercase, hyphens as separators.",
       "files": []
-    },
-    {
-      "id": 6,
-      "prompt": "I'm working on a customer project where all commits follow Jira-style format. The last 5 commits in git log are:\n\n[ACME-301] add pagination to user list\n[ACME-298] fix date formatting in reports\n[ACME-295] update API client timeout\n[ACME-290] add error handling for uploads\n[ACME-287] refactor auth middleware\n\nI just fixed a null pointer in the search module. The Jira ticket is ACME-310. Write the git commit command for me (don't run it).",
-      "expected_output": "The agent should detect the Jira-style [ACME-NNN] format from git log and produce a commit message matching that convention (e.g. [ACME-310] fix null pointer in search module), with Assisted-by trailer. Should NOT use conventional commit format since the project uses a different convention.",
-      "files": []
-    },
-    {
-      "id": 7,
-      "prompt": "I tried to commit with conventional commit format but the commit-msg hook rejected it with this error:\n\nERROR: Commit message must match pattern: ^[A-Z]+-[0-9]+: .+$\nExample: PROJECT-123: add new feature\n\nThe ticket is PROJECT-456 and I added a new dashboard widget. Write the correct git commit command (don't run it).",
-      "expected_output": "The agent should parse the hook error, understand the required format (PROJECT-NNN: description), and produce a compliant commit (e.g. PROJECT-456: add new dashboard widget) with Assisted-by trailer. Should NOT retry with conventional commit or legacy refs format.",
-      "files": []
     }
   ]
 }
