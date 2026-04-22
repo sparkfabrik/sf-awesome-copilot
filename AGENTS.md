@@ -29,11 +29,11 @@ sjust sf-agents-status           # show installed resources and update status
 
 ### What gets synced
 
-| Source (this repo) | Install target | Description |
-|--------------------|---------------|-------------|
-| `skills/system/<name>/` | `~/.agents/skills/<name>/` | Agent skills (SKILL.md + bundled assets) |
-| `agents/system/<name>/copilot/` | `~/.copilot/agents/` | GitHub Copilot agent profiles |
-| `agents/system/<name>/opencode/` | `~/.config/opencode/agents/` | OpenCode agent profiles |
+| Source (this repo)               | Install target               | Description                              |
+| -------------------------------- | ---------------------------- | ---------------------------------------- |
+| `skills/system/<name>/`          | `~/.agents/skills/<name>/`   | Agent skills (SKILL.md + bundled assets) |
+| `agents/system/<name>/copilot/`  | `~/.copilot/agents/`         | GitHub Copilot agent profiles            |
+| `agents/system/<name>/opencode/` | `~/.config/opencode/agents/` | OpenCode agent profiles                  |
 
 The sync is SHA-tracked via a manifest at `~/.cache/sparkdock/sf-skills-manifest.json`.
 Local modifications are detected and preserved unless `--force` is used.
@@ -47,7 +47,7 @@ Local modifications are detected and preserved unless `--force` is used.
 
 ## File Formats
 
-### Agent Files (*.agent.md)
+### Agent Files (\*.agent.md)
 
 - Must have `description` field (wrapped in single quotes)
 - File names should be lowercase with words separated by hyphens
@@ -56,10 +56,10 @@ Local modifications are detected and preserved unless `--force` is used.
 
 ```markdown
 ---
-name: 'agent-name'
-description: 'Short description of what the agent does'
-tools: ['tool1', 'tool2']
-model: 'gpt-4o'
+name: "agent-name"
+description: "Short description of what the agent does"
+tools: ["tool1", "tool2"]
+model: "gpt-4o"
 ---
 
 # Agent Title
@@ -67,7 +67,7 @@ model: 'gpt-4o'
 Instructions and context for the agent...
 ```
 
-### Agent Skills (skills/*/SKILL.md)
+### Agent Skills (skills/\*/SKILL.md)
 
 - Each skill is a folder containing a `SKILL.md` file
 - SKILL.md must have `name` field (lowercase with hyphens, matching folder name)
@@ -78,7 +78,7 @@ Instructions and context for the agent...
 ```markdown
 ---
 name: skill-name
-description: 'Short description for when to use this skill'
+description: "Short description for when to use this skill"
 ---
 
 # Skill Title
@@ -122,6 +122,7 @@ System agents (`agents/system/`) support multiple tools (Copilot, OpenCode). Eac
 ## Git Workflow
 
 - **Never push directly to `main`.** Always create a feature branch and open a pull request.
+- **Verify your branch before every commit.** Run `git branch --show-current` and confirm you are on the correct feature branch — not `main`, not a stale branch from a previous task. This is especially important after branch switches (e.g., smoke tests, rebases, stash pop). Never assume you are on the right branch.
 - Branch naming: `feat/`, `fix/`, `chore/`, `test/` prefixes with kebab-case description (e.g., `feat/glab-file-uploads`, `fix/skill-jq-flag`).
 - Commit messages: conventional commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
 - Always update `CHANGELOG.md` when making user-facing changes (see Changelog section below).
@@ -167,13 +168,13 @@ Requires `jq` and `curl`.
 The manifest format is defined by `config/upstream-skills.schema.json`. Each entry
 in the `skills` array has the following fields:
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | yes | Skill name (`lowercase-with-hyphens`). Must match the target folder under `skills/system/`. |
-| `repo` | string | yes | GitHub repository in `owner/repo` format. |
-| `ref` | string | no | Branch or tag to sync from. Defaults to `main`. |
-| `path` | string | yes | Path to the skill directory inside the repo. |
-| `frontmatter_overrides` | object | no | YAML frontmatter fields to patch in the upstream SKILL.md. Only listed fields are replaced; all other upstream fields are kept as-is. |
+| Field                   | Type   | Required | Description                                                                                                                           |
+| ----------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                  | string | yes      | Skill name (`lowercase-with-hyphens`). Must match the target folder under `skills/system/`.                                           |
+| `repo`                  | string | yes      | GitHub repository in `owner/repo` format.                                                                                             |
+| `ref`                   | string | no       | Branch or tag to sync from. Defaults to `main`.                                                                                       |
+| `path`                  | string | yes      | Path to the skill directory inside the repo.                                                                                          |
+| `frontmatter_overrides` | object | no       | YAML frontmatter fields to patch in the upstream SKILL.md. Only listed fields are replaced; all other upstream fields are kept as-is. |
 
 Example entry:
 
