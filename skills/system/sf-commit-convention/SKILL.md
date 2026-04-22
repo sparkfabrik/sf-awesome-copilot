@@ -89,14 +89,17 @@ Skipping the reference is the exception, not the norm. Never silently omit it.
 
 ### Resolving the full project path
 
-**Always use the fully qualified project path in footers.** Run `git remote get-url origin` and parse the namespace/project path (e.g., `sparkfabrik/sf-awesome-copilot` on GitHub, `sparkfabrik-innovation-team/r-d/ai/project` on GitLab).
+**Always use the fully qualified project path in footers — never a bare `#N`.** A bare `#N` is ambiguous: on platforms like GitLab it only links within the current project context, which breaks when commits are cherry-picked, mirrored, or viewed outside the original project. The fully qualified path (`owner/repo#N`) is unambiguous everywhere.
 
-When the user provides a bare `#N`, resolve it to `<project-path>#N`:
+Run `git remote get-url origin` and parse the namespace/project path (e.g., `sparkfabrik/sf-awesome-copilot` on GitHub, `sparkfabrik-innovation-team/r-d/ai/project` on GitLab). When the user provides a bare `#N`, resolve it to `<project-path>#N`:
 
 | User provides      | Footer                                                                  |
 | ------------------ | ----------------------------------------------------------------------- |
 | `#35`              | `Refs: owner/repo#35` or `Closes: owner/repo#35` (resolved from remote) |
 | `owner/project#35` | `Refs: owner/project#35` or `Closes: owner/project#35` (used as-is)     |
+
+**Wrong:** `Refs: #35`, `Closes: #42` (bare references — never do this)
+**Correct:** `Refs: sparkfabrik/sf-awesome-copilot#35`, `Closes: sparkfabrik/sf-awesome-copilot#42`
 
 Use `Closes:` when the commit fully resolves the issue. Use `Refs:` otherwise.
 
