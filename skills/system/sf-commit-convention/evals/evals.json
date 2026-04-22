@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "I just fixed a bug in the authentication module where OAuth tokens were not being refreshed. The related issue is #18. Please create the git commit message for me (don't actually run git commit, just output the full git commit command I should run).",
-      "expected_output": "A conventional commit with fix(auth) type/scope, NO issue number in subject line, Refs or Closes footer with #18, and Assisted-by trailer",
+      "expected_output": "A conventional commit with fix(auth) type/scope, NO issue number in subject line, Refs or Closes footer with fully qualified project path and #18 (e.g. owner/repo#18), and Assisted-by trailer",
       "files": []
     },
     {

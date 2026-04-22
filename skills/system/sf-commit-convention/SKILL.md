@@ -87,14 +87,16 @@ refs #<issue-number>: <description>
 
 Skipping the reference is the exception, not the norm. Never silently omit it.
 
-### Same-project vs cross-project
+### Resolving the full project path
 
-Run `git remote get-url origin` and parse the namespace/project path. Compare against the issue reference:
+**Always use the fully qualified project path in footers.** Run `git remote get-url origin` and parse the namespace/project path (e.g., `sparkfabrik/sf-awesome-copilot` on GitHub, `sparkfabrik-innovation-team/r-d/ai/project` on GitLab).
 
-| Issue reference    | Detection                 | Footer                                                 |
-| ------------------ | ------------------------- | ------------------------------------------------------ |
-| `#35`              | Same repo                 | `Refs: #35` or `Closes: #35`                           |
-| `owner/project#35` | Cross-repo (contains `/`) | `Refs: owner/project#35` or `Closes: owner/project#35` |
+When the user provides a bare `#N`, resolve it to `<project-path>#N`:
+
+| User provides      | Footer                                                                  |
+| ------------------ | ----------------------------------------------------------------------- |
+| `#35`              | `Refs: owner/repo#35` or `Closes: owner/repo#35` (resolved from remote) |
+| `owner/project#35` | `Refs: owner/project#35` or `Closes: owner/project#35` (used as-is)     |
 
 Use `Closes:` when the commit fully resolves the issue. Use `Refs:` otherwise.
 
@@ -126,7 +128,7 @@ Follow the same conventional commit format as the subject line. Issue reference 
 
 ```bash
 git commit -m "feat(rag): add document ingestion pipeline" \
-  --trailer "Refs: #35" \
+  --trailer "Refs: owner/repo#35" \
   --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
 
@@ -142,7 +144,7 @@ git commit -m "feat(rag): add document ingestion pipeline" \
 
 ```bash
 git commit -m "fix(discovery): handle symlink loops in file scanning" \
-  --trailer "Closes: #42" \
+  --trailer "Closes: owner/repo#42" \
   --trailer "Assisted-by: opencode/github-copilot/claude-opus-4.6"
 ```
 
