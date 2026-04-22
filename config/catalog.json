@@ -31,6 +31,9 @@
     "sf-create-agentsmd": {
       "description": "Generate and review AGENTS.md for projects"
     },
+    "sf-commit-convention": {
+      "description": "Enforce SparkFabrik commit conventions and trailers"
+    },
     "skill-creator": {
       "description": "Create, iterate, and benchmark agent skills"
     }

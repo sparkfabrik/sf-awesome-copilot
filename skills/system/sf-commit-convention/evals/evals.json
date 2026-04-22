@@ -1,0 +1,35 @@
+{
+  "skill_name": "sf-commit-convention",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just fixed a bug in the authentication module where OAuth tokens were not being refreshed. The related issue is #18. Please create the git commit message for me (don't actually run git commit, just output the full git commit command I should run).",
+      "expected_output": "A conventional commit with fix(auth) type/scope, NO issue number in subject line, Refs or Closes footer with fully qualified project path and #18 (e.g. owner/repo#18), and Assisted-by trailer",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I added a new feature to the RAG pipeline that handles PDF ingestion. The issue is tracked in a different project: sparkfabrik-innovation-team/r-d/ai/poc-drupal-rag-intelligence#72. Write the git commit command for me (don't actually run it).",
+      "expected_output": "Conventional commit with feat(rag) type/scope, NO issue number in subject line, Refs footer with full cross-project path, and Assisted-by trailer",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I updated the CI pipeline configuration to add a new linting step. There's no related issue for this. Write the git commit command (don't run it).",
+      "expected_output": "The agent should ask if there is a related issue before producing the commit. If confirmed none, output conventional commit with ci scope, no issue ref, and Assisted-by trailer",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I need to start working on issue #42 which is about adding PDF export functionality. I haven't created a branch yet. What branch name should I use? Just tell me the branch name, don't create it.",
+      "expected_output": "Branch name following feat/<issue>-<description> pattern, e.g. feat/42-add-pdf-export. All lowercase, hyphens as separators.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "I need to create a branch for a bug fix. The issue is #7, it's about a broken redirect after login. What should I name the branch? Just output the name.",
+      "expected_output": "Branch name following fix/<issue>-<description> pattern, e.g. fix/7-broken-login-redirect. All lowercase, hyphens as separators.",
+      "files": []
+    }
+  ]
+}

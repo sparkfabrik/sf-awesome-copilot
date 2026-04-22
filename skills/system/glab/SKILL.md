@@ -198,9 +198,9 @@ This applies to **every** piece of content the agent creates, regardless of leng
 > )"
 > ```
 
----
+> **Issue auto-linking:** GitLab renders bare `#N` as a clickable link to issue N. Use backticks (`` `#18` ``) when referring to issue numbers as text (examples, tables, logs). Leave `#N` bare only when it should link to an actual issue (e.g., `Closes #42`).
 
-## Issues
+---
 
 ```bash
 glab issue create --title "Bug: ..." --description "..." --label "type::bug,priority::high" --assignee "@me"
