@@ -125,6 +125,29 @@ Assisted-by: opencode/github-copilot/claude-opus-4.6
 
 Follow the same conventional commit format as the subject line. Issue reference goes in the MR/PR description body, never in the title.
 
+## Non-interactive Operations
+
+Agents run without a TTY. Any git command that opens `$EDITOR` or expects interactive keyboard input will hang indefinitely. Always pass messages and options via command-line flags.
+
+### Commands to avoid
+
+| Don't use                          | Why                             | Use instead                                  |
+| ---------------------------------- | ------------------------------- | -------------------------------------------- |
+| `git rebase -i`                    | Opens editor for pick/squash    | `git rebase <branch>` (non-interactive)      |
+| `git add -i` / `git add -p`        | Interactive staging prompts     | `git add <file>` or `git add .`              |
+| `git commit` (without `-m`)        | Opens editor for commit message | `git commit -m "..."` with `--trailer` flags |
+| `git merge` (conflict with editor) | Opens editor for merge message  | `git merge --no-edit <branch>`               |
+| `git tag -a` (without `-m`)        | Opens editor for tag annotation | `git tag -a v1.0 -m "..."`                   |
+
+**General rule:** if a git command has a `-i` or `--interactive` flag, never use it. If a command normally opens an editor, find the flag that passes the value inline.
+
+### Rebase
+
+- `git rebase <branch>` (non-interactive) is safe for straightforward rebases.
+- For squashing commits, prefer the platform's squash merge option (GitHub / GitLab) over `git rebase -i`.
+- Prefer `git pull --rebase` over manual fetch + rebase when updating a branch.
+- If rebase conflicts occur, resolve the files then run `git rebase --continue`. Do not add `--edit` — the original commit messages are reused automatically.
+
 ## Git Command Examples
 
 ### Conventional, same-project issue
