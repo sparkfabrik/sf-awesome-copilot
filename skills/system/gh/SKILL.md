@@ -74,61 +74,38 @@ Issues and PRs both use `#` prefix.
 
 ## Writing on behalf of the user
 
-Whenever you create or post content on GitHub on behalf of the user -- including **PR descriptions** (`gh pr create`), **issue descriptions** (`gh issue create`), **comments** (`gh pr comment`, `gh issue comment`), **reviews** (`gh pr review`), or **`gh api` body fields** -- you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
+Every piece of content you create on GitHub carries this attribution header, with no exceptions: PR and issue descriptions, comments, reviews, and `gh api` body fields.
 
 ```
 > :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
 
-Substitute your own runtime identity (agent name and model ID) in the parenthetical. The agent name MUST be all lowercase, and the model ID MUST be the full model ID, not a friendly name. This is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill puts in the `Assisted-by` commit trailer, so keep the two identical.
+Fetch the username, never hardcode it. Substitute your own runtime identity for `<agentname>/<full-model-id>`: agent name all lowercase, the model ID exactly as your runtime reports it (including any suffix), never a friendly name. It is the same string the `sf-commit-convention` skill puts in the `Assisted-by` commit trailer, so keep the two identical.
 
-Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled. Fetch it in the same command that posts the content:
-
-```bash
-GH_USERNAME=$(gh api user --jq '.login')
-gh pr create \
-  --title "feat: add dark mode" \
-  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
-
-## Summary
-
-- Adds dark mode toggle to settings page
-- ..."
-```
-
-> **Shell variables do not survive between commands.** Each command you run starts a
-> fresh shell, so an assignment made in an earlier command is gone by the time you post.
-> Put the assignment and the posting command in the **same** command, as shown above.
-> An unset variable expands to nothing and silently renders the header as
-> `on behalf of @ (...)`, with no username. Always check the posted output.
-
-**Example** -- adding a comment to issue #42:
+Fetch and post in a **single command**. A separate command runs in its own shell, so the variable is gone by the time you post and expands to nothing, rendering `on behalf of @ (...)` with no username.
 
 ```bash
 GH_USERNAME=$(gh api user --jq '.login')
-gh issue comment 42 \
-  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
+gh issue comment 42 --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5)._
 
 ## Triage
 
 Root cause identified: ..."
 ```
 
-This applies to **every** piece of content the agent creates, regardless of length or context. Never skip the header.
+With a heredoc body, never single-quote the delimiter (`<<'EOF'`): a quoted delimiter suppresses expansion and emits the literal `$GH_USERNAME`.
 
-> **Heredoc warning:** when using `cat <<EOF` to build the body, **never** single-quote the delimiter (`<<'EOF'`). Single-quoted heredocs suppress variable expansion and produce the literal string `$GH_USERNAME` instead of the resolved value. Always use an unquoted delimiter:
->
-> ```bash
-> GH_USERNAME=$(gh api user --jq '.login')
-> gh pr create --title "feat: add dark mode" --body "$(cat <<EOF
-> > :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
->
-> ## Summary
->
-> - Adds dark mode toggle to settings page
-> EOF
-> )"
-> ```
+```bash
+GH_USERNAME=$(gh api user --jq '.login')
+gh pr create --title "feat: add dark mode" --body "$(cat <<EOF
+> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5)._
+
+## Summary
+
+- Adds dark mode toggle to settings page
+EOF
+)"
+```
 
 > **Issue auto-linking:** GitHub renders bare `#N` as a clickable link to issue N. Use backticks (`` `#18` ``) when referring to issue numbers as text (examples, tables, logs). Leave `#N` bare only when it should link to an actual issue (e.g., `Closes #42`).
 
@@ -337,7 +314,7 @@ Use the dedicated replies endpoint:
 ```bash
 GH_USERNAME=$(gh api user --jq '.login')
 gh api -X POST repos/{owner}/{repo}/pulls/15/comments/<comment_id>/replies \
-  -f body="> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
+  -f body="> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5)._
 
 The null check is needed because..."
 ```
