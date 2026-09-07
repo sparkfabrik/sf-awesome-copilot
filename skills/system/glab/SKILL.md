@@ -172,32 +172,28 @@ Every piece of content you create on GitLab carries this attribution header: MR 
 > :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
 
-Fetch the username, never hardcode it. Substitute your own runtime identity for `<agentname>/<full-model-id>`: agent name all lowercase, the model ID exactly as your runtime reports it (including any suffix), never a friendly name. It is the same string the `sf-commit-convention` skill puts in the `Assisted-by` commit trailer, so keep the two identical.
+Fetch the username, never hardcode it. For `<agentname>/<full-model-id>` substitute your own runtime identity: the harness you run in as the agent name, lowercase, and the model ID exactly as your runtime reports it, never a friendly name. Same string as the `Assisted-by` trailer in `sf-commit-convention`, so keep the two identical.
 
-The header is omitted only when the user explicitly asks you to leave it out, for example when contributing to a project whose policy rejects AI-assisted content. Never suggest omitting it and never decide to omit it yourself. When the user does ask, drop the header and write the content normally, with no substitute marker.
+Leave the header out only when the user asks you to, for instance on a project whose policy rejects AI-assisted content. Never suggest it, never decide it yourself, never swap in a softer marker.
 
-Fetch and post in a **single command**. A separate command runs in its own shell, so the variable is gone by the time you post and expands to nothing, rendering `on behalf of @ (...)` with no username. `glab api` has no `--jq` flag (that is a `gh` feature), so pipe to `jq`.
+Fetch and post in one command: a separate command runs in its own shell, so the variable is empty by the time you post and the header renders `on behalf of @ (...)` with no username. `glab api` has no `--jq` flag (that is a `gh` feature), so pipe to `jq`.
 
 ```bash
 GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
 GITLAB_HOST=gitlab.example.com glab issue note 42 -R group/project \
   --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5)._
 
-## Triage
-
 Root cause identified: ..."
 ```
 
-With a heredoc body, never single-quote the delimiter (`<<'EOF'`): a quoted delimiter suppresses expansion and emits the literal `$GL_USERNAME`.
+Never single-quote a heredoc delimiter (`<<'EOF'`): it blocks expansion and emits the literal `$GL_USERNAME`.
 
 ```bash
 GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
 GITLAB_HOST=gitlab.example.com glab mr create --title "feat: add dark mode" --description "$(cat <<EOF
 > :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5)._
 
-## Summary
-
-- Adds dark mode toggle to settings page
+Adds a dark mode toggle to the settings page.
 EOF
 )"
 ```
