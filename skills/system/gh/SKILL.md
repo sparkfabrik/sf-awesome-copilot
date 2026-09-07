@@ -80,15 +80,12 @@ Whenever you create or post content on GitHub on behalf of the user -- including
 > :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
 
-The parenthetical is your own runtime identity: the harness name in lowercase (`claude-code`, `opencode`, `copilot`) followed by the exact model ID, never a friendly name. No command or environment variable exposes it, so substitute the values yourself. It is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill writes in the `Assisted-by` commit trailer, so keep the two identical: commits and web content must report the same agent.
+Substitute your own runtime identity (agent name and model ID) in the parenthetical. The agent name MUST be all lowercase, and the model ID MUST be the full model ID, not a friendly name. This is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill puts in the `Assisted-by` commit trailer, so keep the two identical.
 
-Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
+Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled. Fetch it in the same command that posts the content:
 
 ```bash
-# Step 1: fetch the username (do this once per session)
 GH_USERNAME=$(gh api user --jq '.login')
-
-# Step 2: use it in the content
 gh pr create \
   --title "feat: add dark mode" \
   --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
@@ -99,9 +96,16 @@ gh pr create \
 - ..."
 ```
 
+> **Shell variables do not survive between commands.** Each command you run starts a
+> fresh shell, so an assignment made in an earlier command is gone by the time you post.
+> Put the assignment and the posting command in the **same** command, as shown above.
+> An unset variable expands to nothing and silently renders the header as
+> `on behalf of @ (...)`, with no username. Always check the posted output.
+
 **Example** -- adding a comment to issue #42:
 
 ```bash
+GH_USERNAME=$(gh api user --jq '.login')
 gh issue comment 42 \
   --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 
@@ -115,6 +119,7 @@ This applies to **every** piece of content the agent creates, regardless of leng
 > **Heredoc warning:** when using `cat <<EOF` to build the body, **never** single-quote the delimiter (`<<'EOF'`). Single-quoted heredocs suppress variable expansion and produce the literal string `$GH_USERNAME` instead of the resolved value. Always use an unquoted delimiter:
 >
 > ```bash
+> GH_USERNAME=$(gh api user --jq '.login')
 > gh pr create --title "feat: add dark mode" --body "$(cat <<EOF
 > > :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 >
@@ -330,6 +335,7 @@ Each comment has an `id` field. Top-level review comments have no `in_reply_to_i
 Use the dedicated replies endpoint:
 
 ```bash
+GH_USERNAME=$(gh api user --jq '.login')
 gh api -X POST repos/{owner}/{repo}/pulls/15/comments/<comment_id>/replies \
   -f body="> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 

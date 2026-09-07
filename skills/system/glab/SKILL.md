@@ -172,7 +172,7 @@ Whenever you create or post content on GitLab on behalf of the user — includin
 > :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
 
-The parenthetical is your own runtime identity: the harness name in lowercase (`claude-code`, `opencode`, `copilot`) followed by the exact model ID, never a friendly name. No command or environment variable exposes it, so substitute the values yourself. It is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill writes in the `Assisted-by` commit trailer, so keep the two identical: commits and web content must report the same agent.
+Substitute your own runtime identity (agent name and model ID) in the parenthetical. The agent name MUST be all lowercase, and the model ID MUST be the full model ID, not a friendly name. This is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill puts in the `Assisted-by` commit trailer, so keep the two identical.
 
 To get the current authenticated username run:
 
@@ -182,13 +182,10 @@ GITLAB_HOST=<hostname> glab api user | jq -r '.username'
 
 > **Note:** `glab api` does not support `--jq` (that's a `gh` feature). Always pipe to `jq` instead.
 
-Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
+Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled. Fetch it in the same command that posts the content:
 
 ```bash
-# Step 1: fetch the username (do this once per session)
-GL_USERNAME=$(GITLAB_HOST=<hostname> glab api user | jq -r '.username')
-
-# Step 2: use it in the content
+GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
 GITLAB_HOST=gitlab.example.com glab mr create \
   --title "feat: add dark mode" \
   --description "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5[1m])._
@@ -199,9 +196,16 @@ GITLAB_HOST=gitlab.example.com glab mr create \
 - ..."
 ```
 
+> **Shell variables do not survive between commands.** Each command you run starts a
+> fresh shell, so an assignment made in an earlier command is gone by the time you post.
+> Put the assignment and the posting command in the **same** command, as shown above.
+> An unset variable expands to nothing and silently renders the header as
+> `on behalf of @ (...)`, with no username. Always check the posted output.
+
 **Example** — adding a note to issue #42:
 
 ```bash
+GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
 GITLAB_HOST=gitlab.example.com glab issue note 42 \
   -R group/project \
   --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5[1m])._
@@ -216,6 +220,7 @@ This applies to **every** piece of content the agent creates, regardless of leng
 > **Heredoc warning:** when using `cat <<EOF` to build the body, **never** single-quote the delimiter (`<<'EOF'`). Single-quoted heredocs suppress variable expansion and produce the literal string `$GL_USERNAME` instead of the resolved value. Always use an unquoted delimiter:
 >
 > ```bash
+> GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
 > glab mr create --title "feat: add dark mode" --description "$(cat <<EOF
 > > :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5[1m])._
 >

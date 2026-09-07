@@ -13,6 +13,10 @@ Changes are grouped by date.
 - Upstream skill sync: refresh `angular/angular-developer` and `system/playwright-cli` from the declared source repositories.
 - `glab` and `gh` skills: the AI attribution header now names the agent and model that wrote the content (`> :robot: _This was written by an AI agent on behalf of @user (claude-code/claude-opus-5[1m])._`), using the same identity as the `Assisted-by` commit trailer.
 
+### Fixed
+
+- `glab` and `gh` skills: the username for the AI attribution header is now fetched in the same command that posts the content. The previous two-step example relied on a shell variable surviving between commands, which produced a header with an empty `@` mention.
+
 ## [2026-09-02]
 
 ### Changed
