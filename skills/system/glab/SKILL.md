@@ -169,8 +169,10 @@ Issue and MR titles and descriptions, comments and notes, and commit messages ar
 Whenever you create or post content on GitLab on behalf of the user — including **MR descriptions** (`glab mr create`), **issue descriptions** (`glab issue create`), **comments/notes** (`glab issue note`, `glab mr note`), or **`glab api` body fields** — you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
 
 ```
-> :robot: _This was written by an AI agent on behalf of @<username>._
+> :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
+
+The parenthetical is your own runtime identity: the harness name in lowercase (`claude-code`, `opencode`, `copilot`) followed by the exact model ID, never a friendly name. No command or environment variable exposes it, so substitute the values yourself. It is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill writes in the `Assisted-by` commit trailer, so keep the two identical: commits and web content must report the same agent.
 
 To get the current authenticated username run:
 
@@ -189,7 +191,7 @@ GL_USERNAME=$(GITLAB_HOST=<hostname> glab api user | jq -r '.username')
 # Step 2: use it in the content
 GITLAB_HOST=gitlab.example.com glab mr create \
   --title "feat: add dark mode" \
-  --description "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
+  --description "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5[1m])._
 
 ## Summary
 
@@ -202,7 +204,7 @@ GITLAB_HOST=gitlab.example.com glab mr create \
 ```bash
 GITLAB_HOST=gitlab.example.com glab issue note 42 \
   -R group/project \
-  --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
+  --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5[1m])._
 
 ## Triage
 
@@ -215,7 +217,7 @@ This applies to **every** piece of content the agent creates, regardless of leng
 >
 > ```bash
 > glab mr create --title "feat: add dark mode" --description "$(cat <<EOF
-> > :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
+> > :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5[1m])._
 >
 > ## Summary
 >

@@ -105,6 +105,10 @@ keeps the reference in the subject line instead.)
 
 Example: `Assisted-by: opencode/github-copilot/claude-opus-4.6`
 
+The same `<agentname>/<full-model-id>` string goes in the AI attribution header that
+the `glab` and `gh` skills require on issues, MRs, PRs and comments, so a reader sees
+the same agent identity on the commit and on the surrounding discussion.
+
 ## MR/PR Titles
 
 Same conventional commit format as the subject line. The issue reference goes in the

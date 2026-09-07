@@ -77,8 +77,10 @@ Issues and PRs both use `#` prefix.
 Whenever you create or post content on GitHub on behalf of the user -- including **PR descriptions** (`gh pr create`), **issue descriptions** (`gh issue create`), **comments** (`gh pr comment`, `gh issue comment`), **reviews** (`gh pr review`), or **`gh api` body fields** -- you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
 
 ```
-> :robot: _This was written by an AI agent on behalf of @<username>._
+> :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
+
+The parenthetical is your own runtime identity: the harness name in lowercase (`claude-code`, `opencode`, `copilot`) followed by the exact model ID, never a friendly name. No command or environment variable exposes it, so substitute the values yourself. It is the same `<agentname>/<full-model-id>` string the `sf-commit-convention` skill writes in the `Assisted-by` commit trailer, so keep the two identical: commits and web content must report the same agent.
 
 Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
 
@@ -89,7 +91,7 @@ GH_USERNAME=$(gh api user --jq '.login')
 # Step 2: use it in the content
 gh pr create \
   --title "feat: add dark mode" \
-  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
+  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 
 ## Summary
 
@@ -101,7 +103,7 @@ gh pr create \
 
 ```bash
 gh issue comment 42 \
-  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
+  --body "> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 
 ## Triage
 
@@ -114,7 +116,7 @@ This applies to **every** piece of content the agent creates, regardless of leng
 >
 > ```bash
 > gh pr create --title "feat: add dark mode" --body "$(cat <<EOF
-> > :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
+> > :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 >
 > ## Summary
 >
@@ -329,7 +331,7 @@ Use the dedicated replies endpoint:
 
 ```bash
 gh api -X POST repos/{owner}/{repo}/pulls/15/comments/<comment_id>/replies \
-  -f body="> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME}._
+  -f body="> :robot: _This was written by an AI agent on behalf of @${GH_USERNAME} (claude-code/claude-opus-5[1m])._
 
 The null check is needed because..."
 ```
