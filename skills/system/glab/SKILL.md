@@ -166,63 +166,37 @@ Issue and MR titles and descriptions, comments and notes, and commit messages ar
 
 ## Writing on behalf of the user
 
-Whenever you create or post content on GitLab on behalf of the user — including **MR descriptions** (`glab mr create`), **issue descriptions** (`glab issue create`), **comments/notes** (`glab issue note`, `glab mr note`), or **`glab api` body fields** — you **must** prepend the following header to make it clear the content was authored by an AI agent acting on behalf of the user:
+Every piece of content you create on GitLab carries this attribution header: MR and issue descriptions, comments and notes, and `glab api` body fields.
 
 ```
-> :robot: _This was written by an AI agent on behalf of @<username>._
+> :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
 
-To get the current authenticated username run:
+Fetch the username, never hardcode it. For `<agentname>/<full-model-id>` substitute your own runtime identity: the harness you run in as the agent name, lowercase, and the model ID exactly as your runtime reports it, never a friendly name. Same string as the `Assisted-by` trailer in `sf-commit-convention`, so keep the two identical.
+
+Leave the header out only when the user asks you to, for instance on a project whose policy rejects AI-assisted content. Never suggest it, never decide it yourself, never swap in a softer marker.
+
+Fetch and post in one command: a separate command runs in its own shell, so the variable is empty by the time you post and the header renders `on behalf of @ (...)` with no username. `glab api` has no `--jq` flag (that is a `gh` feature), so pipe to `jq`.
 
 ```bash
-GITLAB_HOST=<hostname> glab api user | jq -r '.username'
-```
-
-> **Note:** `glab api` does not support `--jq` (that's a `gh` feature). Always pipe to `jq` instead.
-
-Before writing any content, **always fetch the username first** and embed it in the header. Do not hardcode a username or leave the placeholder unfilled:
-
-```bash
-# Step 1: fetch the username (do this once per session)
-GL_USERNAME=$(GITLAB_HOST=<hostname> glab api user | jq -r '.username')
-
-# Step 2: use it in the content
-GITLAB_HOST=gitlab.example.com glab mr create \
-  --title "feat: add dark mode" \
-  --description "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
-
-## Summary
-
-- Adds dark mode toggle to settings page
-- ..."
-```
-
-**Example** — adding a note to issue #42:
-
-```bash
-GITLAB_HOST=gitlab.example.com glab issue note 42 \
-  -R group/project \
-  --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
-
-## Triage
+GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
+GITLAB_HOST=gitlab.example.com glab issue note 42 -R group/project \
+  --message "> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5)._
 
 Root cause identified: ..."
 ```
 
-This applies to **every** piece of content the agent creates, regardless of length or context. Never skip the header.
+Never single-quote a heredoc delimiter (`<<'EOF'`): it blocks expansion and emits the literal `$GL_USERNAME`.
 
-> **Heredoc warning:** when using `cat <<EOF` to build the body, **never** single-quote the delimiter (`<<'EOF'`). Single-quoted heredocs suppress variable expansion and produce the literal string `$GL_USERNAME` instead of the resolved value. Always use an unquoted delimiter:
->
-> ```bash
-> glab mr create --title "feat: add dark mode" --description "$(cat <<EOF
-> > :robot: _This was written by an AI agent on behalf of @${GL_USERNAME}._
->
-> ## Summary
->
-> - Adds dark mode toggle to settings page
-> EOF
-> )"
-> ```
+```bash
+GL_USERNAME=$(GITLAB_HOST=gitlab.example.com glab api user | jq -r '.username')
+GITLAB_HOST=gitlab.example.com glab mr create --title "feat: add dark mode" --description "$(cat <<EOF
+> :robot: _This was written by an AI agent on behalf of @${GL_USERNAME} (claude-code/claude-opus-5)._
+
+Adds a dark mode toggle to the settings page.
+EOF
+)"
+```
 
 > **Issue auto-linking:** GitLab renders a bare reference as a clickable link, but a backticked one renders as inline code and does not link. Use backticks when referring to a number as text (examples, tables, logs), and leave it bare when it should link to an actual issue (e.g., `Closes #42`). See "Fully-qualified references" above for the full rule, including cross-project paths and GitHub-style refs.
 
