@@ -166,13 +166,15 @@ Issue and MR titles and descriptions, comments and notes, and commit messages ar
 
 ## Writing on behalf of the user
 
-Every piece of content you create on GitLab carries this attribution header, with no exceptions: MR and issue descriptions, comments and notes, and `glab api` body fields.
+Every piece of content you create on GitLab carries this attribution header: MR and issue descriptions, comments and notes, and `glab api` body fields.
 
 ```
 > :robot: _This was written by an AI agent on behalf of @<username> (<agentname>/<full-model-id>)._
 ```
 
 Fetch the username, never hardcode it. Substitute your own runtime identity for `<agentname>/<full-model-id>`: agent name all lowercase, the model ID exactly as your runtime reports it (including any suffix), never a friendly name. It is the same string the `sf-commit-convention` skill puts in the `Assisted-by` commit trailer, so keep the two identical.
+
+The header is omitted only when the user explicitly asks you to leave it out, for example when contributing to a project whose policy rejects AI-assisted content. Never suggest omitting it and never decide to omit it yourself. When the user does ask, drop the header and write the content normally, with no substitute marker.
 
 Fetch and post in a **single command**. A separate command runs in its own shell, so the variable is gone by the time you post and expands to nothing, rendering `on behalf of @ (...)` with no username. `glab api` has no `--jq` flag (that is a `gh` feature), so pipe to `jq`.
 
