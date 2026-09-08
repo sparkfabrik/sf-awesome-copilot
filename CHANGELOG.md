@@ -8,14 +8,11 @@ Changes are grouped by date.
 
 ## [2026-09-08]
 
-### Changed
-
-- `drupal-sdc-figma-verify` skill: token lookup now reads the `design/` layer and the generated theme foundation first; the theme's `figma-token-mapping.md` is used only as a brownfield fallback when no design layer exists.
-
 ### Removed
 
 - `drupal/drupal-sdc-generation` skill: superseded by the sf-drupal-harness skill of the same name.
 - `system/figma-bridge` skill: moved to sf-drupal-harness (`skills/design/figma-bridge`).
+- `drupal/drupal-sdc-figma-verify` skill: verification is done by Showroom `verify_component` and the project's value gate.
 
 ## [2026-09-07]
 
