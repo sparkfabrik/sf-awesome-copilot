@@ -17,7 +17,7 @@ version: 1.2.0
 Verify that a Drupal SDC component implementation correctly uses design tokens matching the corresponding Figma frame. Produces an inline markdown report of mismatches and anti-patterns.
 
 This skill delegates Figma access and token mapping discovery to the `figma-bridge`
-skill (`.agents/skills/figma-bridge/SKILL.md`). Load it first to handle Phase B.
+skill, provided by sf-drupal-harness (`skills/design/figma-bridge`). Load it first to handle Phase B.
 
 ## Prerequisites
 
@@ -27,34 +27,38 @@ skill (`.agents/skills/figma-bridge/SKILL.md`). Load it first to handle Phase B.
 
 ## Reference Documents
 
-| Document | Location | When to Read |
-|---|---|---|
-| **Token Mapping** | `docs/figma-token-mapping.md` inside the **theme folder** | Always — contains the project-specific Figma→SCSS mapping for colors, typography, spacing, radius, shadows |
-| **Figma MCP Usage** | `.agents/skills/figma-bridge/references/figma-mcp-usage.md` | Always — explains how to use MCP tools and extract/map CSS properties |
+| Document            | Location                                                                                                                                                        | When to Read                                                         |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Design layer**    | `design/tokens/**/*.dtcg.json`, `design/components/<slug>/component.json` (`token_bindings`), `design/consumption.json`, generated `<theme>/scss/foundations/*` | When `design/figma.lock` exists at the project root                  |
+| **Token mapping**   | `<theme>/docs/figma-token-mapping.md`                                                                                                                           | Brownfield only, when no design layer exists                         |
+| **Figma MCP Usage** | `figma-bridge` skill                                                                                                                                            | Always, explains how to use MCP tools and extract/map CSS properties |
 
-**Read both reference documents before starting any verification.**
+**Read the applicable reference documents before starting any verification.**
 
-### Locating the Token Mapping
+### Locating the Token Source
 
-The token mapping is stored **inside the Drupal theme**, not in this skill directory. To find it:
+The token source is the design layer at the project root when one exists; the mapping file inside the Drupal theme is used only as a brownfield fallback. To find it:
 
 1. Identify the theme folder from the component path. The component path follows the pattern:
    `src/drupal/web/themes/custom/{theme_name}/components/{component_name}/`
-2. The token mapping file is at:
-   `src/drupal/web/themes/custom/{theme_name}/docs/figma-token-mapping.md`
-3. If the file does not exist, inform the user that a token mapping must be created for this theme before verification can proceed. Offer to generate one by reading the theme's `scss/foundations/compiled/` and `scss/_settings.*.scss` files.
+2. Check whether `design/figma.lock` exists at the project root.
+   - If it does, the project has a design layer: read `design/tokens/**/*.dtcg.json`, `design/components/<slug>/component.json` (`token_bindings`), and the generated `<theme>/scss/foundations/*` files directly. No mapping file is needed; skip step 3.
+   - If it does not, look for the token mapping file at
+     `src/drupal/web/themes/custom/{theme_name}/docs/figma-token-mapping.md`.
+3. Only if the mapping file also does not exist, inform the user that a token mapping must be created for this theme before verification can proceed. Offer to generate one by reading the theme's `scss/foundations/_colors.scss`, `_roles.scss`, and `scss/_settings.*.scss` files.
 
 ## Theme Path
 
 Determined dynamically from the SDC component name. The typical structure is:
+
 ```
 src/drupal/web/themes/custom/{theme_name}/
 ```
 
 Components: `components/{component_name}/`
-Foundations: `scss/foundations/compiled/`
+Foundations: `scss/foundations/` (flat: `_colors.scss`, `_roles.scss`, `_typography.scss`, `_spacing.scss`, `_viewport.scss`)
 Settings: `scss/_settings.*.scss`
-Token Mapping: `docs/figma-token-mapping.md`
+Token mapping (brownfield only): `docs/figma-token-mapping.md`
 
 ---
 
@@ -80,13 +84,15 @@ Ask the user for the following information (skip any already provided):
 
 ### Phase B — Extract Figma Properties
 
-Load and execute the `figma-bridge` skill (`.agents/skills/figma-bridge/SKILL.md`).
+Load and execute the `figma-bridge` skill, provided by sf-drupal-harness (`skills/design/figma-bridge`).
 
 Provide it with:
+
 - The Figma URL from Phase A
 - The theme name (derived from the component path)
 
 `figma-bridge` will handle:
+
 - URL parsing (`fileKey` / `nodeId` extraction)
 - Token mapping discovery and loading
 - MCP calls (`get_design_context`, `get_metadata`, `get_variable_defs`)
@@ -106,7 +112,8 @@ Read the component files from the workspace:
    - Extract all token references:
      - `@extend %placeholder-name` → look up in Typography/Radius tables
      - `@include mixin-name($property, $variant)` → look up in Spacing tables
-     - `$color-*` or `$foundation-*` variables → look up in Color tables
+     - `$color-*` variables → look up in Color tables (primitives)
+     - Role aliases (`$accent-*`, `$surface-*`, `$on-tone-*`, `$text-on-*`, `$graphic-option-*`) → look up in `_roles.scss`
      - `$shadow-*` variables → look up in Shadow table
      - Raw hex values (e.g., `#003a70`) → flag as potential hardcoded tokens
      - Raw px/rem values not using token variables → flag as potential hardcoded spacing
@@ -118,7 +125,7 @@ Read the component files from the workspace:
 
 #### Resolving Token Chains
 
-For each token reference found in the SCSS, resolve to its final value using the token mapping:
+For each token reference found in the SCSS, resolve to its final value using the design layer and the generated foundation, or the mapping file in the brownfield case:
 
 ```
 @extend %heading-h2
@@ -130,9 +137,10 @@ For each token reference found in the SCSS, resolve to its final value using the
   → component-padding-large in _settings.spacing.scss
   → xxs: 40px, md: 80px, lg: 104px, xxl: 104px
 
-background-color: $color-primary-500
-  → $foundation-color-brand-primary-500
-  → resolved hex value from token mapping
+background-color: $accent-default
+  → role in _roles.scss
+  → brand primitive behind it
+  → hex value from design/tokens
 ```
 
 ### Phase D — Compare
@@ -149,19 +157,20 @@ For each property extracted from Figma (Phase B), find the corresponding SCSS to
 
 **Classification:**
 
-| Status | Meaning |
-|---|---|
-| ✅ Match | Figma value matches the resolved SCSS token value |
-| ⚠️ Partial | Value matches but implementation uses hardcoded value instead of token variable/mixin |
-| ❌ Mismatch | Figma value does NOT match the resolved SCSS value |
-| ❓ Not found | Property exists in Figma but has no corresponding SCSS rule (or vice versa) |
+| Status       | Meaning                                                                               |
+| ------------ | ------------------------------------------------------------------------------------- |
+| ✅ Match     | Figma value matches the resolved SCSS token value                                     |
+| ⚠️ Partial   | Value matches but implementation uses hardcoded value instead of token variable/mixin |
+| ❌ Mismatch  | Figma value does NOT match the resolved SCSS value                                    |
+| ❓ Not found | Property exists in Figma but has no corresponding SCSS rule (or vice versa)           |
 
 **Anti-pattern detection:**
 
 Flag these issues even when values match:
+
 - **Hardcoded hex**: SCSS uses a raw hex instead of the corresponding colour variable
 - **Hardcoded px**: SCSS uses a raw px value instead of the spacing mixin
-- **Wrong token level**: SCSS uses a `$foundation-*` variable directly instead of the project alias
+- **Wrong token level**: SCSS reads a colour primitive `$color-*` where `component.json` binds a role, or a role where the binding is a primitive (bindings are replicated, not improved)
 - **Missing responsive**: SCSS sets a value for one breakpoint but lacks responsive media queries when the token system provides multi-breakpoint values
 - **Direct spacer math**: SCSS uses `$spacer * N` for a value that matches a named token
 
@@ -171,7 +180,7 @@ Generate a **concise** report as inline markdown in the chat. The report must be
 
 #### Report Format
 
-```markdown
+````markdown
 # SDC ↔ Figma Verification Report
 
 **Component**: `lc-component-text-media`
@@ -188,14 +197,15 @@ Generate a **concise** report as inline markdown in the chat. The report must be
 
 Brief explanation of why it's a mismatch and what's affected.
 
-| Property | Figma | SCSS | Resolved |
-|---|---|---|---|
-| padding-y | 8px (`token/name`) | none | 0px |
+| Property  | Figma              | SCSS | Resolved |
+| --------- | ------------------ | ---- | -------- |
+| padding-y | 8px (`token/name`) | none | 0px      |
 
 **Fix** in `component-file.scss`:
-⁣```scss
+
+```scss
 // suggested fix code
-⁣```
+```
 
 ### ⚠️ [Short title describing the partial match]
 
@@ -204,7 +214,7 @@ Brief explanation. Mention if it requires design team confirmation.
 ### ❓ [Short title describing the not-found item]
 
 Brief explanation of what's missing and potential impact.
-```
+````
 
 #### Rules for the report
 
@@ -220,16 +230,23 @@ Brief explanation of what's missing and potential impact.
 ## Handling Edge Cases
 
 ### Component not found
+
 If the SDC component directory does not exist under `components/`, inform the user and list available components matching partial name.
 
 ### Multiple theme variants in Figma
+
 If the Figma frame contains multiple variant examples, ask the user which variant to verify, or run verification for each variant sequentially.
 
 ### Nested SDC components
+
 If the Twig template includes other SDC components via `{% include %}` or `{{ include() }}`, note them in the report but do NOT recursively verify them unless the user explicitly asks.
 
 ### Dynamic values
+
 If SCSS uses Twig variables or CSS custom properties set at runtime (e.g., `var(--theme-border-color)` set via variant class), trace the value through the variant class to find the resolved value.
 
 ### Token mapping outdated
-If a hex value from Figma does not match any entry in the token mapping, read the actual foundation files (`scss/foundations/compiled/_colors.scss`, etc.) to check if the token mapping is outdated. Report the discrepancy.
+
+With a design layer, if a hex value from Figma does not match any entry in `design/tokens`, the design layer is stale; re-pull it with the `design-tokens-pull` skill, provided by sf-drupal-harness (`skills/design/design-tokens-pull`). Report the discrepancy.
+
+Without a design layer (brownfield), read the actual foundation file (`scss/foundations/_colors.scss`, etc.) to check if the mapping file is outdated. Report the discrepancy.

@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project has no semantic versioning — the latest commit is the current version.
 Changes are grouped by date.
 
+## [2026-09-08]
+
+### Changed
+
+- `drupal-sdc-figma-verify` skill: token lookup now reads the `design/` layer and the generated theme foundation first; the theme's `figma-token-mapping.md` is used only as a brownfield fallback when no design layer exists.
+
+### Removed
+
+- `drupal/drupal-sdc-generation` skill: superseded by the sf-drupal-harness skill of the same name.
+- `system/figma-bridge` skill: moved to sf-drupal-harness (`skills/design/figma-bridge`).
+
 ## [2026-09-07]
 
 ### Changed
