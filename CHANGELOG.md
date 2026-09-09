@@ -8,6 +8,11 @@ Changes are grouped by date.
 
 ## [2026-09-09]
 
+### Changed
+
+- `gh` and `glab` now require short, plain issues, PR/MR descriptions, and comments even when `sf-writing-style` is not loaded.
+- `sf-writing-style` now limits short artifacts to essential, supported facts and excludes implementation stories and repeated summaries.
+
 ### Removed
 
 - `system/figma-bridge` skill. Spark Showroom is the bridge between Figma and code (`extract_design_layer`, `extract_component`, `verify_component`); no skill in this repository calls the Figma MCP directly any more.

@@ -35,13 +35,13 @@
       "description": "Stress-test designs while documenting terms and decisions"
     },
     "gh": {
-      "description": "GitHub CLI (issues, PRs, Actions, releases)"
+      "description": "GitHub CLI with short, plain issues, PRs, and comments"
     },
     "githuman": {
       "description": "Review AI-generated code changes before committing"
     },
     "glab": {
-      "description": "GitLab CLI with mandatory write and host policies"
+      "description": "GitLab CLI with short, plain issues, MRs, and comments"
     },
     "mermaid-diagrams": {
       "description": "Create clear Mermaid diagrams in Markdown docs"
@@ -65,7 +65,7 @@
       "description": "Enforce SparkFabrik commit conventions and trailers"
     },
     "sf-writing-style": {
-      "description": "SparkFabrik markdown style: readable prose, no AI slop"
+      "description": "Short, plain writing focused on what changes"
     },
     "skill-creator": {
       "description": "Create, iterate, and benchmark agent skills"

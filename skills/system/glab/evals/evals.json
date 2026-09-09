@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "I found a bug on the login page -- when you submit an empty password field the app crashes with a 500 error instead of showing a validation message. Can you create a GitLab issue for this? Make it a high priority bug and assign it to me.",
-      "expected_output": "The agent should use `glab issue create` with a descriptive title, detailed description including steps to reproduce, appropriate labels (bug, priority::high or similar), and --assignee @me. It should NOT use `gh issue create` or any GitHub-specific tooling.",
+      "expected_output": "The agent should use `glab issue create` with a descriptive title, short description stating the empty-password trigger, the 500 error, and the wanted validation message, appropriate labels (bug, priority::high or similar), and --assignee @me. It should NOT use `gh issue create` or any GitHub-specific tooling.",
       "files": [],
       "assertions": [
         "Uses `glab issue create` (not `gh issue create` or curl to the API)",
@@ -17,7 +17,10 @@
         "Uses `--assignee @me` or equivalent to assign to the current user",
         "Checks the git remote to confirm it's a GitLab project before running glab commands",
         "Uses `--label` with a bug-related label (e.g., `bug`, `type::bug`)",
-        "Fetches the authenticated GitLab username and prepends the required AI attribution header to the issue description"
+        "Fetches the authenticated GitLab username and prepends the required AI attribution header to the issue description",
+        "Published body is at most 120 words, excluding required attribution and reference lines, unless the user or a required template asks for more detail",
+        "Published body uses plain words and states the problem, change, or answer without an implementation walkthrough, file inventory, investigation history, or repeated summary",
+        "Applies the writing rules even if sf-writing-style is not loaded; does not append unsolicited explanatory comments"
       ]
     },
     {
@@ -35,7 +38,10 @@
         "Checks git status and branch state before creating the MR",
         "Pushes the branch to remote (with -u) before creating the MR",
         "Analyzes the changes (git diff/log) to draft a meaningful MR title and description",
-        "Fetches the authenticated GitLab username and prepends the required AI attribution header to the MR description"
+        "Fetches the authenticated GitLab username and prepends the required AI attribution header to the MR description",
+        "Published body is at most 80 words, excluding required attribution and reference lines, unless the user or a required template asks for more detail",
+        "Published body uses plain words and states the problem, change, or answer without an implementation walkthrough, file inventory, investigation history, or repeated summary",
+        "Applies the writing rules even if sf-writing-style is not loaded; does not append unsolicited explanatory comments"
       ]
     },
     {
@@ -51,7 +57,10 @@
         "Uses `glab mr note 15` to add a comment about the implementation looking solid",
         "Treats approval and comment as separate operations (not combined into one command)",
         "Uses glab commands throughout (not gh or curl)",
-        "Fetches the authenticated GitLab username and prepends the required AI attribution header to the MR note"
+        "Fetches the authenticated GitLab username and prepends the required AI attribution header to the MR note",
+        "Published body is at most 60 words, excluding required attribution and reference lines, unless the user or a required template asks for more detail",
+        "Published body uses plain words and states the problem, change, or answer without an implementation walkthrough, file inventory, investigation history, or repeated summary",
+        "Applies the writing rules even if sf-writing-style is not loaded; does not append unsolicited explanatory comments"
       ]
     },
     {
@@ -448,6 +457,48 @@
         "Title is human-readable and concise (roughly 3-10 words, under ~60 chars)",
         "Title mentions rate limiting documentation in plain English",
         "Fetches the authenticated GitLab username and prepends the required AI attribution header to the issue description"
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Create a GitLab issue: importing a CSV with accented customer names returns a 500 error. It should import those names successfully. Investigation notes: CSVReader.decode uses ASCII; csv_import.py line 87 raises UnicodeDecodeError. We first suspected database collation, then tried stripping accents as a workaround. Changing the decoder to UTF-8 looks promising. The project is acme/customer-tools. There is no required template. Draft only; do not post. Omit attribution for this draft.",
+      "expected_output": "Draft the requested artifact from the supplied facts. For this isolated authoring test, only the CLI skill is available; sf-writing-style is unavailable. Do not call external services. Preserve the result and any required deployment action; omit investigation history.",
+      "files": [],
+      "assertions": [
+        "The body has at most 120 words",
+        "Uses no decorative headings or bold labels",
+        "Omits unrequested implementation details, even a single file or function name, as well as rejected approaches and unsolicited follow-up explanations",
+        "Keeps the stated problem and expected result, changed behavior and required deployment action, or direct answer to the review question",
+        "Does not need sf-writing-style to apply these writing rules",
+        "Does not invent side effects, sample values, test cases, or reproduction results absent from the supplied facts"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "Open a merge request for the completed session timeout change in acme/customer-tools. Verified diff: sessions now expire after 30 minutes without activity. SESSION_TIMEOUT_MINUTES replaces SESSION_TTL_SECONDS; operators must replace the old setting before deploying. middleware/session.ts refreshes lastSeen, config/session.ts renames the key, migration tests cover the new setting, and README.md updates deployment instructions. We tried a timer-based approach first, reverted it, and added a clock helper. Tests pass. Draft only; do not post. Omit attribution for this draft.",
+      "expected_output": "Draft the requested artifact from the supplied facts. For this isolated authoring test, only the CLI skill is available; sf-writing-style is unavailable. Do not call external services. Preserve the result and any required deployment action; omit investigation history.",
+      "files": [],
+      "assertions": [
+        "The body has at most 80 words",
+        "Uses no decorative headings or bold labels",
+        "Omits unrequested implementation details, even a single file or function name, as well as rejected approaches and unsolicited follow-up explanations",
+        "Keeps the stated problem and expected result, changed behavior and required deployment action, or direct answer to the review question",
+        "Does not need sf-writing-style to apply these writing rules",
+        "Does not invent side effects, sample values, test cases, or reproduction results absent from the supplied facts"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "Reply to this GitLab review comment: \"Why validate before calling the import service?\" Verified facts: the service throws on an empty CSV, so validation first allows a field error. Investigation notes: first tried a broad exception handler, reverted it because it hid unrelated errors, and added three tests in import_validation_test.py. Draft only; do not post. Omit attribution for this draft.",
+      "expected_output": "Draft the requested artifact from the supplied facts. For this isolated authoring test, only the CLI skill is available; sf-writing-style is unavailable. Do not call external services. Preserve the result and any required deployment action; omit investigation history.",
+      "files": [],
+      "assertions": [
+        "The body has at most 60 words",
+        "Uses no decorative headings or bold labels",
+        "Omits unrequested implementation details, even a single file or function name, as well as rejected approaches and unsolicited follow-up explanations",
+        "Keeps the stated problem and expected result, changed behavior and required deployment action, or direct answer to the review question",
+        "Does not need sf-writing-style to apply these writing rules",
+        "Does not invent side effects, sample values, test cases, or reproduction results absent from the supplied facts"
       ]
     }
   ]

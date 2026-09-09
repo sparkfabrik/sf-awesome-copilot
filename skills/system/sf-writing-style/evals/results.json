@@ -1,0 +1,126 @@
+{
+  "model": "claude-opus-5",
+  "controlled_comparison": {
+    "method": "Six draft prompts, each run once with original and revised CLI skill text supplied to claude -p. Tools and automatic skill discovery were disabled.",
+    "revision": "The revised rules in this comparison predate the final evidence-rule edits. The natural-trigger test below used the current rules.",
+    "limitations": "One run per prompt and configuration. GitHub and GitLab prompts share three scenarios; this is not a reliability estimate.",
+    "cases": [
+      {
+        "case": "gh-issue",
+        "prompt": "Create a GitHub issue: importing a CSV with accented customer names returns a 500 error. It should import those names successfully. Investigation notes: CSVReader.decode uses ASCII; csv_import.py line 87 raises UnicodeDecodeError. We first suspected database collation, then tried stripping accents as a workaround. Changing the decoder to UTF-8 looks promising. The project is acme/customer-tools. There is no required template. Draft only; do not post. Omit attribution for this draft.",
+        "original": {
+          "body_words": 229,
+          "title": "CSV import fails on accented customer names",
+          "body": "## Summary\n\nImporting a CSV that contains accented customer names (for example `Jos\u00e9`, `M\u00fcller`, `Ren\u00e9e`) returns a 500 error. The import should complete successfully and store the names with their accents intact.\n\n## Current behaviour\n\nThe request fails with a 500 error. `csv_import.py` raises a `UnicodeDecodeError` at line 87.\n\n## Expected behaviour\n\nThe file imports without error and accented characters are preserved end to end, from the uploaded file through to the stored customer record.\n\n## Investigation\n\n`CSVReader.decode` decodes the uploaded file as ASCII. Any byte outside the ASCII range raises `UnicodeDecodeError`, which surfaces as the 500.\n\nTwo earlier hypotheses were ruled out:\n\n- **Database collation.** Suspected first, but the failure happens during decoding, before any database write.\n- **Stripping accents on input.** Tried as a workaround. It avoids the error but corrupts the customer data, so it is not an acceptable fix.\n\n## Proposed fix\n\nChange the decoder in `CSVReader.decode` to UTF-8. This looks promising and matches the encoding of the files being uploaded. Worth confirming how the code should behave when a file is genuinely not valid UTF-8, so that case returns a clear validation error rather than a 500.\n\n## Reproduction\n\n1. Prepare a CSV with at least one customer name containing an accented character.\n2. Upload it through the customer import.\n3. The request returns 500 and the log shows `UnicodeDecodeError` from `csv_import.py` line 87.",
+          "skill_sha256": "8f9323d734def449856a90b35a898e1d95af194b1af3a3181a945cb09525a226"
+        },
+        "revised": {
+          "body_words": 17,
+          "title": "CSV import fails with accented customer names",
+          "body": "Importing a CSV that contains accented customer names returns a 500 error. Those names should import successfully.",
+          "skill_sha256": "f941dc93b4308a011b31d88256bb17c8c898d2038d0607d0dc33bcf889720571"
+        }
+      },
+      {
+        "case": "gh-description",
+        "prompt": "Open a pull request for the completed session timeout change in acme/customer-tools. Verified diff: sessions now expire after 30 minutes without activity. SESSION_TIMEOUT_MINUTES replaces SESSION_TTL_SECONDS; operators must replace the old setting before deploying. middleware/session.ts refreshes lastSeen, config/session.ts renames the key, migration tests cover the new setting, and README.md updates deployment instructions. We tried a timer-based approach first, reverted it, and added a clock helper. Tests pass. Draft only; do not post. Omit attribution for this draft.",
+        "original": {
+          "body_words": 159,
+          "title": "feat(session)!: expire sessions after 30 minutes of inactivity",
+          "body": "Sessions now expire after 30 minutes without activity. Each authenticated request refreshes the session's `lastSeen` timestamp, so the window is measured from the last activity rather than from login.\n\n## Breaking change\n\n`SESSION_TIMEOUT_MINUTES` replaces `SESSION_TTL_SECONDS`. Operators must replace the old setting before deploying: the previous key is no longer read, and leaving it in place will fall back to the default timeout.\n\n## Changes\n\n- `middleware/session.ts`: refreshes `lastSeen` on activity and expires sessions past the inactivity window.\n- `config/session.ts`: renames the configuration key to `SESSION_TIMEOUT_MINUTES` and reads the value in minutes.\n- `README.md`: updates the deployment instructions to document the new setting.\n- Migration tests cover the new setting.\n\n## Implementation notes\n\nThe first attempt used a timer-based expiry. It was reverted in favour of comparing timestamps on each request, which avoids per session timers and keeps expiry correct across restarts. A small clock helper was added so the timeout logic can be tested deterministically.\n\n## Testing\n\nTests pass.",
+          "skill_sha256": "8f9323d734def449856a90b35a898e1d95af194b1af3a3181a945cb09525a226"
+        },
+        "revised": {
+          "body_words": 21,
+          "title": "feat(session)!: expire sessions after 30 minutes of inactivity",
+          "body": "Sessions now expire after 30 minutes without activity.\n\nBreaking change: `SESSION_TIMEOUT_MINUTES` replaces `SESSION_TTL_SECONDS`. Operators must replace the old setting before deploying.",
+          "skill_sha256": "f941dc93b4308a011b31d88256bb17c8c898d2038d0607d0dc33bcf889720571"
+        }
+      },
+      {
+        "case": "gh-comment",
+        "prompt": "Reply to this GitHub review comment: \"Why validate before calling the import service?\" Verified facts: the service throws on an empty CSV, so validation first allows a field error. Investigation notes: first tried a broad exception handler, reverted it because it hid unrelated errors, and added three tests in import_validation_test.py. Draft only; do not post. Omit attribution for this draft.",
+        "original": {
+          "body_words": 114,
+          "title": "",
+          "body": "The import service raises an exception on an empty CSV, so by the time it fails we no longer have a clean way to attach the message to the upload field. Validating first lets us return a proper field error and keep the form usable.\n\nI did try the other order first, catching the exception around the service call, but the handler was broad enough to swallow unrelated failures too, so I reverted it. Narrowing it to just the empty case would have meant depending on the exception type the service happens to raise today, which felt more fragile than checking the input up front.\n\nThe behaviour is covered by three tests in `import_validation_test.py`.",
+          "skill_sha256": "8f9323d734def449856a90b35a898e1d95af194b1af3a3181a945cb09525a226"
+        },
+        "revised": {
+          "body_words": 21,
+          "title": "",
+          "body": "The import service throws on an empty CSV. Validating first lets us return a field error instead of surfacing that failure.",
+          "skill_sha256": "f941dc93b4308a011b31d88256bb17c8c898d2038d0607d0dc33bcf889720571"
+        }
+      },
+      {
+        "case": "glab-issue",
+        "prompt": "Create a GitLab issue: importing a CSV with accented customer names returns a 500 error. It should import those names successfully. Investigation notes: CSVReader.decode uses ASCII; csv_import.py line 87 raises UnicodeDecodeError. We first suspected database collation, then tried stripping accents as a workaround. Changing the decoder to UTF-8 looks promising. The project is acme/customer-tools. There is no required template. Draft only; do not post. Omit attribution for this draft.",
+        "original": {
+          "body_words": 202,
+          "title": "CSV import fails on accented customer names",
+          "body": "Importing a CSV that contains accented customer names (for example \"Ren\u00e9e Dubois\") returns a 500 error. The import should accept these names and store them unchanged.\n\n## Current behavior\n\nThe request fails with a 500 error and no row is imported. `csv_import.py` raises a `UnicodeDecodeError` at line 87.\n\n## Expected behavior\n\nThe CSV imports successfully, and accented characters are preserved exactly as they appear in the source file.\n\n## Investigation\n\n`CSVReader.decode` decodes the uploaded file as ASCII, so any byte outside the ASCII range aborts the import before the rows reach the database.\n\nTwo earlier leads did not hold up:\n\n- **Database collation.** Our first suspicion, but the failure happens during decoding, before any database write.\n- **Stripping accents on input.** Tried as a workaround. It avoids the crash but corrupts the stored names, so it is not an acceptable fix.\n\n## Proposed fix\n\nChange the decoder in `CSVReader.decode` from ASCII to UTF-8. This looks promising and matches the encoding of the files that currently fail.\n\n## Open questions\n\n- Should the reader fall back to another encoding, or return a clear validation error, when a file is not valid UTF-8?\n- Do any existing imports depend on the current ASCII behavior?",
+          "skill_sha256": "2ce2165a14d6c61669737fbeab411d404581da5a92b1faa823bd0b1bb91a09f1"
+        },
+        "revised": {
+          "body_words": 17,
+          "title": "CSV import fails on accented customer names",
+          "body": "Importing a CSV that contains accented customer names returns a 500 error. Those names should import successfully.",
+          "skill_sha256": "53ff9c7db65eeefcd967b14a749b7184259a1f8dfce46d11d9020e55b5880c7e"
+        }
+      },
+      {
+        "case": "glab-description",
+        "prompt": "Open a merge request for the completed session timeout change in acme/customer-tools. Verified diff: sessions now expire after 30 minutes without activity. SESSION_TIMEOUT_MINUTES replaces SESSION_TTL_SECONDS; operators must replace the old setting before deploying. middleware/session.ts refreshes lastSeen, config/session.ts renames the key, migration tests cover the new setting, and README.md updates deployment instructions. We tried a timer-based approach first, reverted it, and added a clock helper. Tests pass. Draft only; do not post. Omit attribution for this draft.",
+        "original": {
+          "body_words": 158,
+          "title": "feat(session)!: expire sessions after 30 minutes of inactivity",
+          "body": "Sessions now expire after 30 minutes without activity, replacing the previous absolute time-to-live.\n\n## Breaking change\n\n`SESSION_TIMEOUT_MINUTES` replaces `SESSION_TTL_SECONDS`. Operators must replace the old setting before deploying: the new key is read at startup, and the old one is no longer honoured.\n\n## Changes\n\n- **`middleware/session.ts`**: refreshes `lastSeen` on each request so the timeout tracks activity rather than session age.\n- **`config/session.ts`**: renames the configuration key to `SESSION_TIMEOUT_MINUTES` and reads the value in minutes.\n- **Migration tests**: cover the new setting.\n- **`README.md`**: updates the deployment instructions for the renamed key.\n\n## Implementation notes\n\nThe first attempt used a per-session timer to schedule expiry. It was reverted in favour of comparing `lastSeen` against the current time on each request, which avoids holding timer state per session. A small clock helper was added so the comparison can be driven by a fixed time in tests.\n\n## Testing\n\nThe full test suite passes, including the new migration tests for `SESSION_TIMEOUT_MINUTES`.",
+          "skill_sha256": "2ce2165a14d6c61669737fbeab411d404581da5a92b1faa823bd0b1bb91a09f1"
+        },
+        "revised": {
+          "body_words": 20,
+          "title": "feat(session)!: expire sessions after 30 minutes of inactivity",
+          "body": "Sessions now expire after 30 minutes without activity. SESSION_TIMEOUT_MINUTES replaces SESSION_TTL_SECONDS, and operators must replace the old setting before deploying.",
+          "skill_sha256": "53ff9c7db65eeefcd967b14a749b7184259a1f8dfce46d11d9020e55b5880c7e"
+        }
+      },
+      {
+        "case": "glab-comment",
+        "prompt": "Reply to this GitLab review comment: \"Why validate before calling the import service?\" Verified facts: the service throws on an empty CSV, so validation first allows a field error. Investigation notes: first tried a broad exception handler, reverted it because it hid unrelated errors, and added three tests in import_validation_test.py. Draft only; do not post. Omit attribution for this draft.",
+        "original": {
+          "body_words": 94,
+          "title": "",
+          "body": "The import service raises on an empty CSV, so calling it first turns a user mistake into a 500. Validating up front lets us return a field error on the upload input instead, which is what the form expects.\n\nI did try the alternative: a broad exception handler around the service call. I reverted it because it swallowed unrelated errors from the parser and made real failures look like validation problems.\n\nThe behavior is covered by three new tests in `import_validation_test.py`: empty file, header-only file, and a valid file that still reaches the service.",
+          "skill_sha256": "2ce2165a14d6c61669737fbeab411d404581da5a92b1faa823bd0b1bb91a09f1"
+        },
+        "revised": {
+          "body_words": 23,
+          "title": "",
+          "body": "The import service throws on an empty CSV, so validating first lets the form return a field error instead of surfacing an exception.",
+          "skill_sha256": "53ff9c7db65eeefcd967b14a749b7184259a1f8dfce46d11d9020e55b5880c7e"
+        }
+      }
+    ]
+  },
+  "automatic_trigger": {
+    "method": "Natural draft request with normal skill discovery. Revised skills were exposed through temporary read-only mounts; installed files were unchanged. Only the Skill tool was enabled.",
+    "prompt": "Draft a GitLab issue for acme/customer-tools: importing a CSV with accented customer names returns a 500 error. Those names should import successfully. There is no required template. Return the draft here; do not post anything or create files. Omit attribution for this draft. After the draft, tell me which skills you actually loaded while doing this task, separately from skills that were merely available in the harness.",
+    "loaded_skills": [
+      "glab",
+      "sf-writing-style"
+    ],
+    "loaded_bodies_match_revised_files": true,
+    "skill_sha256": {
+      "gh": "59a1dceec241739f716d6d4d0b771f78da40ac5222937b18d0a294c39ba44b7b",
+      "glab": "f0d401c347212282aa1e1ba6a3c08aabdec9115da17554e4ef19274e37997b8c",
+      "sf-writing-style": "dffe87df2f016aa19e0ab66e21b805b59b121e8dd065c69325aaba43b4b074b7"
+    },
+    "description_words": 32,
+    "length_check": "passed",
+    "factual_check": "failed",
+    "unsupported_claim": "no records are created",
+    "description": "Importing a CSV whose customer names contain accented characters returns a 500 error, and no records are created.\n\nExpected: the import completes and accented names are stored as written in the file.",
+    "limitations": "One GitLab issue draft. Does not establish triggering reliability for other tasks or guarantee factual accuracy."
+  }
+}

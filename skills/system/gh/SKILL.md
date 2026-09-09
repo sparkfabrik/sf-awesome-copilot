@@ -7,6 +7,22 @@ description: 'Invoke whenever the user is working with GitHub. Trigger on any of
 
 Use the `gh` CLI for ALL GitHub-related tasks including working with issues, pull requests, Actions workflows, releases, and repositories. If given a GitHub URL, use `gh` to get the information needed.
 
+## Write short, plain text
+
+Apply these rules whenever you draft or send a title, description, comment, review, changelog, or release note, including through the API. They apply even when `sf-writing-style` has not been loaded.
+
+- **Content.** PR/MR descriptions state what changes. Issues state the problem and wanted result. Comments answer the point. Changelog entries state one change each.
+- **Length.** Default to one to three short sentences. Maximum: 80 words for a PR/MR description, 120 for an issue, 60 for a comment, and one sentence per changelog entry. These are ceilings, not targets. Attribution and reference lines do not count.
+- **Leave out.** No implementation details, even in a single sentence: file paths, function names, internal variables, source lines, test counts, diagnoses, or proposed fixes. Omit workarounds, investigation history, rejected approaches, and repeated summaries. Keep an identifier only when it names the changed interface or a required user action. Do not move omitted detail into unsolicited comments.
+- **Select facts.** Investigation notes and the diff are input, not a checklist to summarize. For an issue, keep the symptom and wanted result. For a PR/MR, keep the changed behavior and required action. For a comment, answer only the question.
+- **Evidence.** Use only supplied facts or results you observed. Omit unknowns. An error does not establish side effects, data loss, partial success, or affected environments. Do not invent causes, sample values, test cases, or reproduction results.
+- **Plain English.** Use familiar words and concrete verbs. Keep necessary technical names exact. No invented jargon, decorative headings, or bold labels. Short text still uses complete sentences.
+- **Exceptions.** Include essential breaking changes and required user actions. Expand only for explicitly requested detail or required template fields, using the fewest words needed. A direct question about how or why deserves a direct answer.
+
+Before posting, read the actual outgoing text. Cut every sentence that does not state the change, problem, answer, or required action. Remove code locations and test details unless explicitly requested. Check each factual claim against the source, then check the length and remove repetition. Reading the diff is required; narrating it is not. Rewrite commit-generated descriptions before posting.
+
+Example description: "Rejects empty passwords with a validation message instead of returning a 500 error."
+
 ## Before you start
 
 1. **Detect GitHub URLs**: if the user provided a URL containing "github.com", this is a GitHub resource. Extract the owner and repo from the URL and proceed with `gh` commands using `-R owner/repo`.
@@ -111,11 +127,11 @@ EOF
 
 These rules apply to every issue title and description, pull request title and description, comment, review, and commit message you write.
 
-**Write in plain, professional prose.** Titles, descriptions, comments, reviews, and commit messages are durable, outward-facing artifacts: write them in complete, well-structured English with proper markdown, regardless of any active terse output style. A session-level reminder such as `CAVEMAN MODE ACTIVE` applies to your conversational replies, never to these artifacts; do not toggle the style, write the artifact in full prose and resume the terse style in chat. Never use the em dash (—) or en dash (–); rewrite with a period, comma, colon, or parentheses, and prefer short paragraphs and lists over dense run-ons.
+Apply [Write short, plain text](#write-short-plain-text) before every write. Conversational styles such as caveman do not apply to published text.
 
 **Use the full path for cross-project references.** When you reference an issue or pull request that lives in a _different_ repository than the one you are writing in, use the full `owner/repo#123` form rather than a bare `#123`. A bare `#123` (or a short form) only resolves within the same repository and will not render as a link from another repository. Apply this in prose and in footers alike (`Closes:`, `Refs:`). For example, to reference the platform-team board from a code repository, write `sparkfabrik-innovation-team/board#4379`, never a bare `board#4379` or `#4379`. Within the same repository, a bare `#123` is correct and renders as a link.
 
-**Load the `sf-writing-style` skill for the full SparkFabrik ruleset** (air, bold lead-in lists, slop blacklist, before/after examples) before composing any of these artifacts.
+Load `sf-writing-style` for additional writing guidance. The rules above apply independently and take priority for these short artifacts. Never use em or en dashes outside quotations or code.
 
 ---
 
@@ -238,9 +254,9 @@ Breaking changes append `!` before the colon: `feat(api)!: change response forma
 **PR creation checklist** (follow this carefully):
 
 1. **Inspect branch state**: `git status`, `git log <base>...HEAD --oneline`, `git diff <base>...HEAD`
-2. **Draft title/description from the actual diff** -- reference specific files, functions, behaviors. Do not just restate the user's request.
+2. **Draft from the actual diff**: state what changes, using the writing rules above. Include identifiers only for the changed interface or a required user action.
 3. **Push**: `git push -u origin HEAD` if not yet pushed.
-4. **Create**: `gh pr create` with all relevant flags.
+4. **Check and create**: apply the final writing check to the PR description, then run `gh pr create` with all relevant flags.
 5. **Return the PR URL** to the user.
 
 ### Reviewing and managing PRs
