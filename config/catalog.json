@@ -7,9 +7,6 @@
     "adversarial-verify": {
       "description": "Adversarial verification of code, docs, and analysis"
     },
-    "figma-bridge": {
-      "description": "Figma access, MCP usage, and design-token mapping"
-    },
     "agentic-security-audit": {
       "description": "Audit AI agent configs for OWASP agentic risks"
     },
