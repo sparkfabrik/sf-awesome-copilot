@@ -575,12 +575,6 @@ Pass to the skill:
 > "The SDC files are ready. Now let's generate the Drupal paragraph
 > configuration. Invoking the `drupal-paragraph-generation` skill."
 
-### When verifying against Figma
-
-After building the component, if a Figma URL was used, suggest:
-> "Want to verify the component matches the Figma design? Use the
-> `drupal-sdc-figma-verify` skill with the same Figma URL."
-
 ---
 
 ## Common Mistakes to Avoid
