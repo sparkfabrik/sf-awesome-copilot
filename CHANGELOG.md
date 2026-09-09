@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 This project has no semantic versioning — the latest commit is the current version.
 Changes are grouped by date.
 
+## [2026-09-09]
+
+### Removed
+
+- `system/figma-bridge` skill. Spark Showroom is the bridge between Figma and code (`extract_design_layer`, `extract_component`, `verify_component`); no skill in this repository calls the Figma MCP directly any more.
+- `drupal/drupal-sdc-generation` skill. sf-drupal-harness ships the skill with the same name, built on the Showroom component briefs, and wins the sync wherever both are installed.
+
 ## [2026-09-07]
 
 ### Changed
