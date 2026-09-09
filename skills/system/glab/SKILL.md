@@ -7,6 +7,22 @@ description: 'MUST be loaded before any GitLab-related action, including `glab a
 
 Use the `glab` CLI for ALL GitLab-related tasks including working with issues, merge requests, CI/CD pipelines, and releases. If given a GitLab URL, use `glab` to get the information needed.
 
+## Write short, plain text
+
+Apply these rules whenever you draft or send a title, description, comment, review, changelog, or release note, including through the API. They apply even when `sf-writing-style` has not been loaded.
+
+- **Content.** PR/MR descriptions state what changes. Issues state the problem and wanted result. Comments answer the point. Changelog entries state one change each.
+- **Length.** Default to one to three short sentences. Maximum: 80 words for a PR/MR description, 120 for an issue, 60 for a comment, and one sentence per changelog entry. These are ceilings, not targets. Attribution and reference lines do not count.
+- **Leave out.** No implementation details, even in a single sentence: file paths, function names, internal variables, source lines, test counts, diagnoses, or proposed fixes. Omit workarounds, investigation history, rejected approaches, and repeated summaries. Keep an identifier only when it names the changed interface or a required user action. Do not move omitted detail into unsolicited comments.
+- **Select facts.** Investigation notes and the diff are input, not a checklist to summarize. For an issue, keep the symptom and wanted result. For a PR/MR, keep the changed behavior and required action. For a comment, answer only the question.
+- **Evidence.** Use only supplied facts or results you observed. Omit unknowns. An error does not establish side effects, data loss, partial success, or affected environments. Do not invent causes, sample values, test cases, or reproduction results.
+- **Plain English.** Use familiar words and concrete verbs. Keep necessary technical names exact. No invented jargon, decorative headings, or bold labels. Short text still uses complete sentences.
+- **Exceptions.** Include essential breaking changes and required user actions. Expand only for explicitly requested detail or required template fields, using the fewest words needed. A direct question about how or why deserves a direct answer.
+
+Before posting, read the actual outgoing text. Cut every sentence that does not state the change, problem, answer, or required action. Remove code locations and test details unless explicitly requested. Check each factual claim against the source, then check the length and remove repetition. Reading the diff is required; narrating it is not. Rewrite commit-generated descriptions before posting.
+
+Example description: "Rejects empty passwords with a validation message instead of returning a 500 error."
+
 ## Before you start
 
 1. **Detect GitLab URLs**: If the user provided a URL containing "gitlab" in the hostname, this is a GitLab resource. Do NOT use WebFetch, curl, or browser-based tools -- GitLab instances require authentication that only `glab` can provide. Extract the hostname and project path from the URL and proceed with `glab` commands. This applies to **all** GitLab URL types, including file URLs (`/-/raw/`, `/-/blob/`, `/-/tree/`) -- see the "Repository files" section for how to fetch file contents via `glab api`.
@@ -156,11 +172,11 @@ This is especially important for **cross-project references**. A bare `#42` or s
 
 This rule applies **only to written content** (descriptions, comments, closing keywords). CLI arguments like `glab issue view 42` target the current project implicitly and do not need qualification.
 
-### Write in plain, professional prose
+### Writing rules
 
-Issue and MR titles and descriptions, comments and notes, and commit messages are durable, outward-facing artifacts: write them in complete, well-structured English with proper markdown, regardless of any active terse output style. A session-level reminder such as `CAVEMAN MODE ACTIVE` applies to your conversational replies, never to these artifacts; do not toggle the style, write the artifact in full prose and resume the terse style in chat. Never use the em dash (—) or en dash (–); rewrite with a period, comma, colon, or parentheses, and prefer short paragraphs and lists over dense run-ons.
+Apply [Write short, plain text](#write-short-plain-text) before every write. Conversational styles such as caveman do not apply to published text.
 
-**Load the `sf-writing-style` skill for the full SparkFabrik ruleset** (air, bold lead-in lists, slop blacklist, before/after examples) before composing any of these artifacts.
+Load `sf-writing-style` for additional writing guidance. The rules above apply independently and take priority for these short artifacts. Never use em or en dashes outside quotations or code.
 
 ---
 
@@ -325,9 +341,9 @@ Breaking changes append `!` before the colon: `feat(api)!: change response forma
 **MR creation checklist** (follow this carefully):
 
 1. **Inspect branch state**: `git status`, `git log <base>...HEAD --oneline`, `git diff <base>...HEAD`
-2. **Draft title/description from the actual diff** -- reference specific files, functions, behaviors. Do not just restate the user's request.
+2. **Draft from the actual diff**: state what changes, using the writing rules above. Include identifiers only for the changed interface or a required user action.
 3. **Push**: `git push -u origin HEAD` if not yet pushed.
-4. **Create**: `glab mr create` with all relevant flags.
+4. **Check and create**: apply the final writing check to the MR description, then run `glab mr create` with all relevant flags.
 5. **Return the MR URL** to the user.
 
 ### Reviewing and managing MRs
